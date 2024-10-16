@@ -15,3 +15,4 @@ sudo docker run spbd/spbd
 1. https://docs.docker.com/guides/cpp/containerize/
 2. https://medium.com/codex/a-practical-guide-to-containerize-your-c-application-with-docker-50abb197f6d4
   - https://github.com/mostsignificant/simplehttpserver
+3. https://cedalo.com/blog/mosquitto-docker-configuration-ultimate-guide/
