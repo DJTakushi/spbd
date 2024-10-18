@@ -5,6 +5,11 @@
 #include <tahu.h>
 #include <mosquitto.h>
 
+/*******************************************************************************
+ * SparkPlug B Demo 
+ * Based on tahu/c/examples/udt_example/example.c
+ ******************************************************************************/
+
 enum alias_map {
     Next_Server = 0,
     Rebirth = 1,
@@ -27,7 +32,6 @@ void my_subscribe_callback(struct mosquitto *mosq, void *userdata, int mid, int 
 void my_log_callback(struct mosquitto *mosq, void *userdata, int level, const char *str);
 
 /* Local Functions */
-void publisher(struct mosquitto *mosq, char *topic, void *buf, unsigned len);
 void publish_births(struct mosquitto *mosq);
 void publish_node_birth(struct mosquitto *mosq);
 void publish_device_birth(struct mosquitto *mosq);
@@ -82,14 +86,6 @@ int main(int argc, char* argv[]) {
 
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   }
-}
-
-/*
- * Helper function to publish MQTT messages to the MQTT server
- */
-void publisher(struct mosquitto *mosq, char *topic, void *buf, unsigned len) {
-    // publish the data
-    mosquitto_publish(mosq, NULL, topic, len, buf, 0, false);
 }
 
 /*
