@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile
     # ports:
     #   - "8080:8080"
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
   mqtt:
     image : eclipse-mosquitto:2.0.19
     ports :
