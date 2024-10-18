@@ -5,6 +5,21 @@
 #include <tahu.h>
 #include <mosquitto.h>
 
+enum alias_map {
+    Next_Server = 0,
+    Rebirth = 1,
+    Reboot = 2,
+    Dataset = 3,
+    Node_Metric0 = 4,
+    Node_Metric1 = 5,
+    Node_Metric2 = 6,
+    Device_Metric0 = 7,
+    Device_Metric1 = 8,
+    Device_Metric2 = 9,
+    Device_Metric3 = 10,
+    My_Custom_Motor = 11
+};
+
 /* Mosquitto Callbacks */
 void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message);
 void my_connect_callback(struct mosquitto *mosq, void *userdata, int result);
@@ -17,11 +32,12 @@ void publish_births(struct mosquitto *mosq);
 void publish_node_birth(struct mosquitto *mosq);
 void publish_device_birth(struct mosquitto *mosq);
 void publish_ddata_message(struct mosquitto *mosq);
+void my_publish(struct mosquitto *mosq, std::string topic, std::string msg);
 
 
 int main(int argc, char* argv[]) {
   // MQTT Parameters - copied from tahu/c/examples/udt_example
-  std::string host = "localhost";
+  std::string host = "host.docker.internal";
   int port = 1883;
   int keepalive = 60;
   bool clean_session = true;
@@ -53,9 +69,18 @@ int main(int argc, char* argv[]) {
   }
 
 
+  // Publish the NBIRTH and DBIRTH Sparkplug messages (Birth Certificates)
+  publish_births(mosq);
+
+  std::string my_topic = "spBv1.0/Sparkplug B Devices/DDATA/danny";
+  int counter = 0;
   while(true) {
-    std::cout << "hello world!" << std::endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    // publish_ddata_message(mosq);
+
+    std::string msg = "hello world! (" + std::to_string(counter++)+")";
+    my_publish(mosq,my_topic,msg);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   }
 }
 
@@ -564,11 +589,16 @@ void publish_ddata_message(struct mosquitto *mosq) {
     // Publish the DDATA on the appropriate topic
     mosquitto_publish(mosq, NULL, "spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device", message_length, binary_buffer, 0, false);
 
-
-    char takushi_data[] = "danke DJ Heinko!";
-    mosquitto_publish(mosq, NULL, "spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device", strlen(takushi_data), takushi_data, 0, false);
-
     // Free the memory
     free(binary_buffer);
     free_payload(&ddata_payload);
+}
+
+void my_publish(struct mosquitto *mosq, std::string topic, std::string msg) {
+  static int msg_id =0;
+  std::cout << "publishing : " << msg << std::endl;
+
+  mosquitto_publish(mosq, &msg_id, topic.c_str(),
+                    msg.size(), msg.c_str(), 0, false);
+  msg_id++;
 }
