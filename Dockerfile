@@ -33,6 +33,7 @@ RUN cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build .
 FROM alpine:3.20.3
 
 RUN apk update && apk add --no-cache libstdc++
+RUN apk add mosquitto
 
 RUN addgroup -S shs && adduser -S shs -G shs
 USER shs
