@@ -1,4 +1,5 @@
 #include <chrono>
+#include <cstdlib>
 #include <iostream>
 #include <thread>
 
@@ -41,7 +42,10 @@ void my_publish(struct mosquitto *mosq, std::string topic, std::string msg);
 
 int main(int argc, char* argv[]) {
   // MQTT Parameters - copied from tahu/c/examples/udt_example
-  std::string host = "host.docker.internal";
+  char* host = std::getenv("MQ_HOST");
+  if (host == NULL){
+    host = "localhost";
+  }
   int port = 1883;
   int keepalive = 60;
   bool clean_session = true;
@@ -67,7 +71,7 @@ int main(int argc, char* argv[]) {
   //mosquitto_tls_opts_set(mosq, 0, "tlsv1.2", NULL);               // 0 is DO NOT SSL_VERIFY_PEER
 
   // MQTT Connect
-  if (mosquitto_connect(mosq, host.c_str(), port, keepalive)) {
+  if (mosquitto_connect(mosq, host, port, keepalive)) {
       fprintf(stderr, "Unable to connect.\n");
       return 1;
   }
@@ -79,10 +83,12 @@ int main(int argc, char* argv[]) {
   std::string my_topic = "spBv1.0/Sparkplug B Devices/DDATA/danny";
   int counter = 0;
   while(true) {
-    // publish_ddata_message(mosq);
+    publish_ddata_message(mosq);
 
-    std::string msg = "hello world! (" + std::to_string(counter++)+")";
-    my_publish(mosq,my_topic,msg);
+    for (int j = 0; j < 50; j++) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+      mosquitto_loop(mosq, 0, 1);
+    }
 
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   }
