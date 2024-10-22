@@ -30,7 +30,10 @@ CMD ["python3"  \
 "/tahu/sparkplug_b/c/core/tahu.options", \
 "/tahu/sparkplug_b/c/core/src/tahu.pb"]
 
-RUN /my_venv/bin/python3 nanopb_generator.py -I /tahu/sparkplug_b/sparkplug_b.proto -f /tahu/c/core/tahu.options /tahu/c/core/src/tahu.pb
+RUN /my_venv/bin/python3 nanopb_generator.py \
+    -I /tahu/sparkplug_b/sparkplug_b.proto \
+    -f /tahu/c/core/tahu.options \
+    /tahu/c/core/src/tahu.pb
 
 RUN rm /tahu/c/core/include/pb_common.h
 RUN cp /nanopb/pb_common.h /tahu/c/core/include/
