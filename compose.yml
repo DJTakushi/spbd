@@ -17,3 +17,14 @@ services:
       - "9001:9001"
     volumes:
       - ./mosquitto.config:/mosquitto/config/mosquitto.conf
+  spbd_listener:
+    image: spbd_listener
+    build:
+      context: spbd_listener
+      dockerfile: Dockerfile
+    depends_on:
+      - mqtt
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
+    environment:
+      MQ_HOST : "host.docker.internal"
