@@ -50,7 +50,9 @@ int main(int argc, char* argv[]) {
       fprintf(stderr, "Error: Out of memory.\n");
       return 1;
   }
-  mosquitto_log_callback_set(mosq, my_log_callback);
+  #ifdef SPARKPLUG_DEBUG
+    mosquitto_log_callback_set(mosq, my_log_callback);
+  #endif
   mosquitto_connect_callback_set(mosq, my_connect_callback);
   mosquitto_message_callback_set(mosq, my_message_callback);
   mosquitto_subscribe_callback_set(mosq, my_subscribe_callback);
@@ -77,13 +79,6 @@ int main(int argc, char* argv[]) {
  * Callback for incoming MQTT messages. Since this is a Sparkplug implementation these will be NCMD and DCMD messages
  */
 void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message) {
-    if (message->payloadlen) {
-        fprintf(stdout, "%s :: %d\n", message->topic, message->payloadlen);
-    } else {
-        fprintf(stdout, "%s (null)\n", message->topic);
-    }
-    fflush(stdout);
-
     // Decode the payload
     org_eclipse_tahu_protobuf_Payload inbound_payload = org_eclipse_tahu_protobuf_Payload_init_zero;
 
