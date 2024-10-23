@@ -3,7 +3,7 @@ services:
   spbd:
     image: spbd
     build:
-      context: .
+      context: spbd
       dockerfile: Dockerfile
     # ports:
     #   - "8080:8080"

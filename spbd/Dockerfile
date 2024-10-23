@@ -20,7 +20,8 @@ WORKDIR /
 RUN git clone https://github.com/eclipse/tahu.git --branch v1.0.11
 
 ### disable SPARKPLUG_DEBUG in tahu.h
-RUN  sed -i "s|#define SPARKPLUG_DEBUG 1|//#define SPARKPLUG_DEBUG 1 |g" /tahu/c/core/include/tahu.h
+RUN  sed -i "s|#define SPARKPLUG_DEBUG 1|//#define SPARKPLUG_DEBUG 1 |g" \
+    /tahu/c/core/include/tahu.h
 
 ### get nanopb
 WORKDIR /
@@ -71,11 +72,9 @@ RUN make
 RUN cp include/* /usr/include/
 RUN cp lib/libtahu.a /usr/lib/
 
-WORKDIR /spbd
-
-COPY spbd/ ./spbd/
-COPY CMakeLists.txt .
-
+# spbd_listener build
+COPY CMakeLists.txt /spbd/
+COPY /spbd/* /spbd/spbd/
 WORKDIR /spbd/build
 
 RUN cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build .
@@ -92,6 +91,6 @@ RUN apk add mosquitto
 RUN addgroup -S shs && adduser -S shs -G shs
 USER shs
 
-COPY --chown=shs:shs --from=build ./spbd/build/spbd/spbd ./spbd
+COPY --chown=shs:shs --from=build /spbd/build/spbd/spbd ./spbd
 
 ENTRYPOINT [ "./spbd" ]

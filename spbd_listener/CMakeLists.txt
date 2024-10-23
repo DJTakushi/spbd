@@ -26,15 +26,6 @@ set(SPBDL_NAME_VERSION
 
 project(${SPBDL_PROJECT_NAME})
 
+set(SPBD_LISTENER_SRC_DIR ${PROJECT_SOURCE_DIR}/spbd_listener)
 
-################################################################################
-### SparkPlug B Listener
-################################################################################
-
-set(TARGET spbd_listener)
-
-add_executable(${TARGET} main.cpp)
-
-target_compile_features(${TARGET} PUBLIC cxx_std_17)
-
-target_link_libraries(${TARGET} libtahu.a libmosquitto.so)
+add_subdirectory(spbd_listener)
