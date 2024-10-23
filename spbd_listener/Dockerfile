@@ -19,6 +19,10 @@ RUN /my_venv/bin/python3 -m pip install --upgrade protobuf grpcio-tools
 WORKDIR /
 RUN git clone https://github.com/eclipse/tahu.git --branch v1.0.11
 
+### disable SPARKPLUG_DEBUG in tahu.h
+RUN  sed -i "s|#define SPARKPLUG_DEBUG 1|//#define SPARKPLUG_DEBUG 1 |g" \
+    /tahu/c/core/include/tahu.h
+
 ### get nanopb
 WORKDIR /
 RUN git clone https://github.com/nanopb/nanopb.git --branch nanopb-0.4.1
@@ -68,12 +72,9 @@ RUN make
 RUN cp include/* /usr/include/
 RUN cp lib/libtahu.a /usr/lib/
 
-WORKDIR /spbd_listener
-
-COPY * /spbd_listener/
-# COPY CMakeLists.txt .
-RUN echo $(ls /spbd_listener/)
-
+# spbd_listener build
+COPY CMakeLists.txt /spbd_listener/
+COPY main.cpp /spbd_listener/
 WORKDIR /spbd_listener/build
 
 RUN cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build .
