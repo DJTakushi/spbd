@@ -60,7 +60,10 @@ int main(int argc, char* argv[]) {
       fprintf(stderr, "Error: Out of memory.\n");
       return 1;
   }
-  mosquitto_log_callback_set(mosq, my_log_callback);
+
+  #ifdef SPARKPLUG_DEBUG
+    mosquitto_log_callback_set(mosq, my_log_callback);
+  #endif
   mosquitto_connect_callback_set(mosq, my_connect_callback);
   mosquitto_message_callback_set(mosq, my_message_callback);
   mosquitto_subscribe_callback_set(mosq, my_subscribe_callback);
