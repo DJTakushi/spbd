@@ -1,4 +1,5 @@
 #include <chrono>
+#include <csignal>
 #include <cstdlib>
 #include <iostream>
 #include <thread>
@@ -26,6 +27,15 @@ enum alias_map {
     My_Custom_Motor = 11,
     kEngineSpeed = 12,
 };
+void exit_application(int signum) {
+  std::cout  << "exiting sub application..."<<std::endl;
+  exit(0);
+}
+void sig_int_handler(int signum) {
+  std::cout << std::endl;
+  std::cout << "ctrl+c pressed, exiting..."<<std::endl;
+  exit_application(1);
+}
 
 /* Mosquitto Callbacks */
 void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message);
@@ -42,6 +52,9 @@ void my_publish(struct mosquitto *mosq, std::string topic, std::string msg);
 
 
 int main(int argc, char* argv[]) {
+  signal(SIGINT, sig_int_handler); // registar for ctrl-c
+  signal(SIGTERM, exit_application); // terminate from Docker STOPSIGNAL
+
   // MQTT Parameters - copied from tahu/c/examples/udt_example
   char* host = std::getenv("MQ_HOST");
   if (host == NULL){
