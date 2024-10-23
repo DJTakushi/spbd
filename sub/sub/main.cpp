@@ -6,7 +6,7 @@
 #include <mosquitto.h>
 
 /*******************************************************************************
- * SparkPlug B Listener
+ * SparkPlug B Subscriber
  * Based on tahu/c/examples/udt_example/example.c
  ******************************************************************************/
 enum alias_map {

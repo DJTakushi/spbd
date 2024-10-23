@@ -1,4 +1,4 @@
-# sudo docker compose --profile spbd  --profile listener up
+# sudo docker compose --profile pub  --profile sub up
 services:
   pub:
     image: pub
@@ -22,10 +22,10 @@ services:
       - "9001:9001"
     volumes:
       - ./mosquitto.config:/mosquitto/config/mosquitto.conf
-  spbd_listener:
-    image: spbd_listener
+  sub:
+    image: sub
     build:
-      context: spbd_listener
+      context: sub
       dockerfile: Dockerfile
     depends_on:
       - mqtt
@@ -34,4 +34,4 @@ services:
     environment:
       MQ_HOST : "host.docker.internal"
     profiles:
-      - listener
+      - sub

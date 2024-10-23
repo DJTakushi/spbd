@@ -1,8 +1,8 @@
 ################################################################################
-### SparkPlug B Listener
+### SparkPlug B Subscriber
 ################################################################################
 
-set(TARGET spbd_listener)
+set(TARGET sub)
 
 add_executable(${TARGET} main.cpp)
 
