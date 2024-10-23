@@ -560,19 +560,19 @@ void publish_ddata_message(struct mosquitto *mosq) {
     org_eclipse_tahu_protobuf_Payload ddata_payload;
     get_next_payload(&ddata_payload);
 
-    // Add some device metrics to denote changed values on inputs
-    char ddata_metric_zero_value[13];
-    int i;
-    for (i = 0; i < 12; ++i) {
-        ddata_metric_zero_value[i] = '0' + rand() % 72; // starting on '0', ending on '}'
-    }
-    ddata_metric_zero_value[12] = 0;
+    // // Add some device metrics to denote changed values on inputs
+    // char ddata_metric_zero_value[13];
+    // int i;
+    // for (i = 0; i < 12; ++i) {
+    //     ddata_metric_zero_value[i] = '0' + rand() % 72; // starting on '0', ending on '}'
+    // }
+    // ddata_metric_zero_value[12] = 0;
 
-    // Note the Metric name 'input/Device Metric0' is not needed because we're using aliases
-    add_simple_metric(&ddata_payload, "Device Metric0", true, Device_Metric0, METRIC_DATA_TYPE_STRING, false, false, &ddata_metric_zero_value, sizeof(ddata_metric_zero_value));
-    bool ddata_metric_one_value = rand() % 2;
-    // Note the Metric name 'input/Device Metric1' is not needed because we're using aliases
-    add_simple_metric(&ddata_payload, "Device Metric1", true, Device_Metric1, METRIC_DATA_TYPE_BOOLEAN, false, false, &ddata_metric_one_value, sizeof(ddata_metric_one_value));
+    // // Note the Metric name 'input/Device Metric0' is not needed because we're using aliases
+    // add_simple_metric(&ddata_payload, "Device Metric0", true, Device_Metric0, METRIC_DATA_TYPE_STRING, false, false, &ddata_metric_zero_value, sizeof(ddata_metric_zero_value));
+    // bool ddata_metric_one_value = rand() % 2;
+    // // Note the Metric name 'input/Device Metric1' is not needed because we're using aliases
+    // add_simple_metric(&ddata_payload, "Device Metric1", true, Device_Metric1, METRIC_DATA_TYPE_BOOLEAN, false, false, &ddata_metric_one_value, sizeof(ddata_metric_one_value));
     double engine_speed_ = 1234.56789;
     add_simple_metric(&ddata_payload, "engine_speed", true, kEngineSpeed, METRIC_DATA_TYPE_DOUBLE, false, false, &engine_speed_, sizeof(engine_speed_));
 
