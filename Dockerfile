@@ -19,6 +19,9 @@ RUN /my_venv/bin/python3 -m pip install --upgrade protobuf grpcio-tools
 WORKDIR /
 RUN git clone https://github.com/eclipse/tahu.git --branch v1.0.11
 
+### disable SPARKPLUG_DEBUG in tahu.h
+RUN  sed -i "s|#define SPARKPLUG_DEBUG 1|//#define SPARKPLUG_DEBUG 1 |g" /tahu/c/core/include/tahu.h
+
 ### get nanopb
 WORKDIR /
 RUN git clone https://github.com/nanopb/nanopb.git --branch nanopb-0.4.1
