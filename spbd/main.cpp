@@ -563,7 +563,6 @@ void publish_ddata_message(struct mosquitto *mosq) {
     get_next_payload(&ddata_payload);
 
     // Add some device metrics to denote changed values on inputs
-    fprintf(stdout, "Adding metric: 'input/Device Metric0'\n");
     char ddata_metric_zero_value[13];
     int i;
     for (i = 0; i < 12; ++i) {
@@ -573,7 +572,6 @@ void publish_ddata_message(struct mosquitto *mosq) {
 
     // Note the Metric name 'input/Device Metric0' is not needed because we're using aliases
     add_simple_metric(&ddata_payload, "Device Metric0", true, Device_Metric0, METRIC_DATA_TYPE_STRING, false, false, &ddata_metric_zero_value, sizeof(ddata_metric_zero_value));
-    fprintf(stdout, "Adding metric: 'input/Device Metric1'\n");
     bool ddata_metric_one_value = rand() % 2;
     // Note the Metric name 'input/Device Metric1' is not needed because we're using aliases
     add_simple_metric(&ddata_payload, "Device Metric1", true, Device_Metric1, METRIC_DATA_TYPE_BOOLEAN, false, false, &ddata_metric_one_value, sizeof(ddata_metric_one_value));
