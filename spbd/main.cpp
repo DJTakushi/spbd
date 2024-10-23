@@ -23,7 +23,8 @@ enum alias_map {
     Device_Metric1 = 8,
     Device_Metric2 = 9,
     Device_Metric3 = 10,
-    My_Custom_Motor = 11
+    My_Custom_Motor = 11,
+    kEngineSpeed = 12,
 };
 
 /* Mosquitto Callbacks */
@@ -571,11 +572,14 @@ void publish_ddata_message(struct mosquitto *mosq) {
     ddata_metric_zero_value[12] = 0;
 
     // Note the Metric name 'input/Device Metric0' is not needed because we're using aliases
-    add_simple_metric(&ddata_payload, NULL, true, Device_Metric0, METRIC_DATA_TYPE_STRING, false, false, &ddata_metric_zero_value, sizeof(ddata_metric_zero_value));
+    add_simple_metric(&ddata_payload, "Device Metric0", true, Device_Metric0, METRIC_DATA_TYPE_STRING, false, false, &ddata_metric_zero_value, sizeof(ddata_metric_zero_value));
     fprintf(stdout, "Adding metric: 'input/Device Metric1'\n");
     bool ddata_metric_one_value = rand() % 2;
     // Note the Metric name 'input/Device Metric1' is not needed because we're using aliases
-    add_simple_metric(&ddata_payload, NULL, true, Device_Metric1, METRIC_DATA_TYPE_BOOLEAN, false, false, &ddata_metric_one_value, sizeof(ddata_metric_one_value));
+    add_simple_metric(&ddata_payload, "Device Metric1", true, Device_Metric1, METRIC_DATA_TYPE_BOOLEAN, false, false, &ddata_metric_one_value, sizeof(ddata_metric_one_value));
+    double engine_speed_ = 1234.56789;
+    add_simple_metric(&ddata_payload, "engine_speed", true, kEngineSpeed, METRIC_DATA_TYPE_DOUBLE, false, false, &engine_speed_, sizeof(engine_speed_));
+
 
 #ifdef SPARKPLUG_DEBUG
     // Print the payload
