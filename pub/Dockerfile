@@ -72,10 +72,10 @@ RUN make
 RUN cp include/* /usr/include/
 RUN cp lib/libtahu.a /usr/lib/
 
-# spbd_listener build
-COPY CMakeLists.txt /spbd/
-COPY /spbd/* /spbd/spbd/
-WORKDIR /spbd/build
+# pub build
+COPY CMakeLists.txt /pub/
+COPY /pub/* /pub/pub/
+WORKDIR /pub/build
 
 RUN cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build .
 
@@ -91,6 +91,6 @@ RUN apk add mosquitto
 RUN addgroup -S shs && adduser -S shs -G shs
 USER shs
 
-COPY --chown=shs:shs --from=build /spbd/build/spbd/spbd ./spbd
+COPY --chown=shs:shs --from=build /pub/build/pub/pub ./pub
 
-ENTRYPOINT [ "./spbd" ]
+ENTRYPOINT [ "./pub" ]

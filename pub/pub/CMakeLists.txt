@@ -1,8 +1,8 @@
 ################################################################################
-### SparkPlug B Demo
+### SparkPlug B Demo Publisher
 ################################################################################
 
-set(TARGET spbd)
+set(TARGET pub)
 
 add_executable(${TARGET} main.cpp)
 

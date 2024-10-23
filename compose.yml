@@ -1,9 +1,9 @@
 # sudo docker compose --profile spbd  --profile listener up
 services:
-  spbd:
-    image: spbd
+  pub:
+    image: pub
     build:
-      context: spbd
+      context: pub
       dockerfile: Dockerfile
     # ports:
     #   - "8080:8080"
@@ -14,7 +14,7 @@ services:
     depends_on:
       - mqtt
     profiles:
-      - spbd
+      - pub
   mqtt:
     image : eclipse-mosquitto:2.0.19
     ports :
