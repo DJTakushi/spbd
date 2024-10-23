@@ -95,9 +95,8 @@ void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mo
     for (i = 0; i < limit; i++) {
       if (inbound_payload.metrics[i].name != NULL) {  // alias 0 to 2
         std::string name = inbound_payload.metrics[i].name;
-        std::cout << "name : "  <<name;
         if (name == "engine_speed") {
-          std::cout <<" value : "<< inbound_payload.metrics[i].value.double_value;
+          std::cout <<"engine_speed value : "<< inbound_payload.metrics[i].value.double_value;
         }
       }
       else {
