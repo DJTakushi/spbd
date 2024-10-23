@@ -67,11 +67,8 @@ int main(int argc, char* argv[]) {
 
   int counter = 0;
   while(true) {
-    for (int j = 0; j < 50; j++) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        mosquitto_loop(mosq, 0, 1);
-    }
-    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+    mosquitto_loop(mosq, 0, 1);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
 }
 
