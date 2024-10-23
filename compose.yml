@@ -1,6 +1,13 @@
 # sudo docker compose build pub sub
 # sudo docker compose --profile pub --profile sub up
 services:
+  mqtt:
+    image : eclipse-mosquitto:2.0.19
+    ports :
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto.config:/mosquitto/config/mosquitto.conf
   pub:
     image: pub
     build:
@@ -16,13 +23,6 @@ services:
       - mqtt
     profiles:
       - pub
-  mqtt:
-    image : eclipse-mosquitto:2.0.19
-    ports :
-      - "1883:1883"
-      - "9001:9001"
-    volumes:
-      - ./mosquitto.config:/mosquitto/config/mosquitto.conf
   sub:
     image: sub
     build:
