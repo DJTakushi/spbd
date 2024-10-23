@@ -1,4 +1,5 @@
-# sudo docker compose --profile pub  --profile sub up
+# sudo docker compose build pub sub
+# sudo docker compose --profile pub --profile sub up
 services:
   pub:
     image: pub
