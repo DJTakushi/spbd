@@ -112,12 +112,7 @@ void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mo
 
     // Decode the payload
     org_eclipse_tahu_protobuf_Payload inbound_payload = org_eclipse_tahu_protobuf_Payload_init_zero;
-
-    // takushi
-    const uint8_t* my_payload = static_cast<uint8_t *>(message->payload);
-
-
-    if (decode_payload(&inbound_payload, my_payload, message->payloadlen)) {
+    if (decode_payload(&inbound_payload, (uint8_t*)(message->payload), message->payloadlen)) {
     } else {
         fprintf(stderr, "Failed to decode the payload\n");
     }
