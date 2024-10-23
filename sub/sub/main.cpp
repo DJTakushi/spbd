@@ -65,10 +65,10 @@ int main(int argc, char* argv[]) {
   }
   #ifdef SPARKPLUG_DEBUG
     mosquitto_log_callback_set(mosq, my_log_callback);
+    mosquitto_subscribe_callback_set(mosq, my_subscribe_callback);
   #endif
   mosquitto_connect_callback_set(mosq, my_connect_callback);
   mosquitto_message_callback_set(mosq, my_message_callback);
-  mosquitto_subscribe_callback_set(mosq, my_subscribe_callback);
   mosquitto_username_pw_set(mosq, "admin2", "changeme");
   mosquitto_will_set(mosq, "spBv1.0/Sparkplug B Devices/NDEATH/C Edge Node 2", 0, NULL, 0, false);
 
