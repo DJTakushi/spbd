@@ -96,10 +96,19 @@ void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mo
 
     // Get the number of metrics in the payload and iterate over them handling them as needed
     int i;
-    std::cout << "inbound_payload.metrics_count : " << inbound_payload.metrics_count<<std::endl;
     int limit = inbound_payload.metrics_count;
     for (i = 0; i < limit; i++) {
-        std::cout << "blyat"<<std::endl;
+      if (inbound_payload.metrics[i].name != NULL) {  // alias 0 to 2
+        std::string name = inbound_payload.metrics[i].name;
+        std::cout << "name : "  <<name;
+        if (name == "engine_speed") {
+          std::cout <<" value : "<< inbound_payload.metrics[i].value.double_value;
+        }
+      }
+      else {
+        std::cout << "alias : "  <<inbound_payload.metrics[i].alias;
+      }
+      std::cout << std::endl;
     }
 
 }
