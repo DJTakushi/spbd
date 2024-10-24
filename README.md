@@ -29,4 +29,9 @@ cp lib/libtahu.a /usr/lib/
 
 ```
 ## python
-haha...
+TODO:
+
+# TODO
+- python containerized pub/sub
+  - need fresh protocol files
+    - `protoc --proto_path=sparkplug_b/ --python_out=python/core/ sparkplug_b/sparkplug_b.proto`
