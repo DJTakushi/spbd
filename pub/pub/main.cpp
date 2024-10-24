@@ -58,13 +58,13 @@ int main(int argc, char* argv[]) {
   // MQTT Parameters - copied from tahu/c/examples/udt_example
   std::string host;
   char* host_compose = std::getenv("MQ_HOST");
-    if (host_compose != NULL){
-      host = std::string(host_compose);
-    }
-    else {
-      host = "localhost";
-    }
-  std::cout << "host_compose : " << std::string(host_compose) << std::endl;
+  if (host_compose != NULL){
+    host = std::string(host_compose);
+    std::cout << "host_compose : " << std::string(host_compose) << std::endl;
+  }
+  else {
+    host = "localhost";
+  }
   std::cout << "host :" << host << std::endl;
   int port = 1883;
   int keepalive = 60;
