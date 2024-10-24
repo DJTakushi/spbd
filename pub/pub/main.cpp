@@ -56,10 +56,16 @@ int main(int argc, char* argv[]) {
   signal(SIGTERM, exit_application); // terminate from Docker STOPSIGNAL
 
   // MQTT Parameters - copied from tahu/c/examples/udt_example
-  char* host = std::getenv("MQ_HOST");
-  if (host == NULL){
-    host = "localhost";
-  }
+  std::string host;
+  char* host_compose = std::getenv("MQ_HOST");
+    if (host_compose != NULL){
+      host = std::string(host_compose);
+    }
+    else {
+      host = "localhost";
+    }
+  std::cout << "host_compose : " << std::string(host_compose) << std::endl;
+  std::cout << "host :" << host << std::endl;
   int port = 1883;
   int keepalive = 60;
   bool clean_session = true;
@@ -88,7 +94,7 @@ int main(int argc, char* argv[]) {
   //mosquitto_tls_opts_set(mosq, 0, "tlsv1.2", NULL);               // 0 is DO NOT SSL_VERIFY_PEER
 
   // MQTT Connect
-  if (mosquitto_connect(mosq, host, port, keepalive)) {
+  if (mosquitto_connect(mosq, host.c_str(), port, keepalive)) {
       fprintf(stderr, "Unable to connect.\n");
       return 1;
   }
