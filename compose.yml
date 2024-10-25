@@ -7,7 +7,7 @@ services:
       - "1883:1883"
       - "9001:9001"
     volumes:
-      - ./mosquitto.config:/mosquitto/config/mosquitto.conf
+      - ./mqtt/mosquitto.config:/mosquitto/config/mosquitto.conf
   pub:
     image: pub
     build:
