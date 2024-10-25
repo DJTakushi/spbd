@@ -24,6 +24,15 @@ architecture-beta
     mqtt:R --> L:sub
 ```
 
+```mermaid
+flowchart LR
+  pub --> mqtt@{shape: cyl} --> sub
+
+  style mqtt fill:#660066,stroke:#fff,stroke-width:2px,color:#fff
+  style pub fill:black,stroke:yellow,stroke-width:2px,color:yellow
+  style sub fill:black,stroke:green,stroke-width:2px,color:green
+```
+
 # 2. use
 ## 2.1 use with docker compose
 ```
