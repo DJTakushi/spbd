@@ -21,18 +21,24 @@ flowchart LR
   style sub fill:black,stroke:green,stroke-width:2px,color:green
 ```
 
-Architecture  (desired) :
+Architecture (desired) :
 ```mermaid
 flowchart LR
-  HostApplication <--> mqtt
-  data_gen --http--> pub <--> mqtt[(mqtt)] <--> sub
+  subgraph box
+    data_gen --http--> pub
+    style data_gen fill:black,stroke:red,stroke-width:2px,color:red
+    style pub fill:black,stroke:yellow,stroke-width:2px,color:yellow
+  end
 
-  style mqtt fill:#660066,stroke:#fff,stroke-width:2px,color:#fff
-  style data_gen fill:black,stroke:red,stroke-width:2px,color:red
-  style pub fill:black,stroke:yellow,stroke-width:2px,color:yellow
-  style sub fill:black,stroke:green,stroke-width:2px,color:green
+  subgraph tmv
+    mqtt <--> HostApplication
+    pub  <--> mqtt[(mqtt)] <--> sub
 
-  style HostApplication fill:black,stroke:blue,stroke-width:2px,color:blue
+    style mqtt fill:#660066,stroke:#fff,stroke-width:2px,color:#fff
+    style sub fill:black,stroke:green,stroke-width:2px,color:green
+
+    style HostApplication fill:black,stroke:blue,stroke-width:2px,color:blue
+  end
 ```
 
 # 2. use
