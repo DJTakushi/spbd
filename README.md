@@ -14,7 +14,7 @@ SparkPlugB Demo
 Architecture:
 ```mermaid
 flowchart LR
-  pub --> mqtt@{shape: cyl} --> sub
+  pub --> mqtt[(mqtt)] --> sub
 
   style mqtt fill:#660066,stroke:#fff,stroke-width:2px,color:#fff
   style pub fill:black,stroke:yellow,stroke-width:2px,color:yellow
