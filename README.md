@@ -11,19 +11,7 @@ SparkPlugB Demo
 - [9. TODO](#9-todo)
 
 # 1. description
-```mermaid
-architecture-beta
-    group host[HOST]
-
-    service mqtt(server)[MQTT] in host
-
-    service pub(logos:aws-ec2)[pub] in host
-    service sub(logos:aws-ec2)[sub] in host
-
-    pub:R --> L:mqtt
-    mqtt:R --> L:sub
-```
-
+Architecture:
 ```mermaid
 flowchart LR
   pub --> mqtt@{shape: cyl} --> sub
