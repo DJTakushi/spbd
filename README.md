@@ -30,7 +30,7 @@ flowchart LR
     style pub fill:black,stroke:yellow,stroke-width:2px,color:yellow
   end
 
-  subgraph tmv
+  subgraph server
     mqtt <--> HostApplication
     pub  <--> mqtt[(mqtt)] <--> sub
 
