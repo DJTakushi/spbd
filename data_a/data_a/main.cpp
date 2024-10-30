@@ -35,6 +35,43 @@ static void connection_status_callback(IOTHUB_CLIENT_CONNECTION_STATUS result, I
     }
 }
 
+IOTHUB_CLIENT_CONFIG get_iotclient_config(){
+  IOTHUB_CLIENT_CONFIG config;
+  config.protocol = MQTT_Protocol;
+  config.deviceId = std::getenv("DEVICE_ID");
+  if (config.deviceId == NULL){
+    std::cerr << "DEVICE_ID must be set"<<std::endl;
+    exit(1);
+  }
+
+  config.deviceKey = std::getenv("DEVICE_KEY");
+  if (config.deviceKey == NULL){
+    std::cerr << "DEVICE_KEY must be set"<<std::endl;
+    exit(1);
+  }
+
+  config.iotHubName = std::getenv("IOT_HUB_NAME");
+  if (config.iotHubName == NULL){
+    std::cerr << "IOT_HUB_NAME must be set"<<std::endl;
+    exit(1);
+  }
+
+  config.deviceSasToken = NULL;
+
+  config.iotHubSuffix = std::getenv("IOT_HUB_SUFFIX");
+  if (config.iotHubSuffix == NULL){
+    std::cerr << "IOT_HUB_SUFFIX must be set"<<std::endl;
+    exit(1);
+  }
+
+  config.protocolGatewayHostName = std::getenv("PROTOCOL_GATEWAY_HOSTNAME");
+  if (config.protocolGatewayHostName == NULL){
+    std::cerr << "PROTOCOL_GATEWAY_HOSTNAME must be set"<<std::endl;
+    exit(1);
+  }
+  return config;
+}
+
 int main(int argc, char* argv[]) {
   char* connectionString = std::getenv("IOTEDGE_DEVICEID");
   if (connectionString == NULL){
@@ -42,7 +79,6 @@ int main(int argc, char* argv[]) {
     exit(1);
   }
 
-      IOTHUB_CLIENT_TRANSPORT_PROVIDER protocol = MQTT_Protocol;
     IOTHUB_MESSAGE_HANDLE message_handle;
     size_t messages_sent = 0;
     const char* telemetry_msg = "test_message";
@@ -54,7 +90,9 @@ int main(int argc, char* argv[]) {
 
     (void)printf("Creating IoTHub Device handle\r\n");
     // Create the iothub handle here
-    device_ll_handle = IoTHubDeviceClient_LL_CreateFromConnectionString(connectionString, protocol);
+    // device_ll_handle = IoTHubDeviceClient_LL_CreateFromConnectionString(connectionString, MQTT_Protocol);
+    IOTHUB_CLIENT_CONFIG config = get_iotclient_config();
+    device_ll_handle = IoTHubDeviceClient_LL_Create(&config);
     if (device_ll_handle == NULL)
     {
         (void)printf("Failure creating IotHub device. Hint: Check your connection string.\r\n");
@@ -70,11 +108,11 @@ int main(int argc, char* argv[]) {
         IoTHubDeviceClient_LL_SetOption(device_ll_handle, OPTION_LOG_TRACE, &traceOn);
 #endif
 
-#ifdef SET_TRUSTED_CERT_IN_SAMPLES
-        // Setting the Trusted Certificate. This is only necessary on systems without
-        // built in certificate stores.
-            IoTHubDeviceClient_LL_SetOption(device_ll_handle, OPTION_TRUSTED_CERT, certificates);
-#endif // SET_TRUSTED_CERT_IN_SAMPLES
+// #ifdef SET_TRUSTED_CERT_IN_SAMPLES
+//         // Setting the Trusted Certificate. This is only necessary on systems without
+//         // built in certificate stores.
+//             IoTHubDeviceClient_LL_SetOption(device_ll_handle, OPTION_TRUSTED_CERT, certificates);
+// #endif // SET_TRUSTED_CERT_IN_SAMPLES
 
 #if defined SAMPLE_MQTT || defined SAMPLE_MQTT_OVER_WEBSOCKETS
         //Setting the auto URL Encoder (recommended for MQTT). Please use this option unless
