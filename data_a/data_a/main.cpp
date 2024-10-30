@@ -8,7 +8,6 @@
 #include "azure_c_shared_utility/threadapi.h"
 #include "azure_c_shared_utility/crt_abstractions.h"
 #include "azure_c_shared_utility/shared_util_options.h"
-static const char* connectionString = "[device connection string]";
 #define MESSAGE_COUNT        5
 static bool g_continueRunning = true;
 static size_t g_message_count_send_confirmations = 0;
@@ -37,7 +36,12 @@ static void connection_status_callback(IOTHUB_CLIENT_CONNECTION_STATUS result, I
 }
 
 int main(int argc, char* argv[]) {
-  std::cout << "hello world!" << std::endl;
+  char* connectionString = std::getenv("IOTEDGE_DEVICEID");
+  if (connectionString == NULL){
+    std::cerr << "IOTEDGE_DEVICEID must be set to connection string"<<std::endl;
+    exit(1);
+  }
+
       IOTHUB_CLIENT_TRANSPORT_PROVIDER protocol = MQTT_Protocol;
     IOTHUB_MESSAGE_HANDLE message_handle;
     size_t messages_sent = 0;
