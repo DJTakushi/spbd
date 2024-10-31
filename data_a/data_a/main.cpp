@@ -73,12 +73,6 @@ IOTHUB_CLIENT_CONFIG get_iotclient_config(){
 }
 
 int main(int argc, char* argv[]) {
-  char* connectionString = std::getenv("IOTEDGE_DEVICEID");
-  if (connectionString == NULL){
-    std::cerr << "IOTEDGE_DEVICEID must be set to connection string"<<std::endl;
-    exit(1);
-  }
-
     IOTHUB_MESSAGE_HANDLE message_handle;
     size_t messages_sent = 0;
     const char* telemetry_msg = "test_message";
@@ -90,7 +84,6 @@ int main(int argc, char* argv[]) {
 
     (void)printf("Creating IoTHub Device handle\r\n");
     // Create the iothub handle here
-    // device_ll_handle = IoTHubDeviceClient_LL_CreateFromConnectionString(connectionString, MQTT_Protocol);
     IOTHUB_CLIENT_CONFIG config = get_iotclient_config();
     device_ll_handle = IoTHubDeviceClient_LL_Create(&config);
     if (device_ll_handle == NULL)
