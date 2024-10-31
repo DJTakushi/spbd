@@ -36,3 +36,16 @@ services:
       MQ_HOST : "host.docker.internal"
     profiles:
       - sub
+  data_b:
+    image: data_b
+    build:
+      context: data_b
+      dockerfile: Dockerfile
+    depends_on:
+      - mqtt
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
+    environment:
+      MQ_HOST : "host.docker.internal"
+    profiles:
+      - data_b
