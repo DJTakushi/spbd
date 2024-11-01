@@ -68,13 +68,15 @@ int main(void)
         size_t iterator = 0;
         double temperature = 0;
         double humidity = 0;
+        double engine_speed=0.0;
         do
         {
             if (iterator < MESSAGE_COUNT)
             {
                 temperature = minTemperature + (rand() % 10);
                 humidity = minHumidity +  (rand() % 20);
-                sprintf_s(msgText, sizeof(msgText), "{\"deviceId\":\"myFirstDevice\",\"windSpeed\":%.2f,\"temperature\":%.2f,\"humidity\":%.2f}", avgWindSpeed + (rand() % 4 + 2), temperature, humidity);
+                engine_speed+=0.01;
+                sprintf_s(msgText, sizeof(msgText), "{\"deviceId\":\"myFirstDevice\",\"windSpeed\":%.2f,\"temperature\":%.2f,\"humidity\":%.2f,\"engine_speed\":%.2f}", avgWindSpeed + (rand() % 4 + 2), temperature, humidity, engine_speed);
                 if ((messages[iterator].messageHandle = IoTHubMessage_CreateFromString(msgText)) == NULL)
                 {
                     (void)printf("ERROR: iotHubMessageHandle is NULL!\r\n");
