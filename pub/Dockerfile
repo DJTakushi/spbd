@@ -85,6 +85,11 @@ RUN git submodule init && git submodule update
 RUN cmake -Duse_edge_modules=ON ..
 RUN make install
 
+# nlohmann
+WORKDIR /
+RUN git clone https://github.com/nlohmann/json.git --branch v3.11.3
+RUN cp -r /json/include/* /usr/include/
+
 # pub build
 COPY CMakeLists.txt /pub/
 COPY /pub/* /pub/pub/
