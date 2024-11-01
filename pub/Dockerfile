@@ -14,6 +14,10 @@ RUN apk add python3
 RUN apk add py3-pip
 RUN python3 -m venv /my_venv
 RUN /my_venv/bin/python3 -m pip install --upgrade protobuf grpcio-tools
+RUN apk add openssl-dev
+RUN apk add curl-dev
+RUN apk add util-linux-dev
+
 
 # tahu
 WORKDIR /
@@ -72,6 +76,15 @@ RUN make
 RUN cp include/* /usr/include/
 RUN cp lib/libtahu.a /usr/lib/
 
+# azure iot sdk
+WORKDIR /
+RUN git clone https://github.com/Azure/azure-iot-sdk-c.git --branch 1.14.0
+RUN mkdir -p /azure-iot-sdk-c/cmake
+WORKDIR /azure-iot-sdk-c/cmake
+RUN git submodule init && git submodule update
+RUN cmake -Duse_edge_modules=ON ..
+RUN make install
+
 # pub build
 COPY CMakeLists.txt /pub/
 COPY /pub/* /pub/pub/
@@ -87,6 +100,9 @@ FROM alpine:3.20.3
 
 RUN apk update && apk add --no-cache libstdc++
 RUN apk add mosquitto
+RUN apk add openssl-dev
+RUN apk add curl-dev
+RUN apk add util-linux-dev
 
 RUN addgroup -S shs && adduser -S shs -G shs
 USER shs
