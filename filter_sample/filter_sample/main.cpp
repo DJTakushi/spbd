@@ -1,4 +1,6 @@
 // copied from https://github.com/Azure/azure-iot-sdk-c/tree/main/iothub_client/samples/iothub_client_sample_module_filter
+// route to this module : 
+// E.G.: FROM /messages/* INTO BrokeredEndpoint("/modules/filter_sample/inputs/input1")
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
