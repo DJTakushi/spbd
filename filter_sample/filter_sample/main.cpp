@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define USE_EDGE_MODULES
 #include "azureiot/iothub_module_client_ll.h"
 #include "azureiot/iothub_client_options.h"
 #include "azureiot/iothub_message.h"
