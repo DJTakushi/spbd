@@ -17,10 +17,13 @@
 #include "azure_c_shared_utility/shared_util_options.h"
 #include "azureiot/iothubtransportmqtt.h"
 #include "azureiot/iothub.h"
+
+#include "nlohmann/json.hpp"
 /*******************************************************************************
  * SparkPlug B Demo 
  * Based on tahu/c/examples/udt_example/example.c
  ******************************************************************************/
+double engine_speed_ = -999.9;
 
 enum alias_map {
     Next_Server = 0,
@@ -638,7 +641,6 @@ void publish_ddata_message(struct mosquitto *mosq) {
     // bool ddata_metric_one_value = rand() % 2;
     // // Note the Metric name 'input/Device Metric1' is not needed because we're using aliases
     // add_simple_metric(&ddata_payload, "Device Metric1", true, Device_Metric1, METRIC_DATA_TYPE_BOOLEAN, false, false, &ddata_metric_one_value, sizeof(ddata_metric_one_value));
-    double engine_speed_ = 1234.56789;
     add_simple_metric(&ddata_payload, "engine_speed", true, kEngineSpeed, METRIC_DATA_TYPE_DOUBLE, false, false, &engine_speed_, sizeof(engine_speed_));
 
 
@@ -707,6 +709,16 @@ static void PrintMessageInformation(IOTHUB_MESSAGE_HANDLE message)
         else
         {
             (void)printf(" Received Binary message.\r\n  Data: <<<%.*s>>> & Size=%d\r\n", (int)messageBodyLength, messageBody, (int)messageBodyLength);
+            try{
+                nlohmann::json j = nlohmann::json::parse(messageBody);
+                if(j.contains("engine_speed")){
+                  engine_speed_= j["engine_speed"];
+                }
+            }
+            catch (...) {
+            std::cout << "exception parsing message" <<std::endl;
+            // Block of code to handle errors
+            }
         }
     }
 
@@ -895,7 +907,7 @@ static int SetupCallbacksForInputQueues(IOTHUB_MODULE_CLIENT_LL_HANDLE iotHubMod
 {
     int ret;
 
-    if (IoTHubModuleClient_LL_SetInputMessageCallback(iotHubModuleClientHandle, "input1", InputQueue1FilterCallback, (void*)iotHubModuleClientHandle) != IOTHUB_CLIENT_OK)
+    if (IoTHubModuleClient_LL_SetInputMessageCallback(iotHubModuleClientHandle, "input1", DefaultMessageCallback, (void*)iotHubModuleClientHandle) != IOTHUB_CLIENT_OK)
     {
         (void)printf("ERROR: IoTHubModuleClient_LL_SetInputMessageCallback(\"input1\")..........FAILED!\r\n");
         ret = MU_FAILURE;
