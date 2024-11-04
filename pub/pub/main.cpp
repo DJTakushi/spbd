@@ -74,16 +74,21 @@ FILTERED_MESSAGE_INSTANCE;
 size_t messagesReceivedByInput1Queue = 0;
 
 static void PrintMessageInformation(IOTHUB_MESSAGE_HANDLE message);
-static IOTHUBMESSAGE_DISPOSITION_RESULT DefaultMessageCallback(IOTHUB_MESSAGE_HANDLE message, void* userContextCallback);
+static IOTHUBMESSAGE_DISPOSITION_RESULT DefaultMessageCallback(
+    IOTHUB_MESSAGE_HANDLE message,
+    void* userContextCallback);
 static IOTHUBMESSAGE_DISPOSITION_RESULT input1_message_callback(
     IOTHUB_MESSAGE_HANDLE msg,
     void* userContextCallback);
 static void SendConfirmationCallbackFromFilter(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* userContextCallback);
 static FILTERED_MESSAGE_INSTANCE* CreateFilteredMessageInstance(IOTHUB_MESSAGE_HANDLE message);
 static IOTHUBMESSAGE_DISPOSITION_RESULT InputQueue1FilterCallback(IOTHUB_MESSAGE_HANDLE message, void* userContextCallback);
-static IOTHUB_MODULE_CLIENT_LL_HANDLE InitializeConnectionForFilter();
-static void DeInitializeConnectionForFilter(IOTHUB_MODULE_CLIENT_LL_HANDLE iotHubModuleClientHandle);
-static int SetupCallbacksForInputQueues(IOTHUB_MODULE_CLIENT_LL_HANDLE iotHubModuleClientHandle);
+
+static IOTHUB_MODULE_CLIENT_LL_HANDLE initialize_iot_connection();
+/** TODO : deinitialize on a graceful exit with below function**/
+static void deinitialize_iot_connection(IOTHUB_MODULE_CLIENT_LL_HANDLE handle);
+static int SetupCallbacksForInputQueues(
+    IOTHUB_MODULE_CLIENT_LL_HANDLE iotHubModuleClientHandle);
 
 
 int main(int argc, char* argv[]) {
@@ -138,16 +143,16 @@ int main(int argc, char* argv[]) {
   // Publish the NBIRTH and DBIRTH Sparkplug messages (Birth Certificates)
 //   publish_births(mosq);
 
+  // IoT Hub Provisioning
   IOTHUB_MODULE_CLIENT_LL_HANDLE iotHubModuleClientHandle;
-  if ((iotHubModuleClientHandle =InitializeConnectionForFilter ()) == NULL) {
-    std::cerr << "InitializeConnectionForFilter failed"<<std::endl;
+  if ((iotHubModuleClientHandle = initialize_iot_connection ()) == NULL) {
+    std::cerr << "initialize_iot_connection failed"<<std::endl;
     return 1;
   }
   if (SetupCallbacksForInputQueues(iotHubModuleClientHandle) != 0) {
-    std::cerr << "InitializeConnectionForFilter failed"<<std::endl;
+    std::cerr << "SetupCallbacksForInputQueues failed"<<std::endl;
     return 1;
   }
-
   auto iothub_refresh = std::thread([&iotHubModuleClientHandle]() {
     while (true) {
         IoTHubModuleClient_LL_DoWork(iotHubModuleClientHandle);
@@ -910,37 +915,36 @@ static IOTHUBMESSAGE_DISPOSITION_RESULT InputQueue1FilterCallback(IOTHUB_MESSAGE
     return result;
 }
 
-static IOTHUB_MODULE_CLIENT_LL_HANDLE InitializeConnectionForFilter()
-{
-    IOTHUB_MODULE_CLIENT_LL_HANDLE iotHubModuleClientHandle;
+static IOTHUB_MODULE_CLIENT_LL_HANDLE initialize_iot_connection() {
+  IOTHUB_MODULE_CLIENT_LL_HANDLE handle;
 
-    if (IoTHub_Init() != 0)
-    {
-        (void)printf("Failed to initialize the platform.\r\n");
-        iotHubModuleClientHandle = NULL;
-    }
-    // Note: You must use MQTT_Protocol as the argument below.  Using other protocols will result in undefined behavior.
-    else if ((iotHubModuleClientHandle = IoTHubModuleClient_LL_CreateFromEnvironment(MQTT_Protocol)) == NULL)
-    {
-        (void)printf("ERROR: IoTHubModuleClient_LL_CreateFromEnvironment failed\r\n");
-    }
-    else
-    {
-        // Uncomment the following lines to enable verbose logging (e.g., for debugging).
-        // bool traceOn = true;
-        // IoTHubModuleClient_LL_SetOption(iotHubModuleClientHandle, OPTION_LOG_TRACE, &traceOn);
-    }
+  if (IoTHub_Init() != 0) {
+    std::cerr << "Failed to initialize the platform."<<std::endl;
+    handle = NULL;
+  }
+  /*Note: You must use MQTT_Protocol as the argument below.
+    Using other protocols will result in undefined behavior.*/
+  handle = IoTHubModuleClient_LL_CreateFromEnvironment(MQTT_Protocol);
+  if (handle == NULL) {
+    std::cerr <<"ERROR: IoTHubModuleClient_LL_CreateFromEnvironment failed";
+    std::cerr << std::endl;
+  }
+  else {
+      /* Uncomment the following lines to enable verbose logging 
+        (e.g., for debugging).*/
+      // bool traceOn = true;
+      // IoTHubModuleClient_LL_SetOption(handle, OPTION_LOG_TRACE, &traceOn);
+  }
 
-    return iotHubModuleClientHandle;
+  return handle;
 }
 
-static void DeInitializeConnectionForFilter(IOTHUB_MODULE_CLIENT_LL_HANDLE iotHubModuleClientHandle)
-{
-    if (iotHubModuleClientHandle != NULL)
-    {
-        IoTHubModuleClient_LL_Destroy(iotHubModuleClientHandle);
-    }
-    IoTHub_Deinit();
+static void deinitialize_iot_connection(
+    IOTHUB_MODULE_CLIENT_LL_HANDLE handle) {
+  if (handle != NULL) {
+    IoTHubModuleClient_LL_Destroy(handle);
+  }
+  IoTHub_Deinit();
 }
 
 static int SetupCallbacksForInputQueues(
