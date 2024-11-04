@@ -15,110 +15,93 @@
 #include "azureiot/iothubtransportmqtt.h"
 #include "azureiot/iothub.h"
 
-static int callbackCounter;
 static char msgText[1024];
 static char propText[1024];
 #define MESSAGE_COUNT 500
-#define DOWORK_LOOP_NUM     60
+#define DOWORK_LOOP_NUM 60
 
 
-typedef struct EVENT_INSTANCE_TAG
-{
-    IOTHUB_MESSAGE_HANDLE messageHandle;
-    size_t messageTrackingId;  // For tracking the messages within the user callback.
+typedef struct EVENT_INSTANCE_TAG {
+  IOTHUB_MESSAGE_HANDLE messageHandle;
+  size_t messageTrackingId;  // For tracking the messages within the user callback.
 } EVENT_INSTANCE;
 
-static void SendConfirmationCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* userContextCallback)
-{
-    EVENT_INSTANCE* eventInstance = (EVENT_INSTANCE*)userContextCallback;
-    // (void)printf("Confirmation[%d] received for message tracking id = %lu with result = %s\r\n", callbackCounter, (unsigned long)eventInstance->messageTrackingId, MU_ENUM_TO_STRING(IOTHUB_CLIENT_CONFIRMATION_RESULT, result));
-    /* Some device specific action code goes here... */
-    callbackCounter++;
-    IoTHubMessage_Destroy(eventInstance->messageHandle);
+static void SendConfirmationCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result,
+                                    void* userContextCallback) {
+  EVENT_INSTANCE* eventInstance = (EVENT_INSTANCE*)userContextCallback;
+  /* Some device specific action code goes here... */
+  IoTHubMessage_Destroy(eventInstance->messageHandle);
 }
 
-int main(void)
-{
-    IOTHUB_MODULE_CLIENT_LL_HANDLE iotHubModuleClientHandle;
-    EVENT_INSTANCE messages[MESSAGE_COUNT];
+int main(void) {
+  IOTHUB_MODULE_CLIENT_LL_HANDLE iotHubModuleClientHandle;
+  EVENT_INSTANCE messages[MESSAGE_COUNT];
 
-    srand((unsigned int)time(NULL));
-    double avgWindSpeed = 10.0;
-    double minTemperature = 20.0;
-    double minHumidity = 60.0;
+  srand((unsigned int)time(NULL));
+  double avgWindSpeed = 10.0;
+  double minTemperature = 20.0;
+  double minHumidity = 60.0;
 
-    callbackCounter = 0;
+  if (IoTHub_Init() != 0) {
+    (void)printf("Failed to initialize the platform.\r\n");
+    return 1;
+  }
+  // Note: You must use MQTT_Protocol as the argument below.  Using other protocols will result in undefined behavior.
+  else if ((iotHubModuleClientHandle = IoTHubModuleClient_LL_CreateFromEnvironment(MQTT_Protocol)) == NULL) {
+    (void)printf("ERROR: iotHubModuleClientHandle is NULL!\r\n");
+  }
+  else {
+    // Uncomment the following lines to enable verbose logging (e.g., for debugging).
+    // bool traceOn = true;
+    // IoTHubModuleClient_LL_SetOption(iotHubModuleClientHandle, OPTION_LOG_TRACE, &traceOn);
 
-    if (IoTHub_Init() != 0)
-    {
-        (void)printf("Failed to initialize the platform.\r\n");
-        return 1;
-    }
-    // Note: You must use MQTT_Protocol as the argument below.  Using other protocols will result in undefined behavior.
-    else if ((iotHubModuleClientHandle = IoTHubModuleClient_LL_CreateFromEnvironment(MQTT_Protocol)) == NULL)
-    {
-        (void)printf("ERROR: iotHubModuleClientHandle is NULL!\r\n");
-    }
-    else
-    {
-        // Uncomment the following lines to enable verbose logging (e.g., for debugging).
-        // bool traceOn = true;
-        // IoTHubModuleClient_LL_SetOption(iotHubModuleClientHandle, OPTION_LOG_TRACE, &traceOn);
+    size_t iterator = 0;
+    double temperature = 0;
+    double humidity = 0;
+    double engine_speed=0.0;
+    do {
+      if (true/*iterator < MESSAGE_COUNT*/) {
+        temperature = minTemperature + (rand() % 10);
+        humidity = minHumidity +  (rand() % 20);
+        engine_speed+=0.01;
+        sprintf_s(msgText, sizeof(msgText), "{\"deviceId\":\"myFirstDevice\",\"windSpeed\":%.2f,\"temperature\":%.2f,\"humidity\":%.2f,\"engine_speed\":%.2f}", avgWindSpeed + (rand() % 4 + 2), temperature, humidity, engine_speed);
+        if ((messages[iterator].messageHandle = IoTHubMessage_CreateFromString(msgText)) == NULL) {
+          (void)printf("ERROR: iotHubMessageHandle is NULL!\r\n");
+        }
+        else {
+          (void)IoTHubMessage_SetMessageId(messages[iterator].messageHandle, "MSG_ID");
+          (void)IoTHubMessage_SetCorrelationId(messages[iterator].messageHandle, "CORE_ID");
 
-        size_t iterator = 0;
-        double temperature = 0;
-        double humidity = 0;
-        double engine_speed=0.0;
-        do
-        {
-            if (true/*iterator < MESSAGE_COUNT*/)
-            {
-                temperature = minTemperature + (rand() % 10);
-                humidity = minHumidity +  (rand() % 20);
-                engine_speed+=0.01;
-                sprintf_s(msgText, sizeof(msgText), "{\"deviceId\":\"myFirstDevice\",\"windSpeed\":%.2f,\"temperature\":%.2f,\"humidity\":%.2f,\"engine_speed\":%.2f}", avgWindSpeed + (rand() % 4 + 2), temperature, humidity, engine_speed);
-                if ((messages[iterator].messageHandle = IoTHubMessage_CreateFromString(msgText)) == NULL)
-                {
-                    (void)printf("ERROR: iotHubMessageHandle is NULL!\r\n");
-                }
-                else
-                {
-                    (void)IoTHubMessage_SetMessageId(messages[iterator].messageHandle, "MSG_ID");
-                    (void)IoTHubMessage_SetCorrelationId(messages[iterator].messageHandle, "CORE_ID");
+          messages[iterator].messageTrackingId = iterator;
+          MAP_HANDLE propMap = IoTHubMessage_Properties(messages[iterator].messageHandle);
+          (void)sprintf_s(propText, sizeof(propText), temperature > 28 ? "true" : "false");
+          Map_AddOrUpdate(propMap, "temperatureAlert", propText);
 
-                    messages[iterator].messageTrackingId = iterator;
-                    MAP_HANDLE propMap = IoTHubMessage_Properties(messages[iterator].messageHandle);
-                    (void)sprintf_s(propText, sizeof(propText), temperature > 28 ? "true" : "false");
-                    Map_AddOrUpdate(propMap, "temperatureAlert", propText);
-
-                    if (IoTHubModuleClient_LL_SendEventToOutputAsync(iotHubModuleClientHandle, messages[iterator].messageHandle, "temperatureOutput", SendConfirmationCallback, &messages[iterator]) != IOTHUB_CLIENT_OK)
-                    {
-                        (void)printf("ERROR: IoTHubModuleClient_LL_SendEventAsync..........FAILED!\r\n");
-                    }
-                    else
-                    {
-                        // (void)printf("IoTHubModuleClient_LL_SendEventAsync accepted message [%d] for transmission to IoT Hub.\r\n", (int)iterator);
-                    }
-                }
-
-            }
-            IoTHubModuleClient_LL_DoWork(iotHubModuleClientHandle);
-            ThreadAPI_Sleep(1000);
-            iterator++;
-        } while (1);
-
-        // Loop while we wait for messages to drain off.
-        size_t index = 0;
-        for (index = 0; index < DOWORK_LOOP_NUM; index++)
-        {
-            IoTHubModuleClient_LL_DoWork(iotHubModuleClientHandle);
-            ThreadAPI_Sleep(100);
+          if (IoTHubModuleClient_LL_SendEventToOutputAsync(iotHubModuleClientHandle, messages[iterator].messageHandle, "temperatureOutput", SendConfirmationCallback, &messages[iterator]) != IOTHUB_CLIENT_OK) {
+              (void)printf("ERROR: IoTHubModuleClient_LL_SendEventAsync..........FAILED!\r\n");
+          }
+          else {
+              // (void)printf("IoTHubModuleClient_LL_SendEventAsync accepted message [%d] for transmission to IoT Hub.\r\n", (int)iterator);
+          }
         }
 
-        IoTHubModuleClient_LL_Destroy(iotHubModuleClientHandle);
+      }
+      IoTHubModuleClient_LL_DoWork(iotHubModuleClientHandle);
+      ThreadAPI_Sleep(1000);
+      iterator++;
+    } while (1);
+
+    // Loop while we wait for messages to drain off.
+    size_t index = 0;
+    for (index = 0; index < DOWORK_LOOP_NUM; index++) {
+      IoTHubModuleClient_LL_DoWork(iotHubModuleClientHandle);
+      ThreadAPI_Sleep(100);
     }
 
-    (void)printf("Finished executing\n");
-    IoTHub_Deinit();
-    return 0;
+    IoTHubModuleClient_LL_Destroy(iotHubModuleClientHandle);
+  }
+
+  (void)printf("Finished executing\n");
+  IoTHub_Deinit();
+  return 0;
 }
