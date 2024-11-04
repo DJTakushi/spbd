@@ -80,7 +80,6 @@ static IOTHUBMESSAGE_DISPOSITION_RESULT DefaultMessageCallback(
 static IOTHUBMESSAGE_DISPOSITION_RESULT input1_message_callback(
     IOTHUB_MESSAGE_HANDLE msg,
     void* userContextCallback);
-static void SendConfirmationCallbackFromFilter(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* userContextCallback);
 static FILTERED_MESSAGE_INSTANCE* CreateFilteredMessageInstance(IOTHUB_MESSAGE_HANDLE message);
 
 static IOTHUB_MODULE_CLIENT_LL_HANDLE initialize_iot_connection();
@@ -810,22 +809,6 @@ static IOTHUBMESSAGE_DISPOSITION_RESULT input1_message_callback (
     }
   }
   return IOTHUBMESSAGE_ACCEPTED;
-}
-
-// SendConfirmationCallbackFromFilter is invoked when the message that was forwarded on from 'InputQueue1FilterCallback'
-// pipeline function is confirmed.
-// The Azure IoT C SDK allows developers to acknowledge cloud-to-device messages
-// (either sending DISPOSITION if using AMQP, or PUBACK if using MQTT) outside the following callback, in a separate function call.
-// This would allow the user application to process the incoming message before acknowledging it to the Azure IoT Hub, since
-// the callback below is supposed to return as fast as possible to unblock I/O.
-// Please look for "IOTHUBMESSAGE_ASYNC_ACK" in iothub_ll_c2d_sample for more details.
-static void SendConfirmationCallbackFromFilter(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* userContextCallback)
-{
-    // The context corresponds to which message# we were at when we sent.
-    FILTERED_MESSAGE_INSTANCE* filteredMessageInstance = (FILTERED_MESSAGE_INSTANCE*)userContextCallback;
-    (void)printf("Confirmation[%lu] received for message with result = %d\r\n", (unsigned long)filteredMessageInstance->messageTrackingId, result);
-    IoTHubMessage_Destroy(filteredMessageInstance->messageHandle);
-    free(filteredMessageInstance);
 }
 
 // Allocates a context for callback and clones the message
