@@ -82,7 +82,6 @@ static IOTHUBMESSAGE_DISPOSITION_RESULT input1_message_callback(
     void* userContextCallback);
 static void SendConfirmationCallbackFromFilter(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* userContextCallback);
 static FILTERED_MESSAGE_INSTANCE* CreateFilteredMessageInstance(IOTHUB_MESSAGE_HANDLE message);
-static IOTHUBMESSAGE_DISPOSITION_RESULT InputQueue1FilterCallback(IOTHUB_MESSAGE_HANDLE message, void* userContextCallback);
 
 static IOTHUB_MODULE_CLIENT_LL_HANDLE initialize_iot_connection();
 /** TODO : deinitialize on a graceful exit with below function**/
@@ -853,66 +852,6 @@ static FILTERED_MESSAGE_INSTANCE* CreateFilteredMessageInstance(IOTHUB_MESSAGE_H
     }
 
     return filteredMessageInstance;
-}
-
-// InputQueue1FilterCallback implements a very primitive filtering mechanism.  It will send the 1st, 3rd, 5th, etc. messages
-// to the next step in the queue and will filter out the 2nd, 4th, 6th, etc. messages.
-// The Azure IoT C SDK allows developers to acknowledge cloud-to-device messages
-// (either sending DISPOSITION if using AMQP, or PUBACK if using MQTT) outside the following callback, in a separate function call.
-// This would allow the user application to process the incoming message before acknowledging it to the Azure IoT Hub, since
-// the callback below is supposed to return as fast as possible to unblock I/O.
-// Please look for "IOTHUBMESSAGE_ASYNC_ACK" in iothub_ll_c2d_sample for more details.
-static IOTHUBMESSAGE_DISPOSITION_RESULT InputQueue1FilterCallback(IOTHUB_MESSAGE_HANDLE message, void* userContextCallback)
-{
-    IOTHUBMESSAGE_DISPOSITION_RESULT result;
-    IOTHUB_CLIENT_RESULT clientResult;
-    IOTHUB_MODULE_CLIENT_LL_HANDLE iotHubModuleClientHandle = (IOTHUB_MODULE_CLIENT_LL_HANDLE)userContextCallback;
-
-    PrintMessageInformation(message);
-
-    if ((messagesReceivedByInput1Queue % 2) == 0)
-    {
-        // This message should be sent to next stop in the pipeline, namely "output1".  What happens at "output1" is determined
-        // by the configuration of the Edge routing table setup.
-        FILTERED_MESSAGE_INSTANCE* filteredMessageInstance = CreateFilteredMessageInstance(message);
-        if (NULL == filteredMessageInstance)
-        {
-            result = IOTHUBMESSAGE_ABANDONED;
-        }
-        else
-        {
-            // We filter out every other message.  Here we will send on.
-            (void)printf("Sending message (%lu) to the next stage in pipeline\r\n", (unsigned long)messagesReceivedByInput1Queue);
-
-            IOTHUB_MESSAGE_RESULT msgResult = IoTHubMessage_SetMessageId(message, "MSG_ID");
-            if (msgResult != IOTHUB_MESSAGE_OK)
-            {
-                (void)printf("SetMesageId failed, id=%d\r\n", msgResult);
-            }
-
-            clientResult = IoTHubModuleClient_LL_SendEventToOutputAsync(iotHubModuleClientHandle, message, "output1", SendConfirmationCallbackFromFilter, (void*)filteredMessageInstance);
-            if (clientResult != IOTHUB_CLIENT_OK)
-            {
-                IoTHubMessage_Destroy(filteredMessageInstance->messageHandle);
-                free(filteredMessageInstance);
-                (void)printf("IoTHubModuleClient_LL_SendEventToOutputAsync failed on sending msg#=%lu, err=%d\r\n", (unsigned long)messagesReceivedByInput1Queue, clientResult);
-                result = IOTHUBMESSAGE_ABANDONED;
-            }
-            else
-            {
-                result = IOTHUBMESSAGE_ACCEPTED;
-            }
-        }
-    }
-    else
-    {
-        // No-op.  Swallow this message by not passing it onto the next stage in the pipeline.
-        (void)printf("Not sending message (%lu) to the next stage in pipeline.\r\n", (unsigned long)messagesReceivedByInput1Queue);
-        result = IOTHUBMESSAGE_ACCEPTED;
-    }
-
-    messagesReceivedByInput1Queue++;
-    return result;
 }
 
 static IOTHUB_MODULE_CLIENT_LL_HANDLE initialize_iot_connection() {
