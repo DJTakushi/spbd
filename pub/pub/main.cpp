@@ -63,16 +63,6 @@ void publish_device_birth(struct mosquitto *mosq);
 void publish_ddata_message(struct mosquitto *mosq);
 void my_publish(struct mosquitto *mosq, std::string topic, std::string msg);
 
-
-typedef struct FILTERED_MESSAGE_INSTANCE_TAG
-{
-    IOTHUB_MESSAGE_HANDLE messageHandle;
-    size_t messageTrackingId;  // For tracking the messages within the user callback.
-}
-FILTERED_MESSAGE_INSTANCE;
-
-size_t messagesReceivedByInput1Queue = 0;
-
 static void PrintMessageInformation(IOTHUB_MESSAGE_HANDLE msg);
 static IOTHUBMESSAGE_DISPOSITION_RESULT DefaultMessageCallback(
     IOTHUB_MESSAGE_HANDLE message,
@@ -680,9 +670,6 @@ void my_publish(struct mosquitto *mosq, std::string topic, std::string msg) {
 
 // Prints relevant system properties about a message.
 static void PrintMessageInformation(IOTHUB_MESSAGE_HANDLE msg) {
-  std::cout << "Received Message [%lu]";
-  std::cout <<(unsigned long)messagesReceivedByInput1Queue;
-
   IOTHUBMESSAGE_CONTENT_TYPE contentType;
   contentType = IoTHubMessage_GetContentType(msg);
   if (contentType != IOTHUBMESSAGE_BYTEARRAY) {
