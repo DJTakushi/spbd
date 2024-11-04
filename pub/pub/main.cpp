@@ -75,6 +75,9 @@ size_t messagesReceivedByInput1Queue = 0;
 
 static void PrintMessageInformation(IOTHUB_MESSAGE_HANDLE message);
 static IOTHUBMESSAGE_DISPOSITION_RESULT DefaultMessageCallback(IOTHUB_MESSAGE_HANDLE message, void* userContextCallback);
+static IOTHUBMESSAGE_DISPOSITION_RESULT input1_message_callback(
+    IOTHUB_MESSAGE_HANDLE msg,
+    void* userContextCallback);
 static void SendConfirmationCallbackFromFilter(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* userContextCallback);
 static FILTERED_MESSAGE_INSTANCE* CreateFilteredMessageInstance(IOTHUB_MESSAGE_HANDLE message);
 static IOTHUBMESSAGE_DISPOSITION_RESULT InputQueue1FilterCallback(IOTHUB_MESSAGE_HANDLE message, void* userContextCallback);
@@ -768,6 +771,43 @@ static IOTHUBMESSAGE_DISPOSITION_RESULT DefaultMessageCallback(IOTHUB_MESSAGE_HA
     return IOTHUBMESSAGE_ACCEPTED;
 }
 
+static IOTHUBMESSAGE_DISPOSITION_RESULT input1_message_callback (
+    IOTHUB_MESSAGE_HANDLE msg, void* userContextCallback) {
+  (void)userContextCallback;
+
+  IOTHUBMESSAGE_CONTENT_TYPE contentType = IoTHubMessage_GetContentType(msg);
+  if (contentType != IOTHUBMESSAGE_BYTEARRAY) {
+    /*  The transport will only create messages of type IOTHUBMESSAGE_BYTEARRAY,
+        never IOTHUBMESSAGE_STRING.*/
+    std::cout << "Warning: Unknown content type "<<int(contentType)<< \
+        "[%d] received for message.  Cannot display"<<std::endl;
+  }
+  else {
+    /*  IoTHubMessage_GetByteArray retrieves a shallow copy of the data.
+        Caller must NOT free messageBody.*/
+    IOTHUB_MESSAGE_RESULT messageResult;
+    unsigned const char* messageBody;
+    size_t messageBodyLength;
+    messageResult = IoTHubMessage_GetByteArray(msg, &messageBody,
+                                                &messageBodyLength);
+    if (messageResult != IOTHUB_MESSAGE_OK) {
+      std::cout <<" WARNING: messageBody = NULL"<<std::endl;
+    }
+    else {
+      try{
+        nlohmann::json j = nlohmann::json::parse(messageBody);
+        if(j.contains("engine_speed")){
+          engine_speed_= j["engine_speed"];
+        }
+      }
+      catch (...) {
+        std::cout << "exception parsing message" <<std::endl;
+      }
+    }
+  }
+  return IOTHUBMESSAGE_ACCEPTED;
+}
+
 // SendConfirmationCallbackFromFilter is invoked when the message that was forwarded on from 'InputQueue1FilterCallback'
 // pipeline function is confirmed.
 // The Azure IoT C SDK allows developers to acknowledge cloud-to-device messages
@@ -903,23 +943,30 @@ static void DeInitializeConnectionForFilter(IOTHUB_MODULE_CLIENT_LL_HANDLE iotHu
     IoTHub_Deinit();
 }
 
-static int SetupCallbacksForInputQueues(IOTHUB_MODULE_CLIENT_LL_HANDLE iotHubModuleClientHandle)
-{
-    int ret;
+static int SetupCallbacksForInputQueues(
+      IOTHUB_MODULE_CLIENT_LL_HANDLE iotHubModuleClientHandle) {
+    int ret = 0;
+    IOTHUB_CLIENT_RESULT client_result;
 
-    if (IoTHubModuleClient_LL_SetInputMessageCallback(iotHubModuleClientHandle, "input1", DefaultMessageCallback, (void*)iotHubModuleClientHandle) != IOTHUB_CLIENT_OK)
-    {
-        (void)printf("ERROR: IoTHubModuleClient_LL_SetInputMessageCallback(\"input1\")..........FAILED!\r\n");
-        ret = MU_FAILURE;
+    client_result = IoTHubModuleClient_LL_SetInputMessageCallback(
+        iotHubModuleClientHandle,
+        "input1",
+        input1_message_callback,
+        (void*)iotHubModuleClientHandle);
+    if (client_result != IOTHUB_CLIENT_OK) {
+      std::cerr << "ERROR: IoTHubModuleClient_LL_SetInputMessageCallback(\
+          \"input1\")..........FAILED!"<<std::endl;
+      ret = MU_FAILURE;
     }
-    else if (IoTHubModuleClient_LL_SetMessageCallback(iotHubModuleClientHandle, DefaultMessageCallback, (void*)iotHubModuleClientHandle) != IOTHUB_CLIENT_OK)
-    {
-        (void)printf("ERROR: IoTHubModuleClient_LL_SetMessageCallback(default)..........FAILED!\r\n");
+
+    client_result = IoTHubModuleClient_LL_SetMessageCallback(
+        iotHubModuleClientHandle,
+        DefaultMessageCallback,
+        (void*)iotHubModuleClientHandle);
+    if (client_result != IOTHUB_CLIENT_OK) {
+      std::cerr << "ERROR: IoTHubModuleClient_LL_SetMessageCallback(default) \
+          ..........FAILED!" << std::endl;
         ret = MU_FAILURE;
-    }
-    else
-    {
-        ret = 0;
     }
 
     return ret;
