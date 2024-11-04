@@ -762,15 +762,17 @@ static void PrintMessageInformation(IOTHUB_MESSAGE_HANDLE message)
         correlationId, inputQueueName, connectionModuleId, connectionDeviceId, tempAlertProperty);
 }
 
-// DefaultMessageCallback is invoked if a message arrives that does not map up to one of the queues
-// specified by IoTHubModuleClient_LL_SetInputMessageCallback.
-// In the context of this sample, such behavior is unexpected but not an error.
-static IOTHUBMESSAGE_DISPOSITION_RESULT DefaultMessageCallback(IOTHUB_MESSAGE_HANDLE message, void* userContextCallback)
-{
-    (void)userContextCallback;
-    (void)printf("Message arrived sent to the default queue\r\n");
-    PrintMessageInformation(message);
-    return IOTHUBMESSAGE_ACCEPTED;
+/** DefaultMessageCallback is invoked if a message arrives that does not map up
+ *  to one of the queues specified by
+ *  IoTHubModuleClient_LL_SetInputMessageCallback.
+ *  In the context of this sample, such behavior is unexpected but not an
+ *  error. **/
+static IOTHUBMESSAGE_DISPOSITION_RESULT DefaultMessageCallback(
+    IOTHUB_MESSAGE_HANDLE message, void* userContextCallback) {
+  (void)userContextCallback;
+  std::cout <<"Message arrived sent to the default queue"<<std::endl;
+  PrintMessageInformation(message);
+  return IOTHUBMESSAGE_ACCEPTED;
 }
 
 static IOTHUBMESSAGE_DISPOSITION_RESULT input1_message_callback (
