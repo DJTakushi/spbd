@@ -80,7 +80,6 @@ static IOTHUBMESSAGE_DISPOSITION_RESULT DefaultMessageCallback(
 static IOTHUBMESSAGE_DISPOSITION_RESULT input1_message_callback(
     IOTHUB_MESSAGE_HANDLE msg,
     void* userContextCallback);
-static FILTERED_MESSAGE_INSTANCE* CreateFilteredMessageInstance(IOTHUB_MESSAGE_HANDLE message);
 
 static IOTHUB_MODULE_CLIENT_LL_HANDLE initialize_iot_connection();
 /** TODO : deinitialize on a graceful exit with below function**/
@@ -809,32 +808,6 @@ static IOTHUBMESSAGE_DISPOSITION_RESULT input1_message_callback (
     }
   }
   return IOTHUBMESSAGE_ACCEPTED;
-}
-
-// Allocates a context for callback and clones the message
-// NOTE: The message MUST be cloned at this stage.  InputQueue1FilterCallback's caller always frees the message
-// so we need to pass down a new copy.
-static FILTERED_MESSAGE_INSTANCE* CreateFilteredMessageInstance(IOTHUB_MESSAGE_HANDLE message)
-{
-    FILTERED_MESSAGE_INSTANCE* filteredMessageInstance = (FILTERED_MESSAGE_INSTANCE*)malloc(sizeof(FILTERED_MESSAGE_INSTANCE));
-    if (NULL == filteredMessageInstance)
-    {
-        (void)printf("Failed allocating 'FILTERED_MESSAGE_INSTANCE' for pipelined message\r\n");
-    }
-    else
-    {
-        memset(filteredMessageInstance, 0, sizeof(*filteredMessageInstance));
-
-        if ((filteredMessageInstance->messageHandle = IoTHubMessage_Clone(message)) == NULL)
-        {
-            (void)printf("Cloning message for pipelined message\r\n");
-            free(filteredMessageInstance);
-            filteredMessageInstance = NULL;
-        }
-        filteredMessageInstance->messageTrackingId = messagesReceivedByInput1Queue;
-    }
-
-    return filteredMessageInstance;
 }
 
 static IOTHUB_MODULE_CLIENT_LL_HANDLE initialize_iot_connection() {
