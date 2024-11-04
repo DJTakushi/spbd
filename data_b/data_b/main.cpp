@@ -1,5 +1,6 @@
 // based on azure-iot-sdk-c/iothub_client/samples/iothub_client_sample_module_sender/iothub_client_sample_module_sender.c
 
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -20,20 +21,22 @@ static char propText[1024];
 #define DOWORK_LOOP_NUM 60
 
 
-typedef struct EVENT_INSTANCE_TAG {
+struct EVENT_INSTANCE {
   IOTHUB_MESSAGE_HANDLE messageHandle;
-  size_t messageTrackingId; // For tracking the messages in the user callback.
-} EVENT_INSTANCE;
+  size_t messageTrackingId; // For tracking the instances in the user callback.
+};
 
 static void SendConfirmationCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result,
                                     void* userContextCallback) {
   EVENT_INSTANCE* eventInstance = (EVENT_INSTANCE*)userContextCallback;
   /* Some device specific action code goes here... */
+  size_t id = eventInstance->messageTrackingId;
   IoTHubMessage_Destroy(eventInstance->messageHandle);
+  delete eventInstance;
+  std::cout << "deleted eventInstance with id "<< id <<std::endl;
 }
 
 int main(void) {
-  EVENT_INSTANCE messages[MESSAGE_COUNT];
 
   srand((unsigned int)time(NULL));
   double avgWindSpeed = 10.0;
@@ -53,6 +56,7 @@ int main(void) {
     return 1;
   }
 
+  std::cout << "starting loop..."<<std::endl;
   size_t iterator = 0;
   double engine_speed=0.0;
   do {
@@ -60,19 +64,23 @@ int main(void) {
     double humidity = minHumidity +  (rand() % 20);
     engine_speed+=0.01;
     sprintf_s(msgText, sizeof(msgText), "{\"deviceId\":\"myFirstDevice\",\"windSpeed\":%.2f,\"temperature\":%.2f,\"humidity\":%.2f,\"engine_speed\":%.2f}", avgWindSpeed + (rand() % 4 + 2), temperature, humidity, engine_speed);
-    if ((messages[iterator].messageHandle = IoTHubMessage_CreateFromString(msgText)) == NULL) {
+
+    EVENT_INSTANCE* instance = new EVENT_INSTANCE();
+    instance->messageHandle = IoTHubMessage_CreateFromString(msgText);
+
+    if (instance->messageHandle == NULL) {
       (void)printf("ERROR: iotHubMessageHandle is NULL!\r\n");
     }
     else {
-      (void)IoTHubMessage_SetMessageId(messages[iterator].messageHandle, "MSG_ID");
-      (void)IoTHubMessage_SetCorrelationId(messages[iterator].messageHandle, "CORE_ID");
+      (void)IoTHubMessage_SetMessageId(instance->messageHandle, "MSG_ID");
+      (void)IoTHubMessage_SetCorrelationId(instance->messageHandle, "CORE_ID");
 
-      messages[iterator].messageTrackingId = iterator;
-      MAP_HANDLE propMap = IoTHubMessage_Properties(messages[iterator].messageHandle);
+      instance->messageTrackingId = iterator;
+      MAP_HANDLE propMap = IoTHubMessage_Properties(instance->messageHandle);
       (void)sprintf_s(propText, sizeof(propText), temperature > 28 ? "true" : "false");
       Map_AddOrUpdate(propMap, "temperatureAlert", propText);
 
-      if (IoTHubModuleClient_LL_SendEventToOutputAsync(handle, messages[iterator].messageHandle, "temperatureOutput", SendConfirmationCallback, &messages[iterator]) != IOTHUB_CLIENT_OK) {
+      if (IoTHubModuleClient_LL_SendEventToOutputAsync(handle, instance->messageHandle, "temperatureOutput", SendConfirmationCallback, instance) != IOTHUB_CLIENT_OK) {
         (void)printf("ERROR: IoTHubModuleClient_LL_SendEventAsync..........FAILED!\r\n");
       }
       else {
@@ -85,7 +93,7 @@ int main(void) {
     iterator++;
   } while (1);
 
-  // Loop while we wait for messages to drain off.
+  // Loop while we wait for instances to drain off.
   size_t index = 0;
   for (index = 0; index < DOWORK_LOOP_NUM; index++) {
     IoTHubModuleClient_LL_DoWork(handle);
