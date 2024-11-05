@@ -1,3 +1,4 @@
+#include <ctime>
 #include <chrono>
 #include <csignal>
 #include <cstdlib>
@@ -79,6 +80,10 @@ static int SetupCallbacksForInputQueues(
 
 
 int main(int argc, char* argv[]) {
+  std::time_t now = std::time(nullptr);
+  std::cout << "starting pub main at " << std::asctime(std::localtime(&now));
+  std::cout <<"..."  << std::endl;
+
   signal(SIGINT, sig_int_handler); // registar for ctrl-c
   signal(SIGTERM, exit_application); // terminate from Docker STOPSIGNAL
 

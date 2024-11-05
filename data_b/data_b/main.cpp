@@ -1,5 +1,6 @@
 // based on azure-iot-sdk-c/iothub_client/samples/iothub_client_sample_module_sender/iothub_client_sample_module_sender.c
 
+#include <ctime>
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,10 +34,13 @@ static void SendConfirmationCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result,
   size_t id = eventInstance->messageTrackingId;
   IoTHubMessage_Destroy(eventInstance->messageHandle);
   delete eventInstance;
-  std::cout << "deleted eventInstance with id "<< id <<std::endl;
+  // std::cout << "deleted eventInstance with id "<< id <<std::endl;
 }
 
 int main(void) {
+  std::time_t now = std::time(nullptr);
+  std::cout << "starting data_b main at " << std::asctime(std::localtime(&now));
+  std::cout <<"..."  << std::endl;
 
   srand((unsigned int)time(NULL));
   double avgWindSpeed = 10.0;
