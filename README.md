@@ -11,33 +11,23 @@ SparkPlugB Demo
 - [9. TODO](#9-todo)
 
 # 1. description
-Architecture :
-```mermaid
-flowchart LR
-  pub --> mqtt[(mqtt)] --> sub
-
-  style mqtt fill:#660066,stroke:#fff,stroke-width:2px,color:#fff
-  style pub fill:black,stroke:yellow,stroke-width:2px,color:yellow
-  style sub fill:black,stroke:green,stroke-width:2px,color:green
-```
-
-Architecture (desired) :
+Architecture (deployed) :
 ```mermaid
 flowchart LR
   subgraph box
-    data_gen --http--> pub
+    data_gen --$edgeHost<br>messages--> pub
     style data_gen fill:black,stroke:red,stroke-width:2px,color:red
     style pub fill:black,stroke:yellow,stroke-width:2px,color:yellow
   end
 
   subgraph server
     mqtt <--> HostApplication
-    pub  <--> mqtt[(mqtt)] <--> sub
+    pub  <--sparkPlugB--> mqtt[(mqtt)] <--> sub
 
     style mqtt fill:#660066,stroke:#fff,stroke-width:2px,color:#fff
     style sub fill:black,stroke:green,stroke-width:2px,color:green
 
-    style HostApplication fill:black,stroke:blue,stroke-width:2px,color:blue
+    style HostApplication fill:black,stroke:blue,stroke-width:2px,color:blue,stroke-dasharray: 5 5
   end
 ```
 
