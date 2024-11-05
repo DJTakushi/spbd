@@ -15,8 +15,8 @@
 #include "azureiot/iothubtransportmqtt.h"
 #include "azureiot/iothub.h"
 
-static char msgText[1024];
-static char propText[1024];
+#include "nlohmann/json.hpp"
+
 #define MESSAGE_COUNT 500
 #define DOWORK_LOOP_NUM 60
 
@@ -63,10 +63,15 @@ int main(void) {
     double temperature = minTemperature + (rand() % 10);
     double humidity = minHumidity +  (rand() % 20);
     engine_speed+=0.01;
-    sprintf_s(msgText, sizeof(msgText), "{\"deviceId\":\"myFirstDevice\",\"windSpeed\":%.2f,\"temperature\":%.2f,\"humidity\":%.2f,\"engine_speed\":%.2f}", avgWindSpeed + (rand() % 4 + 2), temperature, humidity, engine_speed);
+    nlohmann::json j;
+    j["deviceId"] = "myFirstDevice";
+    j["windSpeed"] = avgWindSpeed + (rand() % 4 + 2);
+    j["temperature"] = temperature;
+    j["humidity"] = humidity;
+    j["engine_speed"] = engine_speed;
 
     EVENT_INSTANCE* instance = new EVENT_INSTANCE();
-    instance->messageHandle = IoTHubMessage_CreateFromString(msgText);
+    instance->messageHandle = IoTHubMessage_CreateFromString(j.dump().c_str());
 
     if (instance->messageHandle == NULL) {
       (void)printf("ERROR: iotHubMessageHandle is NULL!\r\n");
@@ -77,14 +82,18 @@ int main(void) {
 
       instance->messageTrackingId = iterator;
       MAP_HANDLE propMap = IoTHubMessage_Properties(instance->messageHandle);
-      (void)sprintf_s(propText, sizeof(propText), temperature > 28 ? "true" : "false");
-      Map_AddOrUpdate(propMap, "temperatureAlert", propText);
+      std::string propText = temperature > 28 ? "true" : "false";
+      Map_AddOrUpdate(propMap, "temperatureAlert", propText.c_str());
 
-      if (IoTHubModuleClient_LL_SendEventToOutputAsync(handle, instance->messageHandle, "temperatureOutput", SendConfirmationCallback, instance) != IOTHUB_CLIENT_OK) {
-        (void)printf("ERROR: IoTHubModuleClient_LL_SendEventAsync..........FAILED!\r\n");
-      }
-      else {
-        // (void)printf("IoTHubModuleClient_LL_SendEventAsync accepted message [%d] for transmission to IoT Hub.\r\n", (int)iterator);
+      IOTHUB_CLIENT_RESULT result;
+      result = IoTHubModuleClient_LL_SendEventToOutputAsync(handle,
+                                                      instance->messageHandle,
+                                                      "temperatureOutput",
+                                                      SendConfirmationCallback,
+                                                      instance);
+      if (result != IOTHUB_CLIENT_OK) {
+        std::cerr << "ERROR: IoTHubModuleClient_LL_SendEventAsync......FAILED!";
+        std::cerr << std::endl;
       }
     }
 
