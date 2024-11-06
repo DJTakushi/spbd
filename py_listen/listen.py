@@ -21,6 +21,9 @@ subscriptions = [
   "spBv1.0/" + myGroupId + "/DCMD/" + myNodeName + "/#",
   "spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device"
 ]
+nbirth_topic = f"spBv1.0/{myGroupId}/NBIRTH/{myNodeName}"
+dbirth_topic = f"spBv1.0/{myGroupId}/DBIRTH/{myNodeName}/{myDeviceName}"
+ndeath_topic=f"spBv1.0/{myGroupId}/NDEATH/{myNodeName}"
 
 def on_connect(client, userdata, flags, rc):
   if rc == 0:
@@ -54,7 +57,6 @@ def publishNodeBirth(client):
   # Add some device metrics (removed by takushi)
 
   byteArray = bytearray(nbirth_payload.SerializeToString())
-  nbirth_topic = f"spBv1.0/{myGroupId}/NBIRTH/{myNodeName}"
   client.publish(nbirth_topic, byteArray, 0, False)
 
 def publishDeviceBirth(client):
@@ -64,30 +66,26 @@ def publishDeviceBirth(client):
   # Add some device metrics (removed by takushi)
 
   totalByteArray = bytearray(dbirth_payload.SerializeToString())
-  dbirth_topic = f"spBv1.0/{myGroupId}/DBIRTH/{myNodeName}/{myDeviceName}"
   client.publish(dbirth_topic, totalByteArray, 0, False)
 
-def main():
-  print("Starting main application")
-
-  # Create the node death payload
+def setNodeDeath(client):
   deathPayload = sparkplug.getNodeDeathPayload()
+  deathByteArray = bytearray(deathPayload.SerializeToString())
+  client.will_set(ndeath_topic, deathByteArray, 0, False)
 
-  # Start of main program - Set up the MQTT client connection
+
+def main():
+  # set up the MQTT client connection
   client = mqtt.Client(serverUrl, 1883, 60)
   client.on_connect = on_connect
   client.on_message = on_message
   client.username_pw_set(myUsername, myPassword)
-  deathByteArray = bytearray(deathPayload.SerializeToString())
-  ndeath_topic=f"spBv1.0/{myGroupId}/NDEATH/{myNodeName}"
-  client.will_set(ndeath_topic, deathByteArray, 0, False)
+  setNodeDeath(client)
   client.connect(serverUrl, 1883, 60)
 
-  while True:
-    # Sit and wait for inbound or outbound events
-    for _ in range(5):
-      time.sleep(.1)
-      client.loop()
+  while True: # Sit and wait for inbound or outbound events
+    time.sleep(.1)
+    client.loop()
 
 if __name__=="__main__":
   main()
