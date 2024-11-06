@@ -1,5 +1,6 @@
 # based on tahu/python/examples/example_simple.py
 import sys
+import time
 
 import paho.mqtt.client as mqtt
 import sparkplug_b as sparkplug
@@ -31,6 +32,11 @@ def on_connect(client, userdata, flags, rc):
   for sub in subscriptions:
     client.subscribe(sub)
     print(f"subscribed to {sub}")
+
+  time.sleep(.1) # Short delay to allow connect callback to occur
+  client.loop()
+
+  publishBirth(client) # Publish the birth certificates
 
 def on_message(client, userdata, msg):
   print("Message arrived: " + msg.topic)
@@ -85,13 +91,6 @@ def main():
   ndeath_topic=f"spBv1.0/{myGroupId}/NDEATH/{myNodeName}"
   client.will_set(ndeath_topic, deathByteArray, 0, False)
   client.connect(serverUrl, 1883, 60)
-
-  # Short delay to allow connect callback to occur
-  time.sleep(.1)
-  client.loop()
-
-  # Publish the birth certificates
-  publishBirth(client)
 
   while True:
     # Sit and wait for inbound or outbound events
