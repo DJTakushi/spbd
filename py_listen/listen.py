@@ -1,4 +1,5 @@
 # based on tahu/python/examples/example_simple.py
+# sudo docker build . -t pylisten && sudo docker run pylisten
 import sys
 import time
 
