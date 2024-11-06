@@ -76,7 +76,6 @@ def setNodeDeath(client):
   deathByteArray = bytearray(deathPayload.SerializeToString())
   client.will_set(ndeath_topic, deathByteArray, 0, False)
 
-
 def main():
   # set up the MQTT client connection
   client = mqtt.Client()
