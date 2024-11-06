@@ -1,5 +1,6 @@
 # based on tahu/python/examples/example_simple.py
 # sudo docker build . -t pylisten && sudo docker run pylisten
+import datetime
 import sys
 import time
 
@@ -41,7 +42,7 @@ def on_connect(client, userdata, flags, rc):
   publishBirth(client) # Publish the birth certificates
 
 def on_message(client, userdata, msg):
-  print("Message arrived: " + msg.topic)
+  print(f"{datetime.datetime.now()} : {msg.topic}")
   tokens = msg.topic.split("/")
 
   inboundPayload = sparkplug_b_pb2.Payload()
