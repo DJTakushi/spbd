@@ -18,6 +18,12 @@ publishPeriod = 5000
 myUsername = "admin"
 myPassword = "changeme"
 
+subscriptions = [
+  "spBv1.0/" + myGroupId + "/NCMD/" + myNodeName + "/#",
+  "spBv1.0/" + myGroupId + "/DCMD/" + myNodeName + "/#",
+  "spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device"
+]
+
 def on_connect(client, userdata, flags, rc):
   if rc == 0:
     print("Connected with result code "+str(rc))
@@ -25,32 +31,19 @@ def on_connect(client, userdata, flags, rc):
     print("Failed to connect with result code "+str(rc))
     sys.exit()
 
-  global myGroupId
-  global myNodeName
-
-  print("starting subscriptions...")
-  # Subscribing in on_connect() means that if we lose the connection and
-  # reconnect then subscriptions will be renewed.
-  client.subscribe("spBv1.0/" + myGroupId + "/NCMD/" + myNodeName + "/#")
-  print("subscribed 1...")
-
-  client.subscribe("spBv1.0/" + myGroupId + "/DCMD/" + myNodeName + "/#")
-  print("subscribed 2...")
-
-  # client.subscribe("spBv1.0/Sparkplug B Devices/DDATA/danny")
-  # print("subscribed 3...")
-
-  client.subscribe("spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device")
-  print("subscribed 4...")
-
-  print("subscribed in on_connect()")
+  for sub in subscriptions:
+    client.subscribe(sub)
+    print(f"subscribed to {sub}")
 
 def on_message(client, userdata, msg):
   print("Message arrived: " + msg.topic)
   # print("Message payload : " + msg.payload.decode("utf-8"))
   tokens = msg.topic.split("/")
 
-  if tokens[0] == "spBv1.0" and tokens[1] == myGroupId and (tokens[2] == "DDATA") and tokens[3] == "C Edge Node 1":
+  if (tokens[0] == "spBv1.0" and
+      tokens[1] == myGroupId and
+      tokens[2] == "DDATA" and
+      tokens[3] == "C Edge Node 1"):
     inboundPayload = sparkplug_b_pb2.Payload()
     inboundPayload.ParseFromString(msg.payload)
     print(f"metrics size : {len(inboundPayload.metrics)}")
