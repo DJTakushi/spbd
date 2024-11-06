@@ -12,7 +12,6 @@ serverUrl = "192.168.130.51"
 myGroupId = "Sparkplug B Devices"
 myNodeName = "Python Edge Node 1"
 myDeviceName = "Emulated Device"
-publishPeriod = 5000
 myUsername = "admin"
 myPassword = "changeme"
 
