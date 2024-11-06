@@ -49,27 +49,21 @@ def publishBirth(client):
 
 def publishNodeBirth(client):
   print( "Publishing Node Birth")
-
-  # Create the node birth payload
-  payload = sparkplug.getNodeBirthPayload()
+  nbirth_payload = sparkplug.getNodeBirthPayload()
 
   # Add some device metrics (removed by takushi)
 
-  # Publish the node birth certificate
-  byteArray = bytearray(payload.SerializeToString())
+  byteArray = bytearray(nbirth_payload.SerializeToString())
   nbirth_topic = f"spBv1.0/{myGroupId}/NBIRTH/{myNodeName}"
   client.publish(nbirth_topic, byteArray, 0, False)
 
 def publishDeviceBirth(client):
   print( "Publishing Device Birth")
-
-  # Get the payload
-  payload = sparkplug.getDeviceBirthPayload()
+  dbirth_payload = sparkplug.getDeviceBirthPayload()
 
   # Add some device metrics (removed by takushi)
 
-  # Publish the initial data with the Device BIRTH certificate
-  totalByteArray = bytearray(payload.SerializeToString())
+  totalByteArray = bytearray(dbirth_payload.SerializeToString())
   dbirth_topic = f"spBv1.0/{myGroupId}/DBIRTH/{myNodeName}/{myDeviceName}"
   client.publish(dbirth_topic, totalByteArray, 0, False)
 
