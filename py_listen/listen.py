@@ -1,19 +1,6 @@
-#!/usr/bin/python
-#/********************************************************************************
-# * Copyright (c) 2014, 2018 Cirrus Link Solutions and others
-# *
-# * This program and the accompanying materials are made available under the
-# * terms of the Eclipse Public License 2.0 which is available at
-# * http://www.eclipse.org/legal/epl-2.0.
-# *
-# * SPDX-License-Identifier: EPL-2.0
-# *
-# * Contributors:
-# *   Cirrus Link Solutions - initial implementation
-# ********************************************************************************/
+# based on tahu/python/examples/example_simple.py
 import sys
 sys.path.insert(0, "../core/")
-#print(sys.path)
 
 import paho.mqtt.client as mqtt
 import sparkplug_b as sparkplug
@@ -32,9 +19,6 @@ publishPeriod = 5000
 myUsername = "admin"
 myPassword = "changeme"
 
-######################################################################
-# The callback for when the client receives a CONNACK response from the server.
-######################################################################
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
         print("Connected with result code "+str(rc))
@@ -61,99 +45,24 @@ def on_connect(client, userdata, flags, rc):
     print("subscribed 4...")
 
     print("subscribed in on_connect()")
-######################################################################
 
-######################################################################
-# The callback for when a PUBLISH message is received from the server.
-######################################################################
 def on_message(client, userdata, msg):
     print("Message arrived: " + msg.topic)
     # print("Message payload : " + msg.payload.decode("utf-8"))
     tokens = msg.topic.split("/")
 
-    if tokens[0] == "spBv1.0" and tokens[1] == myGroupId and (tokens[2] == "NCMD" or tokens[2] == "DCMD") and tokens[3] == myNodeName:
-        inboundPayload = sparkplug_b_pb2.Payload()
-        inboundPayload.ParseFromString(msg.payload)
-        for metric in inboundPayload.metrics:
-            if metric.name == "Node Control/Next Server":
-                # 'Node Control/Next Server' is an NCMD used to tell the device/client application to
-                # disconnect from the current MQTT server and connect to the next MQTT server in the
-                # list of available servers.  This is used for clients that have a pool of MQTT servers
-                # to connect to.
-                print( "'Node Control/Next Server' is not implemented in this example")
-            elif metric.name == "Node Control/Rebirth":
-                # 'Node Control/Rebirth' is an NCMD used to tell the device/client application to resend
-                # its full NBIRTH and DBIRTH again.  MQTT Engine will send this NCMD to a device/client
-                # application if it receives an NDATA or DDATA with a metric that was not published in the
-                # original NBIRTH or DBIRTH.  This is why the application must send all known metrics in
-                # its original NBIRTH and DBIRTH messages.
-                publishBirth()
-            elif metric.name == "Node Control/Reboot":
-                # 'Node Control/Reboot' is an NCMD used to tell a device/client application to reboot
-                # This can be used for devices that need a full application reset via a soft reboot.
-                # In this case, we fake a full reboot with a republishing of the NBIRTH and DBIRTH
-                # messages.
-                publishBirth()
-            elif metric.name == "output/Device Metric2":
-                # This is a metric we declared in our DBIRTH message and we're emulating an output.
-                # So, on incoming 'writes' to the output we must publish a DDATA with the new output
-                # value.  If this were a real output we'd write to the output and then read it back
-                # before publishing a DDATA message.
-
-                # We know this is an Int16 because of how we declated it in the DBIRTH
-                newValue = metric.int_value
-                print( "CMD message for output/Device Metric2 - New Value: {}".format(newValue))
-
-                # Create the DDATA payload
-                payload = sparkplug.getDdataPayload()
-                addMetric(payload, None, None, MetricDataType.Int16, newValue)
-
-                # Publish a message data
-                byteArray = bytearray(payload.SerializeToString())
-                client.publish("spBv1.0/" + myGroupId + "/DDATA/" + myNodeName + "/" + myDeviceName, byteArray, 0, False)
-            elif metric.name == "output/Device Metric3":
-                # This is a metric we declared in our DBIRTH message and we're emulating an output.
-                # So, on incoming 'writes' to the output we must publish a DDATA with the new output
-                # value.  If this were a real output we'd write to the output and then read it back
-                # before publishing a DDATA message.
-
-                # We know this is an Boolean because of how we declated it in the DBIRTH
-                newValue = metric.boolean_value
-                print( "CMD message for output/Device Metric3 - New Value: %r" % newValue)
-
-                # Create the DDATA payload
-                payload = sparkplug.getDdataPayload()
-                addMetric(payload, None, None, MetricDataType.Boolean, newValue)
-
-                # Publish a message data
-                byteArray = bytearray(payload.SerializeToString())
-                client.publish("spBv1.0/" + myGroupId + "/DDATA/" + myNodeName + "/" + myDeviceName, byteArray, 0, False)
-            else:
-                print( "Unknown command: " + metric.name)
-    elif tokens[0] == "spBv1.0" and tokens[1] == myGroupId and (tokens[2] == "DDATA") and tokens[3] == "C Edge Node 1":
+    if tokens[0] == "spBv1.0" and tokens[1] == myGroupId and (tokens[2] == "DDATA") and tokens[3] == "C Edge Node 1":
         inboundPayload = sparkplug_b_pb2.Payload()
         inboundPayload.ParseFromString(msg.payload)
         print(f"metrics size : {len(inboundPayload.metrics)}")
         for metric in inboundPayload.metrics:
             if metric.name == "engine_speed":
                 print(f"engine_speed : {metric.double_value}")
-    else:
-        print( "Unknown command...")
 
-    print( "Done publishing")
-######################################################################
-
-######################################################################
-# Publish the BIRTH certificates
-######################################################################
 def publishBirth():
     publishNodeBirth()
     publishDeviceBirth()
-######################################################################
 
-######################################################################
-# Publish the NBIRTH certificate
-######################################################################
 def publishNodeBirth():
     print( "Publishing Node Birth")
 
@@ -208,11 +117,7 @@ def publishNodeBirth():
     # Publish the node birth certificate
     byteArray = bytearray(payload.SerializeToString())
     client.publish("spBv1.0/" + myGroupId + "/NBIRTH/" + myNodeName, byteArray, 0, False)
-######################################################################
 
-######################################################################
-# Publish the DBIRTH certificate
-######################################################################
 def publishDeviceBirth():
     print( "Publishing Device Birth")
 
@@ -238,11 +143,8 @@ def publishDeviceBirth():
     # Publish the initial data with the Device BIRTH certificate
     totalByteArray = bytearray(payload.SerializeToString())
     client.publish("spBv1.0/" + myGroupId + "/DBIRTH/" + myNodeName + "/" + myDeviceName, totalByteArray, 0, False)
-######################################################################
 
-######################################################################
-# Main Application
-######################################################################
+
 print("Starting main application")
 
 # Create the node death payload
@@ -286,4 +188,3 @@ while True:
     for _ in range(5):
         time.sleep(.1)
         client.loop()
-######################################################################
