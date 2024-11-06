@@ -59,11 +59,11 @@ def on_message(client, userdata, msg):
             if metric.name == "engine_speed":
                 print(f"engine_speed : {metric.double_value}")
 
-def publishBirth():
-    publishNodeBirth()
-    publishDeviceBirth()
+def publishBirth(client):
+    publishNodeBirth(client)
+    publishDeviceBirth(client)
 
-def publishNodeBirth():
+def publishNodeBirth(client):
     print( "Publishing Node Birth")
 
     # Create the node birth payload
@@ -75,7 +75,7 @@ def publishNodeBirth():
     byteArray = bytearray(payload.SerializeToString())
     client.publish("spBv1.0/" + myGroupId + "/NBIRTH/" + myNodeName, byteArray, 0, False)
 
-def publishDeviceBirth():
+def publishDeviceBirth(client):
     print( "Publishing Device Birth")
 
     # Get the payload
@@ -87,47 +87,50 @@ def publishDeviceBirth():
     totalByteArray = bytearray(payload.SerializeToString())
     client.publish("spBv1.0/" + myGroupId + "/DBIRTH/" + myNodeName + "/" + myDeviceName, totalByteArray, 0, False)
 
+def main():
+  print("Starting main application")
 
-print("Starting main application")
+  # Create the node death payload
+  deathPayload = sparkplug.getNodeDeathPayload()
 
-# Create the node death payload
-deathPayload = sparkplug.getNodeDeathPayload()
+  # Start of main program - Set up the MQTT client connection
+  client = mqtt.Client(serverUrl, 1883, 60)
+  client.on_connect = on_connect
+  client.on_message = on_message
+  client.username_pw_set(myUsername, myPassword)
+  deathByteArray = bytearray(deathPayload.SerializeToString())
+  client.will_set("spBv1.0/" + myGroupId + "/NDEATH/" + myNodeName, deathByteArray, 0, False)
+  client.connect(serverUrl, 1883, 60)
 
-# Start of main program - Set up the MQTT client connection
-client = mqtt.Client(serverUrl, 1883, 60)
-client.on_connect = on_connect
-client.on_message = on_message
-client.username_pw_set(myUsername, myPassword)
-deathByteArray = bytearray(deathPayload.SerializeToString())
-client.will_set("spBv1.0/" + myGroupId + "/NDEATH/" + myNodeName, deathByteArray, 0, False)
-client.connect(serverUrl, 1883, 60)
+  # Short delay to allow connect callback to occur
+  time.sleep(.1)
+  client.loop()
 
-# Short delay to allow connect callback to occur
-time.sleep(.1)
-client.loop()
+  # Publish the birth certificates
+  publishBirth(client)
 
-# Publish the birth certificates
-publishBirth()
+  while True:
+      # Periodically publish some new data
+      payload = sparkplug.getDdataPayload()
 
-while True:
-    # Periodically publish some new data
-    payload = sparkplug.getDdataPayload()
+      # Add some random data to the inputs
+      addMetric(payload, None, None, MetricDataType.String, ''.join(random.choice(string.ascii_lowercase) for i in range(12)))
 
-    # Add some random data to the inputs
-    addMetric(payload, None, None, MetricDataType.String, ''.join(random.choice(string.ascii_lowercase) for i in range(12)))
+      # Note this data we're setting to STALE via the propertyset as an example
+      metric = addMetric(payload, None, None, MetricDataType.Boolean, random.choice([True, False]))
+      metric.properties.keys.extend(["Quality"])
+      propertyValue = metric.properties.values.add()
+      propertyValue.type = ParameterDataType.Int32
+      propertyValue.int_value = 500
 
-    # Note this data we're setting to STALE via the propertyset as an example
-    metric = addMetric(payload, None, None, MetricDataType.Boolean, random.choice([True, False]))
-    metric.properties.keys.extend(["Quality"])
-    propertyValue = metric.properties.values.add()
-    propertyValue.type = ParameterDataType.Int32
-    propertyValue.int_value = 500
+      # Publish a message data
+      byteArray = bytearray(payload.SerializeToString())
+      client.publish("spBv1.0/" + myGroupId + "/DDATA/" + myNodeName + "/" + myDeviceName, byteArray, 0, False)
 
-    # Publish a message data
-    byteArray = bytearray(payload.SerializeToString())
-    client.publish("spBv1.0/" + myGroupId + "/DDATA/" + myNodeName + "/" + myDeviceName, byteArray, 0, False)
+      # Sit and wait for inbound or outbound events
+      for _ in range(5):
+          time.sleep(.1)
+          client.loop()
 
-    # Sit and wait for inbound or outbound events
-    for _ in range(5):
-        time.sleep(.1)
-        client.loop()
+if __name__=="__main__":
+  main()
