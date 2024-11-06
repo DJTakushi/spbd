@@ -65,7 +65,8 @@ def publishNodeBirth(client):
 
   # Publish the node birth certificate
   byteArray = bytearray(payload.SerializeToString())
-  client.publish("spBv1.0/" + myGroupId + "/NBIRTH/" + myNodeName, byteArray, 0, False)
+  nbirth_topic = f"spBv1.0/{myGroupId}/NBIRTH/{myNodeName}"
+  client.publish(nbirth_topic, byteArray, 0, False)
 
 def publishDeviceBirth(client):
   print( "Publishing Device Birth")
@@ -77,7 +78,8 @@ def publishDeviceBirth(client):
 
   # Publish the initial data with the Device BIRTH certificate
   totalByteArray = bytearray(payload.SerializeToString())
-  client.publish("spBv1.0/" + myGroupId + "/DBIRTH/" + myNodeName + "/" + myDeviceName, totalByteArray, 0, False)
+  dbirth_topic = f"spBv1.0/{myGroupId}/DBIRTH/{myNodeName}/{myDeviceName}"
+  client.publish(dbirth_topic, totalByteArray, 0, False)
 
 def main():
   print("Starting main application")
@@ -91,7 +93,8 @@ def main():
   client.on_message = on_message
   client.username_pw_set(myUsername, myPassword)
   deathByteArray = bytearray(deathPayload.SerializeToString())
-  client.will_set("spBv1.0/" + myGroupId + "/NDEATH/" + myNodeName, deathByteArray, 0, False)
+  ndeath_topic=f"spBv1.0/{myGroupId}/NDEATH/{myNodeName}"
+  client.will_set(ndeath_topic, deathByteArray, 0, False)
   client.connect(serverUrl, 1883, 60)
 
   # Short delay to allow connect callback to occur
