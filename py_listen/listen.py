@@ -3,9 +3,6 @@ import sys
 
 import paho.mqtt.client as mqtt
 import sparkplug_b as sparkplug
-import time
-import random
-import string
 
 from sparkplug_b import *
 
@@ -37,19 +34,11 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
   print("Message arrived: " + msg.topic)
-  # print("Message payload : " + msg.payload.decode("utf-8"))
   tokens = msg.topic.split("/")
 
-  if (tokens[0] == "spBv1.0" and
-      tokens[1] == myGroupId and
-      tokens[2] == "DDATA" and
-      tokens[3] == "C Edge Node 1"):
-    inboundPayload = sparkplug_b_pb2.Payload()
-    inboundPayload.ParseFromString(msg.payload)
-    print(f"metrics size : {len(inboundPayload.metrics)}")
-    for metric in inboundPayload.metrics:
-      if metric.name == "engine_speed":
-        print(f"engine_speed : {metric.double_value}")
+  inboundPayload = sparkplug_b_pb2.Payload()
+  inboundPayload.ParseFromString(msg.payload)
+  print(inboundPayload)
 
 def publishBirth(client):
   publishNodeBirth(client)
