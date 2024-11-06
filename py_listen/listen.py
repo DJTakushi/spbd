@@ -1,6 +1,5 @@
 # based on tahu/python/examples/example_simple.py
 import sys
-sys.path.insert(0, "../core/")
 
 import paho.mqtt.client as mqtt
 import sparkplug_b as sparkplug
