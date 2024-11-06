@@ -16,13 +16,13 @@ myUsername = "admin"
 myPassword = "changeme"
 
 subscriptions = [
-  "spBv1.0/" + myGroupId + "/NCMD/" + myNodeName + "/#",
-  "spBv1.0/" + myGroupId + "/DCMD/" + myNodeName + "/#",
-  "spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device"
+  f"spBv1.0/{myGroupId}/NCMD/{myNodeName}/#",
+  f"spBv1.0/{myGroupId}/DCMD/{myNodeName}/#",
+  f"spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device"
 ]
 nbirth_topic = f"spBv1.0/{myGroupId}/NBIRTH/{myNodeName}"
 dbirth_topic = f"spBv1.0/{myGroupId}/DBIRTH/{myNodeName}/{myDeviceName}"
-ndeath_topic=f"spBv1.0/{myGroupId}/NDEATH/{myNodeName}"
+ndeath_topic = f"spBv1.0/{myGroupId}/NDEATH/{myNodeName}"
 
 def on_connect(client, userdata, flags, rc):
   if rc == 0:
