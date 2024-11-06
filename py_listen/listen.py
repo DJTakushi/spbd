@@ -105,23 +105,6 @@ def main():
   publishBirth(client)
 
   while True:
-    # Periodically publish some new data
-    payload = sparkplug.getDdataPayload()
-
-    # Add some random data to the inputs
-    addMetric(payload, None, None, MetricDataType.String, ''.join(random.choice(string.ascii_lowercase) for i in range(12)))
-
-    # Note this data we're setting to STALE via the propertyset as an example
-    metric = addMetric(payload, None, None, MetricDataType.Boolean, random.choice([True, False]))
-    metric.properties.keys.extend(["Quality"])
-    propertyValue = metric.properties.values.add()
-    propertyValue.type = ParameterDataType.Int32
-    propertyValue.int_value = 500
-
-    # Publish a message data
-    byteArray = bytearray(payload.SerializeToString())
-    client.publish("spBv1.0/" + myGroupId + "/DDATA/" + myNodeName + "/" + myDeviceName, byteArray, 0, False)
-
     # Sit and wait for inbound or outbound events
     for _ in range(5):
       time.sleep(.1)
