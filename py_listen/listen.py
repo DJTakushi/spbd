@@ -33,9 +33,6 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe(sub)
     print(f"subscribed to {sub}")
 
-  time.sleep(.1) # Short delay to allow connect callback to occur
-  client.loop()
-
   publishBirth(client) # Publish the birth certificates
 
 def on_message(client, userdata, msg):
