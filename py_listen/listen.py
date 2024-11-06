@@ -9,6 +9,8 @@ from sparkplug_b import *
 
 # Application Variables
 serverUrl = "192.168.130.51"
+mqtt_port = 1883
+mqtt_keepalive = 60
 myGroupId = "Sparkplug B Devices"
 myNodeName = "Python Edge Node 1"
 myDeviceName = "Emulated Device"
@@ -75,12 +77,12 @@ def setNodeDeath(client):
 
 def main():
   # set up the MQTT client connection
-  client = mqtt.Client(serverUrl, 1883, 60)
+  client = mqtt.Client()
   client.on_connect = on_connect
   client.on_message = on_message
   client.username_pw_set(myUsername, myPassword)
   setNodeDeath(client)
-  client.connect(serverUrl, 1883, 60)
+  client.connect(serverUrl, mqtt_port, mqtt_keepalive)
 
   while True: # Sit and wait for inbound or outbound events
     time.sleep(.1)
