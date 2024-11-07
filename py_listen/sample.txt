@@ -1,0 +1,491 @@
+Connected with result code 0
+subscribed to spBv1.0/Sparkplug B Devices/NCMD/Python Edge Node 1/#
+subscribed to spBv1.0/Sparkplug B Devices/DCMD/Python Edge Node 1/#
+subscribed to spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device
+subscribed to spBv1.0/Sparkplug B Devices/NBIRTH/C Edge Node 1
+subscribed to spBv1.0/Sparkplug B Devices/NDEATH/C Edge Node 1
+subscribed to spBv1.0/Sparkplug B Devices/DBIRTH/C Edge Node 1/Emulated Device
+Publishing Node Birth
+Publishing Device Birth
+2024-11-07 17:10:16.046886 : spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device
+timestamp: 1730999415656
+metrics {
+  name: "gear"
+  alias: 13
+  timestamp: 1730999415656
+  datatype: 3
+  int_value: 0
+}
+metrics {
+  name: "engine_speed"
+  alias: 12
+  timestamp: 1730999415656
+  datatype: 10
+  double_value: 72.190000000000026
+}
+seq: 52
+
+2024-11-07 17:10:16.711967 : spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device
+timestamp: 1730999416710
+metrics {
+  name: "gear"
+  alias: 13
+  timestamp: 1730999416710
+  datatype: 3
+  int_value: 0
+}
+metrics {
+  name: "engine_speed"
+  alias: 12
+  timestamp: 1730999416710
+  datatype: 10
+  double_value: 72.200000000000031
+}
+seq: 53
+
+2024-11-07 17:10:17.765986 : spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device
+timestamp: 1730999417764
+metrics {
+  name: "gear"
+  alias: 13
+  timestamp: 1730999417764
+  datatype: 3
+  int_value: 0
+}
+metrics {
+  name: "engine_speed"
+  alias: 12
+  timestamp: 1730999417764
+  datatype: 10
+  double_value: 72.210000000000036
+}
+seq: 54
+
+2024-11-07 17:10:18.259092 : spBv1.0/Sparkplug B Devices/NDEATH/C Edge Node 1
+
+2024-11-07 17:10:18.589422 : spBv1.0/Sparkplug B Devices/NBIRTH/C Edge Node 1
+timestamp: 1730999418589
+metrics {
+  name: "Node Control/Next Server"
+  alias: 0
+  timestamp: 1730999418589
+  datatype: 11
+  boolean_value: false
+}
+metrics {
+  name: "Node Control/Rebirth"
+  alias: 1
+  timestamp: 1730999418589
+  datatype: 11
+  boolean_value: false
+}
+metrics {
+  name: "Node Control/Reboot"
+  alias: 2
+  timestamp: 1730999418589
+  datatype: 11
+  boolean_value: false
+}
+metrics {
+  name: "Node Metric0"
+  alias: 4
+  timestamp: 1730999418589
+  datatype: 12
+  string_value: "hello node"
+}
+metrics {
+  name: "Node Metric1"
+  alias: 5
+  timestamp: 1730999418589
+  datatype: 11
+  boolean_value: true
+}
+metrics {
+  name: "DataSet"
+  alias: 3
+  datatype: 16
+  dataset_value {
+    num_of_columns: 3
+    columns: "Int8s"
+    columns: "Int16s"
+    columns: "Int32s"
+    types: 1
+    types: 2
+    types: 3
+    rows {
+      elements {
+        int_value: 0
+      }
+      elements {
+        int_value: 1
+      }
+      elements {
+        int_value: 2
+      }
+    }
+    rows {
+      elements {
+        int_value: 3
+      }
+      elements {
+        int_value: 4
+      }
+      elements {
+        int_value: 5
+      }
+    }
+  }
+}
+metrics {
+  name: "Node Metric2"
+  alias: 6
+  datatype: 2
+  properties {
+    keys: "engUnit"
+    values {
+      type: 12
+      string_value: "MyCustomUnits"
+    }
+  }
+  int_value: 13
+}
+metrics {
+  name: "_types_/Custom_Motor"
+  datatype: 19
+  template_value {
+    metrics {
+      name: "RPMs"
+      datatype: 3
+      int_value: 0
+    }
+    metrics {
+      name: "AMPs"
+      datatype: 3
+      int_value: 0
+    }
+    parameters {
+      name: "Index"
+      type: 12
+      string_value: "0"
+    }
+    is_definition: true
+  }
+}
+seq: 0
+uuid: "MyUUID"
+
+2024-11-07 17:10:18.689716 : spBv1.0/Sparkplug B Devices/DBIRTH/C Edge Node 1/Emulated Device
+timestamp: 1730999418589
+metrics {
+  name: "input/Device Metric0"
+  alias: 7
+  timestamp: 1730999418589
+  datatype: 12
+  string_value: "hello device"
+}
+metrics {
+  name: "input/Device Metric1"
+  alias: 8
+  timestamp: 1730999418589
+  datatype: 11
+  boolean_value: true
+}
+metrics {
+  name: "output/Device Metric2"
+  alias: 9
+  timestamp: 1730999418589
+  datatype: 2
+  int_value: 16
+}
+metrics {
+  name: "output/Device Metric3"
+  alias: 10
+  timestamp: 1730999418589
+  datatype: 11
+  boolean_value: true
+}
+metrics {
+  name: "My_Custom_Motor"
+  alias: 11
+  datatype: 19
+  template_value {
+    metrics {
+      name: "RPMs"
+      datatype: 3
+      int_value: 123
+    }
+    metrics {
+      name: "AMPs"
+      datatype: 3
+      properties {
+        keys: "engUnit"
+        values {
+          type: 12
+          string_value: "milliamps"
+        }
+      }
+      int_value: 456
+    }
+    parameters {
+      name: "Index"
+      type: 12
+      string_value: "1"
+    }
+    template_ref: "Custom_Motor"
+    is_definition: false
+  }
+}
+seq: 1
+
+2024-11-07 17:10:18.789979 : spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device
+timestamp: 1730999418591
+metrics {
+  name: "gear"
+  alias: 13
+  timestamp: 1730999418591
+  datatype: 3
+  int_value: 0
+}
+metrics {
+  name: "engine_speed"
+  alias: 12
+  timestamp: 1730999418591
+  datatype: 10
+  double_value: -999.9
+}
+seq: 2
+
+2024-11-07 17:10:19.645080 : spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device
+timestamp: 1730999419644
+metrics {
+  name: "gear"
+  alias: 13
+  timestamp: 1730999419644
+  datatype: 3
+  int_value: 0
+}
+metrics {
+  name: "engine_speed"
+  alias: 12
+  timestamp: 1730999419644
+  datatype: 10
+  double_value: 72.230000000000047
+}
+seq: 3
+
+2024-11-07 17:10:20.698639 : spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device
+timestamp: 1730999420697
+metrics {
+  name: "gear"
+  alias: 13
+  timestamp: 1730999420697
+  datatype: 3
+  int_value: 0
+}
+metrics {
+  name: "engine_speed"
+  alias: 12
+  timestamp: 1730999420697
+  datatype: 10
+  double_value: 72.240000000000052
+}
+seq: 4
+
+2024-11-07 17:10:21.751780 : spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device
+timestamp: 1730999421750
+metrics {
+  name: "gear"
+  alias: 13
+  timestamp: 1730999421751
+  datatype: 3
+  int_value: 0
+}
+metrics {
+  name: "engine_speed"
+  alias: 12
+  timestamp: 1730999421751
+  datatype: 10
+  double_value: 72.250000000000057
+}
+seq: 5
+
+2024-11-07 17:10:22.805323 : spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device
+timestamp: 1730999422804
+metrics {
+  name: "gear"
+  alias: 13
+  timestamp: 1730999422804
+  datatype: 3
+  int_value: 0
+}
+metrics {
+  name: "engine_speed"
+  alias: 12
+  timestamp: 1730999422804
+  datatype: 10
+  double_value: 72.260000000000062
+}
+seq: 6
+
+2024-11-07 17:10:23.859133 : spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device
+timestamp: 1730999423858
+metrics {
+  name: "gear"
+  alias: 13
+  timestamp: 1730999423858
+  datatype: 3
+  int_value: 0
+}
+metrics {
+  name: "engine_speed"
+  alias: 12
+  timestamp: 1730999423858
+  datatype: 10
+  double_value: 72.270000000000067
+}
+seq: 7
+
+2024-11-07 17:10:24.913563 : spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device
+timestamp: 1730999424912
+metrics {
+  name: "gear"
+  alias: 13
+  timestamp: 1730999424912
+  datatype: 3
+  int_value: 0
+}
+metrics {
+  name: "engine_speed"
+  alias: 12
+  timestamp: 1730999424912
+  datatype: 10
+  double_value: 72.280000000000072
+}
+seq: 8
+
+2024-11-07 17:10:25.967183 : spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device
+timestamp: 1730999425966
+metrics {
+  name: "gear"
+  alias: 13
+  timestamp: 1730999425966
+  datatype: 3
+  int_value: 0
+}
+metrics {
+  name: "engine_speed"
+  alias: 12
+  timestamp: 1730999425966
+  datatype: 10
+  double_value: 72.290000000000077
+}
+seq: 9
+
+2024-11-07 17:10:27.020364 : spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device
+timestamp: 1730999427020
+metrics {
+  name: "gear"
+  alias: 13
+  timestamp: 1730999427020
+  datatype: 3
+  int_value: 0
+}
+metrics {
+  name: "engine_speed"
+  alias: 12
+  timestamp: 1730999427020
+  datatype: 10
+  double_value: 72.300000000000082
+}
+seq: 10
+
+2024-11-07 17:10:28.074041 : spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device
+timestamp: 1730999428073
+metrics {
+  name: "gear"
+  alias: 13
+  timestamp: 1730999428073
+  datatype: 3
+  int_value: 0
+}
+metrics {
+  name: "engine_speed"
+  alias: 12
+  timestamp: 1730999428073
+  datatype: 10
+  double_value: 72.310000000000088
+}
+seq: 11
+
+2024-11-07 17:10:29.127536 : spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device
+timestamp: 1730999429126
+metrics {
+  name: "gear"
+  alias: 13
+  timestamp: 1730999429126
+  datatype: 3
+  int_value: 0
+}
+metrics {
+  name: "engine_speed"
+  alias: 12
+  timestamp: 1730999429126
+  datatype: 10
+  double_value: 72.3300000000001
+}
+seq: 12
+
+2024-11-07 17:10:30.180775 : spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device
+timestamp: 1730999430180
+metrics {
+  name: "gear"
+  alias: 13
+  timestamp: 1730999430180
+  datatype: 3
+  int_value: 0
+}
+metrics {
+  name: "engine_speed"
+  alias: 12
+  timestamp: 1730999430180
+  datatype: 10
+  double_value: 72.3400000000001
+}
+seq: 13
+
+2024-11-07 17:10:31.234113 : spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device
+timestamp: 1730999431233
+metrics {
+  name: "gear"
+  alias: 13
+  timestamp: 1730999431233
+  datatype: 3
+  int_value: 0
+}
+metrics {
+  name: "engine_speed"
+  alias: 12
+  timestamp: 1730999431233
+  datatype: 10
+  double_value: 72.350000000000108
+}
+seq: 14
+
+2024-11-07 17:10:32.288344 : spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device
+timestamp: 1730999432287
+metrics {
+  name: "gear"
+  alias: 13
+  timestamp: 1730999432287
+  datatype: 3
+  int_value: 0
+}
+metrics {
+  name: "engine_speed"
+  alias: 12
+  timestamp: 1730999432287
+  datatype: 10
+  double_value: 72.360000000000113
+}
+seq: 15
+
