@@ -22,7 +22,10 @@ myPassword = "changeme"
 subscriptions = [
   f"spBv1.0/{myGroupId}/NCMD/{myNodeName}/#",
   f"spBv1.0/{myGroupId}/DCMD/{myNodeName}/#",
-  f"spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device"
+  f"spBv1.0/{myGroupId}/DDATA/#",
+  f"spBv1.0/{myGroupId}/NBIRTH/#",
+  f"spBv1.0/{myGroupId}/NDEATH/#",
+  f"spBv1.0/{myGroupId}/DBIRTH/#"
 ]
 nbirth_topic = f"spBv1.0/{myGroupId}/NBIRTH/{myNodeName}"
 dbirth_topic = f"spBv1.0/{myGroupId}/DBIRTH/{myNodeName}/{myDeviceName}"
