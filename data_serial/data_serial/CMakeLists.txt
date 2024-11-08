@@ -20,5 +20,4 @@ target_link_libraries(${TARGET}
   # libutpm.a
   # libuuid.so
   # libuhttp.a
-  libserial.so
 )
