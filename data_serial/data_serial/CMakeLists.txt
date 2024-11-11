@@ -1,15 +1,20 @@
 set(TARGET data_serial)
 
+add_compile_definitions(AZURE_ROUTES=${AZURE_ROUTES})
 add_executable(${TARGET} main.cpp)
 
 target_compile_features(${TARGET} PUBLIC cxx_std_17)
 
+target_include_directories(${TARGET} PRIVATE
+  "../connection/include"
+)
+
 target_link_libraries(${TARGET}
   # libtahu.a
-  # libmosquitto.so
+  libmosquitto.so
   # libiothub_client.a
   # libiothub_client_mqtt_transport.a
-  libumqtt.a
+  # libumqtt.a
   # libaziotsharedutil.a
   # libparson.a
   # libprov_auth_client.a
@@ -20,4 +25,5 @@ target_link_libraries(${TARGET}
   # libutpm.a
   # libuuid.so
   # libuhttp.a
+  connections
 )

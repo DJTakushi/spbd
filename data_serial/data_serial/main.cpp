@@ -7,7 +7,10 @@
 #include <iostream>
 #include <thread>
 
+#include <mosquitto.h>
 #include "nlohmann/json.hpp"
+
+#include "connection_factory.h"
 
 #define DEFAULT_SERIAL_PORT_NAME "/dev/pts/12"
 
@@ -62,6 +65,8 @@ int main(int argc, char* argv[]) {
   std::string serial_port_name = get_serial_port_name(argc,argv);
   serial_port.open(serial_port_name);
   std::cout << "opened serial port " << serial_port_name << std::endl;
+
+  std::shared_ptr<connection_i> connection = connection_factory::create(kMqtt);
 
   while(true){
     std::string str = "";

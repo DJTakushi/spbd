@@ -18,3 +18,4 @@ project(${PUB_PROJECT_NAME})
 set(PUB_SRC_DIR ${PROJECT_SOURCE_DIR}/pub)
 
 add_subdirectory(data_serial)
+add_subdirectory(connection)
