@@ -1,7 +1,19 @@
-# serial usage
+# physical serial
+per https://www.losant.com/blog/how-to-access-serial-devices-in-docker
+## ttyUSB permissions
+```
+sudo bash -c 'echo "KERNEL==\"ttyUSB[0-9]*\",MODE=\"0666\"" > /etc/udev/rules.d/99-serial.rules'
+```
+## run docker container
+Mount `/dev` volume and run as `--privileged`
+```
+sudo docker run -v /dev:/dev --privileged data_serial
+```
+
+# virtual serial usage
 - https://stackoverflow.com/questions/52187/virtual-serial-port-for-linux
 
-# socat setup
+## socat setup
 ```
 socat -d -d pty,raw,echo=0 pty,raw,echo=0
 ```
