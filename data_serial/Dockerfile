@@ -27,12 +27,12 @@ RUN git clone https://github.com/nlohmann/json.git --branch v3.11.3
 RUN cp -r /json/include/* /usr/include/
 
 # build
-COPY CMakeLists.txt /data_serial/
-COPY /data_serial/* /data_serial/data_serial/
-WORKDIR /data_serial/build
+ADD . /data_serial/
+RUN rm -r /data_serial/build/*
 
+WORKDIR /data_serial/build
 ARG AZURE_ROUTES=1
-RUN cmake -DCMAKE_BUILD_TYPE=Release -DAZURE_ROUTES={AZURE_ROUTES}.. && cmake --build .
+RUN cmake -DCMAKE_BUILD_TYPE=Release -DAZURE_ROUTES={AZURE_ROUTES} .. && cmake --build .
 
 ################################################################################
 # final image
