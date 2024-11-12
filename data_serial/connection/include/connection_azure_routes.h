@@ -10,5 +10,5 @@ class connection_azure_routes : public connection_base {
   connection_azure_routes(size_t max_messages);
   bool initialize();
   void start_loop();
-  void publish(std::string output_name, std::string msg);
+  void publish(std::string topic, std::string msg);
 };
