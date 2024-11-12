@@ -26,6 +26,7 @@
  ******************************************************************************/
 double engine_speed_ = -999.9;
 int gear_ = 0;
+int metric0_ = 0;
 
 enum alias_map {
     Next_Server = 0,
@@ -42,6 +43,7 @@ enum alias_map {
     My_Custom_Motor = 11,
     kEngineSpeed = 12,
     kGear = 13,
+    kMetric0 = 14,
 };
 void exit_application(int signum) {
   std::cout  << "exiting sub application..."<<std::endl;
@@ -646,6 +648,7 @@ void publish_ddata_message(struct mosquitto *mosq) {
     // add_simple_metric(&ddata_payload, "Device Metric1", true, Device_Metric1, METRIC_DATA_TYPE_BOOLEAN, false, false, &ddata_metric_one_value, sizeof(ddata_metric_one_value));
     add_simple_metric(&ddata_payload, "gear", true, kGear, METRIC_DATA_TYPE_INT32, false, false, &gear_, sizeof(gear_));
     add_simple_metric(&ddata_payload, "engine_speed", true, kEngineSpeed, METRIC_DATA_TYPE_DOUBLE, false, false, &engine_speed_, sizeof(engine_speed_));
+    add_simple_metric(&ddata_payload, "metric0", true, kMetric0, METRIC_DATA_TYPE_INT32, false, false, &metric0_, sizeof(metric0_));
 
 
 #ifdef SPARKPLUG_DEBUG
@@ -782,10 +785,14 @@ static IOTHUBMESSAGE_DISPOSITION_RESULT input1_message_callback (
       std::cout <<" WARNING: messageBody = NULL"<<std::endl;
     }
     else {
+      std::cout << "messageBody : " << messageBody<<std::endl;
       try{
         nlohmann::json j = nlohmann::json::parse(messageBody);
         if(j.contains("engine_speed")){
           engine_speed_= j["engine_speed"];
+        }
+        if(j.contains("metric0")){
+          metric0_ = j["metric0"];
         }
       }
       catch (...) {
