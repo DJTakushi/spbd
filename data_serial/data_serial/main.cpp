@@ -73,6 +73,7 @@ int main(int argc, char* argv[]) {
   #endif
   std::shared_ptr<connection_i> connection = connection_factory::create(type);
   connection->initialize();
+  connection->start_loop();
 
   while(true){
     std::string str = "";
@@ -85,6 +86,8 @@ int main(int argc, char* argv[]) {
 
     nlohmann::ordered_json j = gen_metrics_from_serial(str);
     std::cout << j.dump() << std::endl;
+
+    connection->publish("data_serial_output",j.dump());
   }
 
   std::cout << "...exiting main.  goodbye." << std::endl;
