@@ -4,17 +4,10 @@
 #include "azure_c_shared_utility/threadapi.h"
 
 
-class callback_1_context{
- public:
-  std::shared_ptr<message_queue> message_queue_;
-  callback_1_context(std::shared_ptr<message_queue> queue){
-    message_queue_ = queue;
-  };
-};
-
 IOTHUBMESSAGE_DISPOSITION_RESULT callback_1(IOTHUB_MESSAGE_HANDLE message,
                                             void* userContextCallback){
-  callback_1_context* context = (callback_1_context*)(userContextCallback);
+  connection_azure_routes* connection;
+  connection = (connection_azure_routes*)(userContextCallback);
 
   IOTHUBMESSAGE_CONTENT_TYPE contentType = IoTHubMessage_GetContentType(message);
   if (contentType != IOTHUBMESSAGE_BYTEARRAY) {
@@ -34,7 +27,7 @@ IOTHUBMESSAGE_DISPOSITION_RESULT callback_1(IOTHUB_MESSAGE_HANDLE message,
                                                 &messageBodyLength);
     if (messageResult == IOTHUB_MESSAGE_OK) {
       std::string str((const char*)(messageBody),messageBodyLength);
-      context->message_queue_->add_message_to_queue(str);
+      connection->add_message_to_queue(str);
     }
     else {
       std::cout <<" WARNING: messageBody = NULL"<<std::endl;
@@ -53,15 +46,12 @@ bool connection_azure_routes::initialize(){
   if (IoTHub_Init() != 0) {
     handle = IoTHubModuleClient_LL_CreateFromEnvironment(MQTT_Protocol);
     if (handle == NULL){
-
-      callback_1_context* context = new callback_1_context(received_queue_);
-
       IOTHUB_CLIENT_RESULT cresult;
       cresult = IoTHubModuleClient_LL_SetInputMessageCallback(
                                                         handle,
                                                         "data_serial_input",
                                                         callback_1,
-                                                        context);
+                                                        this);
       if (cresult == IOTHUB_CLIENT_OK) {
         good = true;
       }
