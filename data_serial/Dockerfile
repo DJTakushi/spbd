@@ -32,7 +32,7 @@ RUN rm -r /data_serial/build/*
 
 WORKDIR /data_serial/build
 ARG AZURE_ROUTES=1
-RUN cmake -DCMAKE_BUILD_TYPE=Release -DAZURE_ROUTES={AZURE_ROUTES} .. && cmake --build .
+RUN cmake -DCMAKE_BUILD_TYPE=Release -DAZURE_ROUTES=1 .. && cmake --build .
 
 ################################################################################
 # final image
