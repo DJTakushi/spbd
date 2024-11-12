@@ -1,10 +1,13 @@
-#include "connection_i.h"
+#define USE_EDGE_MODULES
+#include "azureiot/iothub_module_client_ll.h"
+#include "azureiot/iothubtransportmqtt.h"
+#include "connection_base.h"
 
-class connection_azure_routes : public connection_i {
+class connection_azure_routes : public connection_base {
+ private:
+  IOTHUB_MODULE_CLIENT_LL_HANDLE handle;
  public:
+  connection_azure_routes(size_t max_messages);
   bool initialize();
-  bool register_message_callback(std::string subscription,
-                                        message_callback callback);
   void start_loop();
-  void stop_loop();
 };

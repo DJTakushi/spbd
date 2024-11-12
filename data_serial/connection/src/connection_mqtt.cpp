@@ -1,18 +1,11 @@
 #include "connection_mqtt.h"
+connection_mqtt::connection_mqtt(size_t max_messages)
+    : connection_base(max_messages) {}
 
 bool connection_mqtt::initialize(){
   return true;
 }
 
-bool connection_mqtt::register_message_callback(std::string subscription,
-                                                message_callback callback){
-  return true;
-}
-
 void connection_mqtt::start_loop(){
-
-}
-
-void connection_mqtt::stop_loop(){
 
 }

@@ -66,7 +66,13 @@ int main(int argc, char* argv[]) {
   serial_port.open(serial_port_name);
   std::cout << "opened serial port " << serial_port_name << std::endl;
 
-  std::shared_ptr<connection_i> connection = connection_factory::create(kMqtt);
+  #ifdef AZURE_ROUTES
+    connection_type type = kAzureIot;
+  #else
+    connection_type type = kMqtt;
+  #endif
+  std::shared_ptr<connection_i> connection = connection_factory::create(type);
+  connection->initialize();
 
   while(true){
     std::string str = "";

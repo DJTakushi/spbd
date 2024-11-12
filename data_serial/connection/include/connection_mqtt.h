@@ -1,10 +1,8 @@
-#include "connection_i.h"
+#include "connection_base.h"
 
-class connection_mqtt : public connection_i {
+class connection_mqtt : public connection_base {
  public:
+  connection_mqtt(size_t max_messages);
   bool initialize();
-  bool register_message_callback(std::string subscription,
-                                        message_callback callback);
   void start_loop();
-  void stop_loop();
 };
