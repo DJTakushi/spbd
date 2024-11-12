@@ -10,7 +10,7 @@ RUN apk add boost-dev
 RUN apk add openssl-dev
 RUN apk add curl-dev
 RUN apk add util-linux-dev
-
+RUN apk add mosquitto-dev
 
 # azure iot sdk
 WORKDIR /
@@ -31,7 +31,8 @@ COPY CMakeLists.txt /data_serial/
 COPY /data_serial/* /data_serial/data_serial/
 WORKDIR /data_serial/build
 
-RUN cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build .
+ARG AZURE_ROUTES=1
+RUN cmake -DCMAKE_BUILD_TYPE=Release -DAZURE_ROUTES={AZURE_ROUTES}.. && cmake --build .
 
 ################################################################################
 # final image
@@ -41,6 +42,7 @@ FROM alpine:3.20.3
 
 RUN apk update && apk add --no-cache libstdc++
 RUN apk add boost-dev
+RUN apk add mosquitto
 
 RUN addgroup -S shs && adduser -S shs -G shs
 USER shs
