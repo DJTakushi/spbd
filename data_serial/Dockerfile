@@ -43,6 +43,8 @@ FROM alpine:3.20.3
 RUN apk update && apk add --no-cache libstdc++
 RUN apk add boost-dev
 RUN apk add mosquitto
+RUN apk add curl
+RUN apk add libuuid
 
 RUN addgroup -S shs && adduser -S shs -G shs
 USER shs
