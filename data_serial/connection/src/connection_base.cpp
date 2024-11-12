@@ -10,3 +10,7 @@ void connection_base::stop_loop(){
     do_work_thread_.join();
   }
 }
+
+std::string connection_base::get_received_message(){
+  return received_queue_->get_popped_message();
+};

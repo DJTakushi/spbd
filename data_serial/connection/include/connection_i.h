@@ -9,6 +9,6 @@ class connection_i {
   virtual bool initialize() = 0;
   virtual void start_loop() = 0;
   virtual void stop_loop() = 0;
-  // virtual std::string get_input() = 0;
+  virtual std::string get_received_message() = 0;
   /** TODO: publish */
 };
