@@ -8,7 +8,7 @@ std::shared_ptr<connection_i> connection_factory::create(connection_type type) {
       break;
     case kMqtt:
     default:
-      out = std::make_shared<connection_mqtt>(100);
+      out = std::make_shared<connection_mqtt>("localhost",883,100);
   }
   return out;
 }

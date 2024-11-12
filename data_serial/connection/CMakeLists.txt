@@ -26,4 +26,5 @@ target_link_libraries(${PROJECT_NAME}
   libutpm.a
   libuuid.so
   libuhttp.a
+  libmosquitto.so
 )

@@ -14,4 +14,5 @@ class connection_base : public connection_i {
   connection_base(size_t max_messages);
   void stop_loop();
   std::string get_received_message();
+  void add_message_to_queue(std::string msg);
 };
