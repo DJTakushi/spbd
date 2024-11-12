@@ -10,6 +10,11 @@ Mount `/dev` volume and run as `--privileged`
 sudo docker run -v /dev:/dev --privileged data_serial
 ```
 
+## write serial from proxybox
+copy `proxybox_serial_writer.py` to proxybox and run to write serial data
+
+Proxybox will need pyserial to run this.  For installation, see https://pythonhosted.org/pyserial/pyserial.html#overview
+
 # virtual serial usage
 - https://stackoverflow.com/questions/52187/virtual-serial-port-for-linux
 
