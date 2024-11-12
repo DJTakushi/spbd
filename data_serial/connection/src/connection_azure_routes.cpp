@@ -43,9 +43,9 @@ connection_azure_routes::connection_azure_routes(size_t max_messages)
 bool connection_azure_routes::initialize(){
   bool good = true;
 
-  if (IoTHub_Init() != 0) {
+  if (IoTHub_Init() == 0) {
     handle = IoTHubModuleClient_LL_CreateFromEnvironment(MQTT_Protocol);
-    if (handle == NULL){
+    if (handle != NULL){
       IOTHUB_CLIENT_RESULT cresult;
       cresult = IoTHubModuleClient_LL_SetInputMessageCallback(
                                                         handle,
