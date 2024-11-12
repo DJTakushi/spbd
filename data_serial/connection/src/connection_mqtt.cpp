@@ -9,3 +9,7 @@ bool connection_mqtt::initialize(){
 void connection_mqtt::start_loop(){
 
 }
+
+void connection_mqtt::publish(std::string output_name, std::string msg){
+  
+}

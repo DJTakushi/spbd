@@ -10,5 +10,5 @@ class connection_i {
   virtual void start_loop() = 0;
   virtual void stop_loop() = 0;
   virtual std::string get_received_message() = 0;
-  /** TODO: publish */
+  virtual void publish(std::string output_name, std::string msg) = 0;
 };

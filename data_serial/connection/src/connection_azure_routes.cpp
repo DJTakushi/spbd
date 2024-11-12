@@ -90,3 +90,7 @@ void connection_azure_routes::start_loop(){
     }
   });
 }
+
+void connection_azure_routes::publish(std::string output_name, std::string msg){
+  
+}
