@@ -37,7 +37,7 @@ bool connection_mqtt::initialize(){
     // MQTT Connect
     int keepalive = 60;
     if (mosquitto_connect(mosq, host_.c_str(), port_, keepalive)) {
-      std::cerr<< "Unable to connect."<<std::endl;
+      std::cerr<< "Unable to connect to MQTT."<<std::endl;
       ret = false;
     }
   }
