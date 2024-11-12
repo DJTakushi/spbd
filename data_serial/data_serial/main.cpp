@@ -12,7 +12,7 @@
 
 #include "connection_factory.h"
 
-#define DEFAULT_SERIAL_PORT_NAME "/dev/pts/12"
+#define DEFAULT_SERIAL_PORT_NAME "/dev/ttyUSB0"
 
 std::string serial_tag = "--serial=";
 boost::asio::io_service m_ioService;
@@ -64,6 +64,14 @@ int main(int argc, char* argv[]) {
 
   std::string serial_port_name = get_serial_port_name(argc,argv);
   serial_port.open(serial_port_name);
+
+  // parameters for reading from proxybox
+  serial_port.set_option(boost::asio::serial_port_base::baud_rate(115200));
+  serial_port.set_option(boost::asio::serial_port_base::character_size(8));
+  serial_port.set_option(boost::asio::serial_port_base::parity(boost::asio::serial_port_base::parity::none));
+  serial_port.set_option(boost::asio::serial_port_base::stop_bits(boost::asio::serial_port_base::stop_bits::one));
+  serial_port.set_option(boost::asio::serial_port_base::flow_control(boost::asio::serial_port_base::flow_control::none));
+
   std::cout << "opened serial port " << serial_port_name << std::endl;
 
   #ifdef AZURE_ROUTES
