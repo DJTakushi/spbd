@@ -51,7 +51,7 @@ nlohmann::ordered_json gen_metrics_from_serial(std::string str){
   for(auto part : parts) {
     std::string metric_name = "metric"+std::to_string(counter);
     boost::trim(part);
-    j[metric_name] = part;
+    j[metric_name] = std::stod(part);
     counter++;
   }
 
