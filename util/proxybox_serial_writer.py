@@ -11,6 +11,7 @@ while True:
                       stopbits=1,
                       timeout=0.5)
   ser.write(bytes(mydata,'utf-8'))
+  print(f"wrote : {mydata.strip()}")
   if counter > 255:
     counter = 0
   else:
