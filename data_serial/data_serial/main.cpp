@@ -54,15 +54,29 @@ int main(int argc, char* argv[]) {
 
   std::string serial_port_name = get_serial_port_name();
   serial_port_->open(serial_port_name);
- 
-  // parameters for reading from proxybox
-  serial_port_->set_option(spb::baud_rate(get_serial_bauderate()));
-  serial_port_->set_option(spb::character_size(get_serial_char_size()));
-  serial_port_->set_option(spb::parity(get_serial_parity()));
-  serial_port_->set_option(spb::stop_bits(get_serial_stop_bits()));
-  serial_port_->set_option(spb::flow_control(get_serial_flow_control()));
-
   std::cout << "opened serial port " << serial_port_name << std::endl;
+
+  // parameters for reading from proxybox
+  uint32_t baud_rate_ = get_serial_bauderate();
+  uint8_t serial_char_size_ = get_serial_char_size();
+  spb::parity::type serial_parity_ = get_serial_parity();
+  spb::stop_bits::type serial_stop_bits_ = get_serial_stop_bits();
+  spb::flow_control::type serial_flow_control_ = get_serial_flow_control();
+
+  serial_port_->set_option(spb::baud_rate(baud_rate_));
+  std::cout << "set baud_rate : " << baud_rate_ << std::endl;
+
+  serial_port_->set_option(spb::character_size(serial_char_size_));
+  std::cout << "set char_size : " << serial_char_size_ << std::endl;
+
+  serial_port_->set_option(spb::parity(serial_parity_));
+  std::cout << "set parity : " << serial_parity_ << std::endl;
+
+  serial_port_->set_option(spb::stop_bits(serial_stop_bits_));
+  std::cout << "set stop bits : " << serial_stop_bits_ << std::endl;
+
+  serial_port_->set_option(spb::flow_control(serial_flow_control_));
+  std::cout << "set flow control : " << serial_flow_control_ << std::endl;
 
   #ifdef AZURE_ROUTES
     connection_type type = kAzureIot;
