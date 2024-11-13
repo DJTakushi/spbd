@@ -1,8 +1,8 @@
 ################################################################################
-### SparkPlug B Demo Publisher
+### SparkPlug B Demo Embedded Edge Node
 ################################################################################
 
-set(TARGET pub)
+set(TARGET een)
 
 add_executable(${TARGET} main.cpp)
 

@@ -1,5 +1,5 @@
 ################################################################################
-### SPARKPLUG B DEMO PUB MAIN
+### SPARKPLUG B DEMO EEN MAIN
 ################################################################################
 
 cmake_minimum_required(VERSION 3.2)
@@ -8,25 +8,25 @@ cmake_minimum_required(VERSION 3.2)
 ### PROJECT DESCRIPTION AND META INFO
 ################################################################################
 
-set(PUB_PROJECT_NAME        "sparkplugb_demo_pub")
-set(PUB_PROJECT_DESCRIPTION "SparkPlugB Demo Publisher")
-set(PUB_AUTHOR_DOMAIN       "https://github.com/DJTakushi/spbd")
-set(PUB_VERSION_MAJOR       "0")
-set(PUB_VERSION_MINOR       "0")
-set(PUB_VERSION_PATCH       "1")
+set(EEN_PROJECT_NAME        "sparkplugb_demo_een")
+set(EEN_PROJECT_DESCRIPTION "SparkPlugB Demo Embedded Edge Node")
+set(EEN_AUTHOR_DOMAIN       "https://github.com/DJTakushi/spbd")
+set(EEN_VERSION_MAJOR       "0")
+set(EEN_VERSION_MINOR       "0")
+set(EEN_VERSION_PATCH       "1")
 
-set(PUB_VERSION
-    "${PUB_VERSION_MAJOR}.${PUB_VERSION_MINOR}.${PUB_VERSION_PATCH}")
-set(PUB_NAME_VERSION
-    "${PUB_PROJECT_NAME} v${PUB_VERSION} (${PUB_VERSION_REVISION})")
+set(EEN_VERSION
+    "${EEN_VERSION_MAJOR}.${EEN_VERSION_MINOR}.${EEN_VERSION_PATCH}")
+set(EEN_NAME_VERSION
+    "${EEN_PROJECT_NAME} v${EEN_VERSION} (${EEN_VERSION_REVISION})")
 
 ################################################################################
 ### DECLARE PROJECT
 ################################################################################
 
-project(${PUB_PROJECT_NAME})
+project(${EEN_PROJECT_NAME})
 
-set(PUB_SRC_DIR ${PROJECT_SOURCE_DIR}/pub)
+set(EEN_SRC_DIR ${PROJECT_SOURCE_DIR}/een)
 
-add_subdirectory(pub)
+add_subdirectory(een)
 # add_subdirectory(iothub_handler)

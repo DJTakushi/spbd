@@ -85,7 +85,7 @@ static int SetupCallbacksForInputQueues(
 
 int main(int argc, char* argv[]) {
   std::time_t now = std::time(nullptr);
-  std::cout << "starting pub main at " << std::asctime(std::localtime(&now));
+  std::cout << "starting een main at " << std::asctime(std::localtime(&now));
   std::cout <<"..."  << std::endl;
 
   signal(SIGINT, sig_int_handler); // registar for ctrl-c

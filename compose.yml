@@ -1,5 +1,5 @@
-# sudo docker compose build pub sub
-# sudo docker compose --profile pub --profile sub up
+# sudo docker compose build een sub
+# sudo docker compose --profile een --profile sub up
 services:
   mqtt:
     image : eclipse-mosquitto:2.0.19
@@ -8,10 +8,10 @@ services:
       - "9001:9001"
     volumes:
       - ./mqtt/mosquitto.config:/mosquitto/config/mosquitto.conf
-  pub:
-    image: pub
+  een:
+    image: een
     build:
-      context: pub
+      context: een
       dockerfile: Dockerfile
     # ports:
     #   - "8080:8080"
@@ -22,7 +22,7 @@ services:
     depends_on:
       - mqtt
     profiles:
-      - pub
+      - een
   sub:
     image: sub
     build:

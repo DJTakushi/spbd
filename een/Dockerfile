@@ -90,10 +90,10 @@ WORKDIR /
 RUN git clone https://github.com/nlohmann/json.git --branch v3.11.3
 RUN cp -r /json/include/* /usr/include/
 
-# pub build
-COPY CMakeLists.txt /pub/
-COPY /pub/* /pub/pub/
-WORKDIR /pub/build
+# een build
+COPY CMakeLists.txt /een/
+COPY /een/* /een/een/
+WORKDIR /een/build
 
 RUN cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build .
 
@@ -112,6 +112,6 @@ RUN apk add util-linux-dev
 RUN addgroup -S shs && adduser -S shs -G shs
 USER shs
 
-COPY --chown=shs:shs --from=build /pub/build/pub/pub ./pub
+COPY --chown=shs:shs --from=build /een/build/een/een ./een
 
-ENTRYPOINT [ "./pub" ]
+ENTRYPOINT [ "./een" ]
