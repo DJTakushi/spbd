@@ -62,3 +62,16 @@ services:
       MQ_HOST : "host.docker.internal"
     profiles:
       - filter_sample
+  data_serial:
+    image:  data_serial
+    build:
+      context: data_serial
+      dockerfile: Dockerfile
+    depends_on:
+      - mqtt
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
+    environment:
+      MQ_HOST : "host.docker.internal"
+    profiles:
+      - data_serial
