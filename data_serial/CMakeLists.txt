@@ -19,3 +19,4 @@ set(PUB_SRC_DIR ${PROJECT_SOURCE_DIR}/pub)
 
 add_subdirectory(data_serial)
 add_subdirectory(connection)
+add_subdirectory(serial_helpers)
