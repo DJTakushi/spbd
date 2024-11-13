@@ -5,7 +5,7 @@ SparkPlugB Demo
   - [2.1 use with docker compose](#21-use-with-docker-compose)
   - [2.2 use with local applications](#22-use-with-local-applications)
     - [2.2.1 tahu setup](#221-tahu-setup)
-    - [2.2.2 pub](#222-pub)
+    - [2.2.2 een](#222-een)
     - [2.2.3sub](#223-sub)
 - [8. developer resources](#8-developer-resources)
 - [9. TODO](#9-todo)
@@ -14,15 +14,19 @@ SparkPlugB Demo
 Architecture (deployed) :
 ```mermaid
 flowchart LR
-  subgraph box
-    data_gen --$edgeHost<br>messages--> pub
-    style data_gen fill:black,stroke:red,stroke-width:2px,color:red
-    style pub fill:black,stroke:yellow,stroke-width:2px,color:yellow
+  subgraph embedded box
+    een[een <br>embedded edge node]
+    data_serial --data_init--> een
+    data_serial --data--> een
+    een --cmd--> data_serial
+
+    style data_serial fill:black,stroke:red,stroke-width:2px,color:red
+    style een fill:black,stroke:yellow,stroke-width:2px,color:yellow
   end
 
   subgraph server
     mqtt <--> HostApplication
-    pub  <--sparkPlugB--> mqtt[(mqtt)] <--> sub
+    een  <--sparkPlugB--> mqtt[(mqtt)] <--> sub
 
     style mqtt fill:#660066,stroke:#fff,stroke-width:2px,color:#fff
     style sub fill:black,stroke:green,stroke-width:2px,color:green
@@ -34,8 +38,8 @@ flowchart LR
 # 2. use
 ## 2.1 use with docker compose
 ```
-sudo docker compose build pub sub
-sudo docker compose --profile pub --profile sub up
+sudo docker compose build een sub
+sudo docker compose --profile een --profile sub up
 ```
 
 ## 2.2. use with local applications
@@ -55,14 +59,14 @@ make
 cp include/* /usr/local/include
 cp lib/libtahu.a /usr/lib/
 ```
-note that protobuf files can be rebuit as shown in `pub`/`sub` Dockerfiles, but the stock tahu files seem to be okay (for now...)
+note that protobuf files can be rebuit as shown in `een`/`sub` Dockerfiles, but the stock tahu files seem to be okay (for now...)
 
-### 2.2.2 pub
+### 2.2.2 een
 ```
-cd pub
+cd een
 mkdir -p build && cd build
 cmake .. && make
-pub/pub
+een/een
 ```
 ### 2.2.3 sub
 ```
