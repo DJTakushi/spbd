@@ -13,8 +13,7 @@
 #include "connection_factory.h"
 #include "environment_helpers.h"
 
-boost::asio::io_service m_ioService;
-boost::asio::serial_port serial_port_(m_ioService);
+std::shared_ptr<boost::asio::serial_port> serial_port_;
 
 void exit_application(int signum) {
   std::cout  << "exiting sub application..."<<std::endl;
@@ -22,9 +21,10 @@ void exit_application(int signum) {
 }
 
 void sig_int_handler(int signum) {
-  std::cout << std::endl;
-  serial_port_.close();
-
+  // TODO : try relocating serial_port_->close() to exit_application()
+  if(serial_port_!= NULL){
+    serial_port_->close();
+  }
   std::cout << "ctrl+c pressed, exiting..."<<std::endl;
   exit_application(1);
 }
@@ -49,15 +49,18 @@ int main(int argc, char* argv[]) {
   signal(SIGINT, sig_int_handler); // registar for ctrl-c
   signal(SIGTERM, exit_application); // terminate from Docker STOPSIGNAL
 
+  boost::asio::io_service m_ioService;
+  serial_port_ = std::make_shared<boost::asio::serial_port>(m_ioService);
+
   std::string serial_port_name = get_serial_port_name();
-  serial_port_.open(serial_port_name);
+  serial_port_->open(serial_port_name);
  
   // parameters for reading from proxybox
-  serial_port_.set_option(spb::baud_rate(get_serial_bauderate()));
-  serial_port_.set_option(spb::character_size(get_serial_char_size()));
-  serial_port_.set_option(spb::parity(get_serial_parity()));
-  serial_port_.set_option(spb::stop_bits(get_serial_stop_bits()));
-  serial_port_.set_option(spb::flow_control(get_serial_flow_control()));
+  serial_port_->set_option(spb::baud_rate(get_serial_bauderate()));
+  serial_port_->set_option(spb::character_size(get_serial_char_size()));
+  serial_port_->set_option(spb::parity(get_serial_parity()));
+  serial_port_->set_option(spb::stop_bits(get_serial_stop_bits()));
+  serial_port_->set_option(spb::flow_control(get_serial_flow_control()));
 
   std::cout << "opened serial port " << serial_port_name << std::endl;
 
@@ -75,7 +78,7 @@ int main(int argc, char* argv[]) {
     char c = '0';
 
     while (c != '\n') {
-      serial_port_.read_some(boost::asio::buffer(&c, 1));
+      serial_port_->read_some(boost::asio::buffer(&c, 1));
       str += c;
     }
 
