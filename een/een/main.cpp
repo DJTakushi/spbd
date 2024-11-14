@@ -20,6 +20,8 @@
 #include "azureiot/iothub.h"
 
 #include "nlohmann/json.hpp"
+
+#include "een.h"
 /*******************************************************************************
  * SparkPlug B Demo 
  * Based on tahu/c/examples/udt_example/example.c
@@ -84,6 +86,7 @@ static int SetupCallbacksForInputQueues(
 
 
 int main(int argc, char* argv[]) {
+  std::shared_ptr<een> een_ = std::make_shared<een>("");
   std::time_t now = std::time(nullptr);
   std::cout << "starting een main at " << std::asctime(std::localtime(&now));
   std::cout <<"..."  << std::endl;

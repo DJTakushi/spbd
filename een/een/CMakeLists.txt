@@ -4,8 +4,17 @@
 
 set(TARGET een)
 
-add_executable(${TARGET} main.cpp)
+add_executable(${TARGET}
+  main.cpp
+  src/een.cpp
+  src/device_client.cpp
+)
 
+target_include_directories(een PRIVATE
+  "."
+  "include"
+  "../attributes/include"
+)
 target_compile_features(${TARGET} PUBLIC cxx_std_17)
 
 target_link_libraries(${TARGET}
@@ -24,4 +33,5 @@ target_link_libraries(${TARGET}
   libutpm.a
   libuuid.so
   libuhttp.a
+  attributes
 )
