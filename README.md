@@ -72,7 +72,8 @@ een *-- device_client : -map[string, device_client*] device_map_
 
 class attribute_host{
   +mutex attribute_mutex
-  +update_attributes(json& msg)
+  -update_attribute(json& msg)
+  +update_attributes_from_array(json& msg)
   +ddata_gen(org_eclipse_tahu_protobuf_Payload& payload)
 }
 device_client *-- attribute_host : -attribute_host attribute_host_

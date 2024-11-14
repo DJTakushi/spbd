@@ -18,6 +18,6 @@ void device_client::dcmd_pass(std::string command){
 }
 void device_client::update(nlohmann::json& j){
   if(j.contains("attributes")){
-    attribute_host_.update_attributes(j["attributes"]);
+    attribute_host_.update_attributes_from_array(j["attributes"]);
   }
 }
