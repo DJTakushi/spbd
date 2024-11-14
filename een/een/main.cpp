@@ -85,7 +85,20 @@ static int SetupCallbacksForInputQueues(
     IOTHUB_MODULE_CLIENT_LL_HANDLE iotHubModuleClientHandle);
 
 std::shared_ptr<een> een_;
+
 int main(int argc, char* argv[]) {
+  een_ = std::make_shared<een>("");
+
+  std::cout << "starting service routine.."<<std::endl;
+  while(een_->is_stable()){
+    een_->service_mqtt();
+    een_->service_iot_hub();
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  }
+  std::cout << "exiting main.  goodbye."<<std::endl;
+
+}
+int main_old(int argc, char* argv[]) {
   een_ = std::make_shared<een>("");
   std::time_t now = std::time(nullptr);
   std::cout << "starting een main at " << std::asctime(std::localtime(&now));
