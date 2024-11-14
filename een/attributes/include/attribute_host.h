@@ -5,8 +5,10 @@
 #include <string>
 #include "nlohmann/json.hpp"
 #include "attribute.h"
+
+typedef std::map<std::string,std::shared_ptr<attribute>> attribute_map;
 class attribute_host{
-  std::map<std::string,attribute*> attributes_;
+  attribute_map attributes_;
  public:
   attribute_host();
   std::mutex attribute_mutex;

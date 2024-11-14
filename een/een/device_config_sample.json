@@ -1,0 +1,89 @@
+{
+  "name":"foo",
+  "attributes":[
+    {
+      "name": "not_used",
+      "datatype":10,
+      "value":0.0,
+      "timestamp":1731564121536
+    },
+    {
+      "name": "slurry_rate",
+      "datatype":10,
+      "value":1.4,
+      "timestamp":1731564121536
+    },
+    {
+      "name": "clean_rate",
+      "datatype":10,
+      "value":0.0,
+      "timestamp":1731564121536
+    },
+    {
+      "name": "denso",
+      "datatype":10,
+      "value":0.0,
+      "timestamp":1731564121536
+    },
+    {
+      "name": "sand_screw_1_rpm",
+      "datatype":10,
+      "value":0.0,
+      "timestamp":1731564121536
+    },
+    {
+      "name": "sand_screw_2_rpm",
+      "datatype":10,
+      "value":0.0,
+      "timestamp":1731564121536
+    },
+    {
+      "name": "sand_screw_3_rpm",
+      "datatype":10,
+      "value":0.0,
+      "timestamp":1731564121536
+    },
+    {
+      "name": "discharge_pressure",
+      "datatype":10,
+      "value":2.32,
+      "timestamp":1731564121536
+    },
+    {
+      "name": "tub_leevel",
+      "datatype":10,
+      "value":2.31,
+      "timestamp":1731564121536
+    },
+    {
+      "name": "clean_total_bbl",
+      "datatype":10,
+      "value":4832.86,
+      "timestamp":1731564121536
+    },
+    {
+      "name": "slurry_total_bbl",
+      "datatype":10,
+      "value":6004.61,
+      "timestamp":1731564121536
+    },
+    {
+      "name": "stage_total_bbls_clean",
+      "datatype":10,
+      "value":0.0,
+      "timestamp":1731564121536
+    },
+    {
+      "name": "tub_valve_position",
+      "datatype":10,
+      "value":100.0,
+      "timestamp":1731564121536
+    },
+    {
+      "name": "suction_pressure",
+      "datatype":10,
+      "value":1.14,
+      "timestamp":1731564121536
+    }
+  ]
+}

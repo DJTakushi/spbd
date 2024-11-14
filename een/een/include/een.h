@@ -1,7 +1,6 @@
 #include <string>
 #include <mosquitto.h>
 
-
 #define USE_EDGE_MODULES
 #include "azureiot/iothub_module_client_ll.h"
 #include "azureiot/iothub_client_options.h"
@@ -14,15 +13,17 @@
 #include "azureiot/iothub.h"
 
 #include "device_client.h"
-
+typedef std::map<std::string,std::shared_ptr<device_client>> device_map;
 class een{
   std::string group_id_;
   std::string edge_node_id;
   struct mosquitto *mosq_ {NULL};
   IOTHUB_MODULE_CLIENT_LL_HANDLE handle_;
-  std::map<std::string,device_client> device_map_;
+  device_map device_map_;
 
   void rec_local_data_msg(std::string& msg);
+  void rec_local_config_msg(std::string& msg);
+
  public:
   een(std::string config);
   void nbirth_send();
