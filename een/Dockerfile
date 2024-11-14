@@ -91,8 +91,8 @@ RUN git clone https://github.com/nlohmann/json.git --branch v3.11.3
 RUN cp -r /json/include/* /usr/include/
 
 # een build
-COPY CMakeLists.txt /een/
-COPY /een/* /een/een/
+ADD . /een/
+RUN rm -r /een/build/*
 WORKDIR /een/build
 
 RUN cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build .
