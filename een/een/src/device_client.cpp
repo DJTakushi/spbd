@@ -7,6 +7,7 @@ device_client::device_client(std::string group_id,
                               : group_id_(group_id),
                                 edge_node_id_(node_id),
                                 config_(config){
+  device_id_ = config["name"];
   update(config);
   set_topics();
 }
@@ -41,7 +42,12 @@ void device_client::ddata_send(struct mosquitto* m){
                       binary_buffer,
                       0,
                       false);
+    std::cout << "ddata_send sent payload to topic "<< topic_ddata_ <<  std::endl;
+
     free(binary_buffer);
+  }
+  else{
+    std::cout << "no payloadto send" <<  std::endl;
   }
   free_payload(&ddata_payload);
 }
@@ -51,5 +57,8 @@ void device_client::dcmd_pass(std::string command){
 void device_client::update(nlohmann::json& j){
   if(j.contains("attributes")){
     attribute_host_.update_attributes_from_array(j["attributes"]);
+  }
+  else{
+    std::cout << "attributes section not found in msg :"<< j.dump()<<std::endl;
   }
 }

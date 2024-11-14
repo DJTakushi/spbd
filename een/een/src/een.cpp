@@ -57,14 +57,15 @@ void een::rec_local_config_msg(std::string& msg){
       std::string name = j["name"];
       if(device_map_.find(name) != device_map_.end()){
         // TODO : should we reset config here?
-        device_map_[name]->update(j);
       }
       else{
         device_map_[name] = std::make_shared<device_client>(group_id_,
                                                             edge_node_id_,
                                                             j);
+        std::cout<< "device_client created : "<< name<<std::endl;
       }
-
+      device_map_[name]->update(j);
+      device_map_[name]->ddata_send(mosq_);
     }
     else{
       std::cout << "'name' missing from message : " << msg << std::endl;

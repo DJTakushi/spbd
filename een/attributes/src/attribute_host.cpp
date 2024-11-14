@@ -1,5 +1,5 @@
+#include <iostream>
 #include "attribute_host.h"
-
 attribute_host::attribute_host(){
   // TODO :
 }
@@ -9,6 +9,7 @@ void attribute_host::update_attribute(nlohmann::json& j, steady_tp time){
     std::string attr_name = j["name"];
     uint64_t attr_datatype = j["datatype"];
     if(attributes_.find(attr_name)==attributes_.end()){
+      std::cout << "creating attribute : "<< attr_name <<"..."<<std::endl;
       attributes_[attr_name] = std::make_shared<attribute>(attr_datatype);
     }
     else{
@@ -23,6 +24,12 @@ void attribute_host::update_attribute(nlohmann::json& j, steady_tp time){
         attributes_[attr_name]->reported_epoch_set(j["timestamp"]);
       }
     }
+    else{
+      std::cout << "missing 'value' and/or 'timestamp'" << std::endl;
+    }
+  }
+  else{
+    std::cout << "name or datatype not found in json : "<<j.dump()<<std::endl;
   }
 }
 
@@ -32,6 +39,9 @@ void attribute_host::update_attributes_from_array(nlohmann::json& j){
     for(auto it = j.begin(); it != j.end(); ++it){
       update_attribute(*it,now);
     }
+  }
+  else{
+    std::cout << "json not an array : " << j.dump()<<std::endl;
   }
 }
 void attribute_host::ddata_gen(org_eclipse_tahu_protobuf_Payload& payload){
