@@ -58,10 +58,14 @@ class een{
 }
 
 class device_client{
-  +string device_id
+  -string device_id_
+  -string group_id_
+  -string edge_node_id_
   -json config_
+  -string topic_ddata_
+  -set_topics()
 
-  +device_client : (string& data_init)
+  +device_client : (string group_id, string node_id, json& data_init)
   +dbirth_send(mosq* m)
   +ddeath_send(mosq* m)
   +ddata_send(mosq* m)

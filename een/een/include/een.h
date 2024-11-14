@@ -15,8 +15,8 @@
 #include "device_client.h"
 typedef std::map<std::string,std::shared_ptr<device_client>> device_map;
 class een{
-  std::string group_id_;
-  std::string edge_node_id;
+  std::string group_id_{"Sparkplug B Devices"};
+  std::string edge_node_id_{"C Edge Node 1"};
   struct mosquitto *mosq_ {NULL};
   IOTHUB_MODULE_CLIENT_LL_HANDLE handle_;
   device_map device_map_;

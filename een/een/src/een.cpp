@@ -30,7 +30,9 @@ void een::rec_local_config_msg(std::string& msg){
         // TODO : should we reset config here?
       }
       else{
-        device_map_[name] = std::make_shared<device_client>(j);
+        device_map_[name] = std::make_shared<device_client>(group_id_,
+                                                            edge_node_id_,
+                                                            j);
       }
 
     }
