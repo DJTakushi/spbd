@@ -17,7 +17,7 @@ flowchart LR
   subgraph embedded box
     een[een <br>embedded edge node]
     data_serial --data--> een
-    data_serial --config--> een
+    data_serial --config*--> een
     een --cmd--> data_serial
 
     style data_serial fill:black,stroke:red,stroke-width:2px,color:red
@@ -34,6 +34,7 @@ flowchart LR
     style HostApplication fill:black,stroke:blue,stroke-width:2px,color:blue,stroke-dasharray: 5 5
   end
 ```
+*config stream could be replaced by comprehensive data-stream with full configuration.  Timestamps would have to indicate if attribute  values are fresh though
 
 ```mermaid
 ---
@@ -58,15 +59,16 @@ class een{
 
 class device_client{
   +string device_id
+  -json config_
 
   +device_client : (string& data_init)
   +dbirth_send(mosq* m)
   +ddeath_send(mosq* m)
   +ddata_send(mosq* m)
   +dcmd_pass(str cmd)
-  +update(string& msg)
+  +update(json& msg)
 }
-een *-- device_client : -map[string, device_client] device_map_
+een *-- device_client : -map[string, device_client*] device_map_
 
 class attribute_host{
   +mutex attribute_mutex
@@ -80,11 +82,15 @@ class attribute{
   -uint64_t datatype_
   -timestamp time_recv
   -timestamp time_sent
+  -uint64_t reported_epoch
   +attribute(uint64_t)
   +set_value(void*)
+  +set_value_with_timetamp(jsong  j_val, stead_tp time)
   +void* get_value()
   +uint64_t get_type()
   +bool must_publish()
+  +uint64_t reported_epoch_get()
+  +reported_epoch_set(uint64_t epoch)
 }
 attribute_host *-- attribute : -map[name,attribute*] attributes_
 ```
