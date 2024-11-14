@@ -35,5 +35,30 @@ void attribute_host::update_attributes_from_array(nlohmann::json& j){
   }
 }
 void attribute_host::ddata_gen(org_eclipse_tahu_protobuf_Payload& payload){
-  // TODO :
+  for(auto attr : attributes_){
+    if(attr.second->is_recently_published()){
+      size_t attr_size;
+      switch (attr.second->get_datatype()){
+        case METRIC_DATA_TYPE_INT64:
+          attr_size = sizeof(uint64_t);
+          break;
+        case METRIC_DATA_TYPE_DOUBLE:
+          attr_size = sizeof(double);
+          break;
+        case METRIC_DATA_TYPE_STRING:
+          attr_size = sizeof(std::string);
+          break;
+      }
+
+      add_simple_metric(&payload,
+                        attr.first.c_str(),
+                        true,
+                        0, // alias; should maybe be removed
+                        attr.second->get_datatype(),
+                        false,
+                        false,
+                        attr.second->get_value(),
+                        attr_size);
+    }
+  }
 }
