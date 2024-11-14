@@ -17,6 +17,7 @@ flowchart LR
   subgraph embedded box
     een[een <br>embedded edge node]
     data_serial --data--> een
+    data_serial --config--> een
     een --cmd--> data_serial
 
     style data_serial fill:black,stroke:red,stroke-width:2px,color:red
@@ -51,37 +52,38 @@ class een{
   +ncmd_rec()
   +dcmd_rec()
   +ndata_send()
-  -local_msg_rec(string msg)
+  -rec_local_data_msg(string& msg)
+  -rec_local_config_msg(string& msg)
 }
 
 class device_client{
   +string device_id
 
-  +device_client : (str data_init)
+  +device_client : (string& data_init)
   +dbirth_send(mosq* m)
   +ddeath_send(mosq* m)
   +ddata_send(mosq* m)
   +dcmd_pass(str cmd)
-  +update(str msg)
+  +update(string& msg)
 }
 een *-- device_client : -map[string, device_client] device_map_
 
 class attribute_host{
   +mutex attribute_mutex
-  +update_attributes(json msg)
-  +payload ddata_gen()
+  +update_attributes(json& msg)
+  +ddata_gen(org_eclipse_tahu_protobuf_Payload& payload)
 }
 device_client *-- attribute_host : -attribute_host attribute_host_
 
 class attribute{
   -void* value_
-  -datatype type_
+  -uint64_t datatype_
   -timestamp time_recv
   -timestamp time_sent
-  +attribute(datatype)
+  +attribute(uint64_t)
   +set_value(void*)
   +void* get_value()
-  +datatype get_type()
+  +uint64_t get_type()
   +bool must_publish()
 }
 attribute_host *-- attribute : -map[name,attribute*] attributes_
