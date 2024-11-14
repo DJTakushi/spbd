@@ -14,9 +14,6 @@ attribute::attribute(uint64_t datatype) : datatype_(datatype) {
 
 
   }}
-void attribute::set_value(void* data){
-  // TODO :
-}
 void attribute::set_value_with_timetamp(nlohmann::json& j_val,
                                               steady_tp time){
   void* data = NULL;
@@ -42,14 +39,14 @@ void attribute::set_value_with_timetamp(nlohmann::json& j_val,
   }
 }
 
-void* attribute::get_value(){
-  // TODO :
+const void* attribute::get_value(){
+  return value_;
 }
 uint64_t attribute::get_datatype(){
-  // TODO :
+  return datatype_;
 }
 bool attribute::must_publish(){
-  // TODO :
+  return time_sent_ < time_recv_;
 }
 uint64_t attribute::reported_epoch_get(){
   return reported_epoch_;
