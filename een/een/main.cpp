@@ -26,7 +26,8 @@
  ******************************************************************************/
 // double engine_speed_ = -999.9;
 // int gear_ = 0;
-int metric0_ = 0;
+#define SERIAL_METRIC_NO 14
+double serial_metric_[SERIAL_METRIC_NO];
 
 enum alias_map {
     Next_Server = 0,
@@ -43,7 +44,6 @@ enum alias_map {
     My_Custom_Motor = 11,
     // kEngineSpeed = 12,
     // kGear = 13,
-    kMetric0,
 };
 void exit_application(int signum) {
   std::cout  << "exiting sub application..."<<std::endl;
@@ -648,7 +648,18 @@ void publish_ddata_message(struct mosquitto *mosq) {
     // add_simple_metric(&ddata_payload, "Device Metric1", true, Device_Metric1, METRIC_DATA_TYPE_BOOLEAN, false, false, &ddata_metric_one_value, sizeof(ddata_metric_one_value));
     // add_simple_metric(&ddata_payload, "gear", true, kGear, METRIC_DATA_TYPE_INT32, false, false, &gear_, sizeof(gear_));
     // add_simple_metric(&ddata_payload, "engine_speed", true, kEngineSpeed, METRIC_DATA_TYPE_DOUBLE, false, false, &engine_speed_, sizeof(engine_speed_));
-    add_simple_metric(&ddata_payload, "metric0", true, kMetric0, METRIC_DATA_TYPE_INT32, false, false, &metric0_, sizeof(metric0_));
+    for(size_t i = 0; i < SERIAL_METRIC_NO; i++){
+      std::string metric_name = "metric"+std::to_string(i);
+      add_simple_metric(&ddata_payload,
+                        metric_name.c_str(),
+                        true,
+                        i,
+                        METRIC_DATA_TYPE_DOUBLE,
+                        false,
+                        false,
+                        &serial_metric_[i],
+                        sizeof(serial_metric_[i]));
+    }
 
 
 #ifdef SPARKPLUG_DEBUG
@@ -791,8 +802,11 @@ static IOTHUBMESSAGE_DISPOSITION_RESULT input1_message_callback (
         // if(j.contains("engine_speed")){
         //   engine_speed_= j["engine_speed"];
         // }
-        if(j.contains("metric0")){
-          metric0_ = j["metric0"];
+        for(size_t i = 0; i < SERIAL_METRIC_NO; i++){
+          std::string m_name = "metric"+std::to_string(i);
+          if(j.contains(m_name)){
+            serial_metric_[i] = j[m_name];
+          }
         }
       }
       catch (...) {
