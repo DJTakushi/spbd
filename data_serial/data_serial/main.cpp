@@ -2,8 +2,9 @@
 #include "boost/asio/serial_port.hpp"
 #include "boost/algorithm/string.hpp"
 
-
+#include <chrono>
 #include <csignal>
+#include <ctime>
 #include <iostream>
 #include <thread>
 
@@ -14,7 +15,7 @@
 #include "environment_helpers.h"
 
 std::shared_ptr<boost::asio::serial_port> serial_port_; // global for handlers
-
+typedef std::chrono::system_clock::time_point sys_tp;
 void exit_application(int signum) {
   std::cout  << "exiting sub application..."<<std::endl;
   exit(0);
@@ -29,16 +30,24 @@ void sig_int_handler(int signum) {
   exit_application(1);
 }
 
-nlohmann::ordered_json gen_metrics_from_serial(std::string str){
+nlohmann::ordered_json gen_metrics_from_serial(std::string str, sys_tp time){
   nlohmann::ordered_json j;
+  j["name"]="data_serial";
   std::vector<std::string> parts;
   boost::split(parts,str,boost::is_any_of(","));
 
   size_t counter = 0;
+  auto epoch = std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch()).count();
   for(auto part : parts) {
+    nlohmann::json attr;
     std::string metric_name = "metric"+std::to_string(counter);
     boost::trim(part);
-    j[metric_name] = std::stod(part);
+    attr["name"] = metric_name;
+    attr["datatype"] = 10;
+    attr["value"] = std::stod(part);
+    attr["timestamp"] = epoch;
+
+    j["attributes"].emplace_back(attr);
     counter++;
   }
 
@@ -69,8 +78,9 @@ int main(int argc, char* argv[]) {
       serial_port_->read_some(boost::asio::buffer(&c, 1));
       str += c;
     }
+    sys_tp time_(std::chrono::system_clock::now());
 
-    nlohmann::ordered_json j = gen_metrics_from_serial(str);
+    nlohmann::ordered_json j = gen_metrics_from_serial(str, time_);
     std::cout << j.dump() << std::endl;
 
     connection->publish("data_serial_output",j.dump());
