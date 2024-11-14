@@ -15,14 +15,20 @@
 #include "device_client.h"
 typedef std::map<std::string,std::shared_ptr<device_client>> device_map;
 class een{
+  bool stable_{false};
   std::string group_id_{"Sparkplug B Devices"};
   std::string edge_node_id_{"C Edge Node 1"};
   struct mosquitto *mosq_ {NULL};
-  IOTHUB_MODULE_CLIENT_LL_HANDLE handle_;
+  std::string mqtt_host_name_;
+  uint mqtt_host_port_;
+  uint mqtt_host_keepalive_;
+
+  IOTHUB_MODULE_CLIENT_LL_HANDLE iot_handle_;
   device_map device_map_;
 
   void rec_local_data_msg(std::string& msg);
   void rec_local_config_msg(std::string& msg);
+
 
  public:
   een(std::string config);
@@ -31,4 +37,8 @@ class een{
   void ncmd_rec();
   void dcmd_rec();
   void ndata__send();
+
+  bool is_stable();
+  void service_mqtt();
+  void service_iot_hub();
 };
