@@ -21,9 +21,9 @@ class een{
   std::string group_id_{"Sparkplug B Devices"};
   std::string edge_node_id_{"C Edge Node 1"};
   struct mosquitto *mosq_ {NULL};
-  std::string mqtt_host_name_;
-  uint mqtt_host_port_;
-  uint mqtt_host_keepalive_;
+  std::string mqtt_host_name_{"localhost"};
+  uint mqtt_host_port_{1883};
+  uint mqtt_host_keepalive_{60};
 
   IOTHUB_MODULE_CLIENT_LL_HANDLE iot_handle_{NULL};
   device_map device_map_;
