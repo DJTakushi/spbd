@@ -16,7 +16,7 @@ class attribute{
   void set_value_with_timetamp(nlohmann::json& j_val, steady_tp time);
   const void* get_value();
   uint64_t get_datatype();
-  bool must_publish();
+  bool is_recently_published();
   uint64_t reported_epoch_get();
   void reported_epoch_set(uint64_t epoch);
 };

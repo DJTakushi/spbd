@@ -89,7 +89,7 @@ class attribute{
   +set_value_with_timetamp(jsong  j_val, stead_tp time)
   +void* get_value()
   +uint64_t get_type()
-  +bool must_publish()
+  +bool is_recently_published()
   +uint64_t reported_epoch_get()
   +reported_epoch_set(uint64_t epoch)
 }

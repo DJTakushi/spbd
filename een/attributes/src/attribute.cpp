@@ -45,7 +45,7 @@ const void* attribute::get_value(){
 uint64_t attribute::get_datatype(){
   return datatype_;
 }
-bool attribute::must_publish(){
+bool attribute::is_recently_published(){
   return time_sent_ < time_recv_;
 }
 uint64_t attribute::reported_epoch_get(){
