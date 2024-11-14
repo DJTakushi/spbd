@@ -84,9 +84,9 @@ static void deinitialize_iot_connection(IOTHUB_MODULE_CLIENT_LL_HANDLE handle);
 static int SetupCallbacksForInputQueues(
     IOTHUB_MODULE_CLIENT_LL_HANDLE iotHubModuleClientHandle);
 
-
+std::shared_ptr<een> een_;
 int main(int argc, char* argv[]) {
-  std::shared_ptr<een> een_ = std::make_shared<een>("");
+  een_ = std::make_shared<een>("");
   std::time_t now = std::time(nullptr);
   std::cout << "starting een main at " << std::asctime(std::localtime(&now));
   std::cout <<"..."  << std::endl;
