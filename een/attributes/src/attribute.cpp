@@ -1,3 +1,4 @@
+#include <sys/types.h>
 #include "tahu.h"
 #include "attribute.h"
 attribute::attribute(uint64_t datatype) : datatype_(datatype) {
