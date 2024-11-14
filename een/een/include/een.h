@@ -14,8 +14,10 @@
 
 #include "device_client.h"
 typedef std::map<std::string,std::shared_ptr<device_client>> device_map;
+
+/** TODO: separate mosquitto and IotEdge content into inherited class */
 class een{
-  bool stable_{false};
+  bool stable_{true}; // will be flagged false if problems detected
   std::string group_id_{"Sparkplug B Devices"};
   std::string edge_node_id_{"C Edge Node 1"};
   struct mosquitto *mosq_ {NULL};
@@ -23,12 +25,17 @@ class een{
   uint mqtt_host_port_;
   uint mqtt_host_keepalive_;
 
-  IOTHUB_MODULE_CLIENT_LL_HANDLE iot_handle_;
+  IOTHUB_MODULE_CLIENT_LL_HANDLE iot_handle_{NULL};
   device_map device_map_;
 
   void rec_local_data_msg(std::string& msg);
   void rec_local_config_msg(std::string& msg);
 
+  void setup_mosquitto();
+  void setup_iot_hub();
+  static IOTHUBMESSAGE_DISPOSITION_RESULT input1_message_callback (
+                                              IOTHUB_MESSAGE_HANDLE msg,
+                                              void* userContextCallback);
 
  public:
   een(std::string config);

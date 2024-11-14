@@ -1,20 +1,28 @@
 #include <iostream>
 #include "een.h"
 een::een(std::string config){
+  setup_mosquitto();
+  setup_iot_hub();
+}
+void een::setup_mosquitto(){
   mosquitto_lib_init();
   mosq_ = mosquitto_new(NULL, true, NULL);
   if (!mosq_) {
-      std::cerr << "Error creating mosquitto handler"<<std::endl;
+    std::cerr << "Error creating mosquitto handler"<<std::endl;
+    stable_ = false;
   }
-
-  mosquitto_username_pw_set(mosq_, "admin", "changeme");
-  if (mosquitto_connect(mosq_,
-                        mqtt_host_name_.c_str(),
-                        mqtt_host_port_,
-                        mqtt_host_keepalive_)) {
-      std::cerr << "Unable to connect."<<std::endl;
+  else{
+    mosquitto_username_pw_set(mosq_, "admin", "changeme");
+    if (mosquitto_connect(mosq_,
+                          mqtt_host_name_.c_str(),
+                          mqtt_host_port_,
+                          mqtt_host_keepalive_)) {
+        std::cerr << "Unable to connect."<<std::endl;
+        stable_ = false;
+    }
   }
 }
+
 void een::nbirth_send(){
   /** TODO :  */
 }
@@ -54,6 +62,70 @@ void een::rec_local_config_msg(std::string& msg){
     std::cerr << "nlohmann::json::exception : " << e.what() << std::endl;
   }
 }
+
+void een::setup_iot_hub(){
+  if (IoTHub_Init() != 0) {
+    iot_handle_ = IoTHubModuleClient_LL_CreateFromEnvironment(MQTT_Protocol);
+    if (iot_handle_ != NULL) {
+      IOTHUB_CLIENT_RESULT client_result;
+      client_result = IoTHubModuleClient_LL_SetInputMessageCallback(
+                                                    iot_handle_,
+                                                    "input1",
+                                                    input1_message_callback,
+                                                    (void*)this);
+      if (client_result == IOTHUB_CLIENT_OK) {
+        std::cout << "iot_handle_ established" <<std::endl;
+      }
+      else{
+        std::cerr << "ERROR : IoTHubModuleClient_LL_SetInputMessageCallback()"<<std::endl;
+        stable_ = false;
+      }
+    }
+    else{
+      std::cerr <<"ERROR: IoTHubModuleClient_LL_CreateFromEnvironment failed";
+      std::cerr << std::endl;
+      stable_ = false;
+    }
+  }
+  else{
+    std::cerr << "Failed to initialize the platform."<<std::endl;
+    stable_ = false;
+  }
+}
+
+IOTHUBMESSAGE_DISPOSITION_RESULT een::input1_message_callback (
+                                                IOTHUB_MESSAGE_HANDLE msg,
+                                                void* userContextCallback) {
+  een* een_ = (een*)userContextCallback;
+
+  IOTHUBMESSAGE_CONTENT_TYPE contentType = IoTHubMessage_GetContentType(msg);
+  if (contentType == IOTHUBMESSAGE_BYTEARRAY) {
+    /*  IoTHubMessage_GetByteArray retrieves a shallow copy of the data.
+        Caller must NOT free messageBody.*/
+    IOTHUB_MESSAGE_RESULT messageResult;
+    unsigned const char* messageBody;
+    size_t messageBodyLength;
+    messageResult = IoTHubMessage_GetByteArray(msg, &messageBody,
+                                                &messageBodyLength);
+    if (messageResult == IOTHUB_MESSAGE_OK) {
+      std::cout << "messageBody : " << messageBody<<std::endl;
+      std::string body_str((const char*)messageBody,messageBodyLength);
+      een_->rec_local_config_msg(body_str);
+    }
+    else{
+      std::cout <<" WARNING: messageBody = NULL"<<std::endl;
+    }
+  }
+  else{
+    /*  The transport will only create messages of type IOTHUBMESSAGE_BYTEARRAY,
+      never IOTHUBMESSAGE_STRING.*/
+    std::cout << "Warning: Unknown content type "<<int(contentType)<< \
+        "[%d] received for message.  Cannot display"<<std::endl;
+
+  }
+  return IOTHUBMESSAGE_ACCEPTED;
+}
+
 
 bool een::is_stable(){
   return stable_;
