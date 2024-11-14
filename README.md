@@ -16,7 +16,6 @@ Architecture (deployed) :
 flowchart LR
   subgraph embedded box
     een[een <br>embedded edge node]
-    data_serial --data_init--> een
     data_serial --data--> een
     een --cmd--> data_serial
 
@@ -33,6 +32,59 @@ flowchart LR
 
     style HostApplication fill:black,stroke:blue,stroke-width:2px,color:blue,stroke-dasharray: 5 5
   end
+```
+
+```mermaid
+---
+title: een (embedded edge node) class diagram
+---
+classDiagram
+
+class een{
+  +string group_id
+  +string edge_node_id
+  -mosquitto* m_
+  -LOCAL_MSG_HANDLE handle_
+  +een(string config)
+  +nbirth_send()
+  +ndeath_send()
+  +ncmd_rec()
+  +dcmd_rec()
+  +ndata_send()
+  -local_msg_rec(string msg)
+}
+
+class device_client{
+  +string device_id
+
+  +device_client : (str data_init)
+  +dbirth_send(mosq* m)
+  +ddeath_send(mosq* m)
+  +ddata_send(mosq* m)
+  +dcmd_pass(str cmd)
+  +update(str msg)
+}
+een *-- device_client : -map[string, device_client] device_map_
+
+class attribute_host{
+  +mutex attribute_mutex
+  +update_attributes(json msg)
+  +payload ddata_gen()
+}
+device_client *-- attribute_host : -attribute_host attribute_host_
+
+class attribute{
+  -void* value_
+  -datatype type_
+  -timestamp time_recv
+  -timestamp time_sent
+  +attribute(datatype)
+  +set_value(void*)
+  +void* get_value()
+  +datatype get_type()
+  +bool must_publish()
+}
+attribute_host *-- attribute : -map[name,attribute*] attributes_
 ```
 
 # 2. use
