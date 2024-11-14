@@ -5,6 +5,12 @@ een::een(std::string config){
   setup_iot_hub();
 }
 void een::setup_mosquitto(){
+  char* mqtt_host_name_env = std::getenv("MQ_HOST");
+  if (mqtt_host_name_env != NULL){
+    mqtt_host_name_ = std::string(mqtt_host_name_env);
+  }
+  std::cout << "host_compose : " << std::string(mqtt_host_name_) << std::endl;
+
   mosquitto_lib_init();
   mosq_ = mosquitto_new(NULL, true, NULL);
   if (!mosq_) {
@@ -16,9 +22,12 @@ void een::setup_mosquitto(){
     if (mosquitto_connect(mosq_,
                           mqtt_host_name_.c_str(),
                           mqtt_host_port_,
-                          mqtt_host_keepalive_)) {
-        std::cerr << "Unable to connect."<<std::endl;
-        stable_ = false;
+                          mqtt_host_keepalive_) == 0) {
+      std::cout << "mosquitto connection established" <<std::endl;
+    }
+    else{
+      std::cerr << "Unable to connect."<<std::endl;
+      stable_ = false;
     }
   }
 }
