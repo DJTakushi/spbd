@@ -66,6 +66,9 @@ void een::rec_local_config_msg(std::string& msg){
       }
 
     }
+    else{
+      std::cout << "'name' missing from message : " << msg << std::endl;
+    }
   }
   catch (nlohmann::json::exception& e) {
     std::cerr << "nlohmann::json::exception : " << e.what() << std::endl;
@@ -73,7 +76,7 @@ void een::rec_local_config_msg(std::string& msg){
 }
 
 void een::setup_iot_hub(){
-  if (IoTHub_Init() != 0) {
+  if (IoTHub_Init() == 0) {
     iot_handle_ = IoTHubModuleClient_LL_CreateFromEnvironment(MQTT_Protocol);
     if (iot_handle_ != NULL) {
       IOTHUB_CLIENT_RESULT client_result;
@@ -117,7 +120,6 @@ IOTHUBMESSAGE_DISPOSITION_RESULT een::input1_message_callback (
     messageResult = IoTHubMessage_GetByteArray(msg, &messageBody,
                                                 &messageBodyLength);
     if (messageResult == IOTHUB_MESSAGE_OK) {
-      std::cout << "messageBody : " << messageBody<<std::endl;
       std::string body_str((const char*)messageBody,messageBodyLength);
       een_->rec_local_config_msg(body_str);
     }
