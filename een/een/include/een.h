@@ -34,6 +34,8 @@ class een{
   IOTHUB_MODULE_CLIENT_LL_HANDLE iot_handle_{NULL};
   device_map device_map_;
 
+  bool log_mosquitto_{false};
+
   void rec_local_data_msg(std::string& msg);
   void rec_local_config_msg(std::string& msg);
 

@@ -80,7 +80,10 @@ void een::log_callback(struct mosquitto *mosq,
                         int level,
                         const char *str) {
   // Print all log messages regardless of level.
-  std::cout << str <<  std::endl;
+  een* een_ = (een*)(userdata);
+  if(een_->log_mosquitto_){
+    std::cout << str <<  std::endl;
+  }
 }
 void een::message_callback(struct mosquitto *mosq,
                                   void *userdata,
