@@ -79,7 +79,7 @@ void sig_int_handler(int signum) {
 
 // static IOTHUB_MODULE_CLIENT_LL_HANDLE initialize_iot_connection();
 /** TODO : deinitialize on a graceful exit with below function**/
-static void deinitialize_iot_connection(IOTHUB_MODULE_CLIENT_LL_HANDLE handle);
+// static void deinitialize_iot_connection(IOTHUB_MODULE_CLIENT_LL_HANDLE handle);
 // // static int SetupCallbacksForInputQueues(
 //     IOTHUB_MODULE_CLIENT_LL_HANDLE iotHubModuleClientHandle);
 
@@ -795,13 +795,13 @@ int main_old(int argc, char* argv[]) {
 //   return handle;
 // }
 
-static void deinitialize_iot_connection(
-    IOTHUB_MODULE_CLIENT_LL_HANDLE handle) {
-  if (handle != NULL) {
-    IoTHubModuleClient_LL_Destroy(handle);
-  }
-  IoTHub_Deinit();
-}
+// static void deinitialize_iot_connection(
+//     IOTHUB_MODULE_CLIENT_LL_HANDLE handle) {
+//   if (handle != NULL) {
+//     IoTHubModuleClient_LL_Destroy(handle);
+//   }
+//   IoTHub_Deinit();
+// }
 
 // static int SetupCallbacksForInputQueues(
 //       IOTHUB_MODULE_CLIENT_LL_HANDLE iotHubModuleClientHandle) {
