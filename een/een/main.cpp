@@ -61,27 +61,27 @@ void sig_int_handler(int signum) {
 // void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message);
 // void my_connect_callback(struct mosquitto *mosq, void *userdata, int result);
 // void my_subscribe_callback(struct mosquitto *mosq, void *userdata, int mid, int qos_count, const int *granted_qos);
-void my_log_callback(struct mosquitto *mosq, void *userdata, int level, const char *str);
+// void my_log_callback(struct mosquitto *mosq, void *userdata, int level, const char *str);
 
 /* Local Functions */
-void publish_births(struct mosquitto *mosq);
-void publish_node_birth(struct mosquitto *mosq);
-void publish_device_birth(struct mosquitto *mosq);
-void publish_ddata_message(struct mosquitto *mosq);
+// void publish_births(struct mosquitto *mosq);
+// void publish_node_birth(struct mosquitto *mosq);
+// void publish_device_birth(struct mosquitto *mosq);
+// void publish_ddata_message(struct mosquitto *mosq);
 
-static void PrintMessageInformation(IOTHUB_MESSAGE_HANDLE msg);
-static IOTHUBMESSAGE_DISPOSITION_RESULT DefaultMessageCallback(
-    IOTHUB_MESSAGE_HANDLE message,
-    void* userContextCallback);
-static IOTHUBMESSAGE_DISPOSITION_RESULT input1_message_callback(
-    IOTHUB_MESSAGE_HANDLE msg,
-    void* userContextCallback);
+// static void PrintMessageInformation(IOTHUB_MESSAGE_HANDLE msg);
+// static IOTHUBMESSAGE_DISPOSITION_RESULT DefaultMessageCallback(
+    // IOTHUB_MESSAGE_HANDLE message,
+    // void* userContextCallback);
+// static IOTHUBMESSAGE_DISPOSITION_RESULT input1_message_callback(
+//     IOTHUB_MESSAGE_HANDLE msg,
+//     void* userContextCallback);
 
-static IOTHUB_MODULE_CLIENT_LL_HANDLE initialize_iot_connection();
+// static IOTHUB_MODULE_CLIENT_LL_HANDLE initialize_iot_connection();
 /** TODO : deinitialize on a graceful exit with below function**/
 static void deinitialize_iot_connection(IOTHUB_MODULE_CLIENT_LL_HANDLE handle);
-static int SetupCallbacksForInputQueues(
-    IOTHUB_MODULE_CLIENT_LL_HANDLE iotHubModuleClientHandle);
+// // static int SetupCallbacksForInputQueues(
+//     IOTHUB_MODULE_CLIENT_LL_HANDLE iotHubModuleClientHandle);
 
 std::shared_ptr<een> een_;
 
@@ -153,18 +153,18 @@ int main_old(int argc, char* argv[]) {
 
   // Publish the NBIRTH and DBIRTH Sparkplug messages (Birth Certificates)
   std::cout << "publishing births..." << std::endl;
-  publish_births(mosq);
+  // publish_births(mosq);
 
   // IoT Hub Provisioning
   IOTHUB_MODULE_CLIENT_LL_HANDLE iotHubModuleClientHandle;
-  if ((iotHubModuleClientHandle = initialize_iot_connection ()) == NULL) {
-    std::cerr << "initialize_iot_connection failed"<<std::endl;
-    return 1;
-  }
-  if (SetupCallbacksForInputQueues(iotHubModuleClientHandle) != 0) {
-    std::cerr << "SetupCallbacksForInputQueues failed"<<std::endl;
-    return 1;
-  }
+  // if ((iotHubModuleClientHandle = initialize_iot_connection ()) == NULL) {
+  //   std::cerr << "initialize_iot_connection failed"<<std::endl;
+  //   return 1;
+  // }
+  // if (SetupCallbacksForInputQueues(iotHubModuleClientHandle) != 0) {
+  //   std::cerr << "SetupCallbacksForInputQueues failed"<<std::endl;
+  //   return 1;
+  // }
   auto iothub_refresh = std::thread([&iotHubModuleClientHandle]() {
     while (true) {
         IoTHubModuleClient_LL_DoWork(iotHubModuleClientHandle);
@@ -414,386 +414,386 @@ int main_old(int argc, char* argv[]) {
  * Helper to publish the Sparkplug NBIRTH and DBIRTH messages after initial MQTT connect.
  * This is also used for Rebirth requests from the backend.
  */
-void publish_births(struct mosquitto *mosq) {
-    // Initialize the sequence number for Sparkplug MQTT messages
-    // This must be zero on every NBIRTH publish
+// void publish_births(struct mosquitto *mosq) {
+//     // Initialize the sequence number for Sparkplug MQTT messages
+//     // This must be zero on every NBIRTH publish
 
-    // Publish the NBIRTH
-    publish_node_birth(mosq);
+//     // Publish the NBIRTH
+//     publish_node_birth(mosq);
 
-    // Publish the DBIRTH
-    publish_device_birth(mosq);
-}
+//     // Publish the DBIRTH
+//     publish_device_birth(mosq);
+// }
 
 /*
  * Helper function to publish a NBIRTH message.  The NBIRTH should include all 'node control' metrics that denote device capability.
  * In addition, it should include every node metric that may ever be published from this edge node.  If any NDATA messages arrive at
  * MQTT Engine that were not included in the NBIRTH, MQTT Engine will request a Rebirth from the device.
  */
-void publish_node_birth(struct mosquitto *mosq) {
-    // Create the NBIRTH payload
-    org_eclipse_tahu_protobuf_Payload nbirth_payload;
+// void publish_node_birth(struct mosquitto *mosq) {
+//     // Create the NBIRTH payload
+//     org_eclipse_tahu_protobuf_Payload nbirth_payload;
 
-    // Initialize the sequence number for Sparkplug MQTT messages
-    // This must be zero on every NBIRTH publish
-    reset_sparkplug_sequence();
-    get_next_payload(&nbirth_payload);
-    nbirth_payload.uuid = strdup("MyUUID");
+//     // Initialize the sequence number for Sparkplug MQTT messages
+//     // This must be zero on every NBIRTH publish
+//     reset_sparkplug_sequence();
+//     get_next_payload(&nbirth_payload);
+//     nbirth_payload.uuid = strdup("MyUUID");
 
-    // Add node control metrics
-    fprintf(stdout, "Adding metric: 'Node Control/Next Server'\n");
-    bool next_server_value = false;
-    add_simple_metric(&nbirth_payload, "Node Control/Next Server", true, Next_Server, METRIC_DATA_TYPE_BOOLEAN, false, false, &next_server_value, sizeof(next_server_value));
-    fprintf(stdout, "Adding metric: 'Node Control/Rebirth'\n");
-    bool rebirth_value = false;
-    add_simple_metric(&nbirth_payload, "Node Control/Rebirth", true, Rebirth, METRIC_DATA_TYPE_BOOLEAN, false, false, &rebirth_value, sizeof(rebirth_value));
-    fprintf(stdout, "Adding metric: 'Node Control/Reboot'\n");
-    bool reboot_value = false;
-    add_simple_metric(&nbirth_payload, "Node Control/Reboot", true, Reboot, METRIC_DATA_TYPE_BOOLEAN, false, false, &reboot_value, sizeof(reboot_value));
+//     // Add node control metrics
+//     fprintf(stdout, "Adding metric: 'Node Control/Next Server'\n");
+//     bool next_server_value = false;
+//     add_simple_metric(&nbirth_payload, "Node Control/Next Server", true, Next_Server, METRIC_DATA_TYPE_BOOLEAN, false, false, &next_server_value, sizeof(next_server_value));
+//     fprintf(stdout, "Adding metric: 'Node Control/Rebirth'\n");
+//     bool rebirth_value = false;
+//     add_simple_metric(&nbirth_payload, "Node Control/Rebirth", true, Rebirth, METRIC_DATA_TYPE_BOOLEAN, false, false, &rebirth_value, sizeof(rebirth_value));
+//     fprintf(stdout, "Adding metric: 'Node Control/Reboot'\n");
+//     bool reboot_value = false;
+//     add_simple_metric(&nbirth_payload, "Node Control/Reboot", true, Reboot, METRIC_DATA_TYPE_BOOLEAN, false, false, &reboot_value, sizeof(reboot_value));
 
-    // Add some regular node metrics
-    fprintf(stdout, "Adding metric: 'Node Metric0'\n");
-    char nbirth_metric_zero_value[] = "hello node";
-    add_simple_metric(&nbirth_payload, "Node Metric0", true, Node_Metric0, METRIC_DATA_TYPE_STRING, false, false, &nbirth_metric_zero_value, sizeof(nbirth_metric_zero_value));
-    fprintf(stdout, "Adding metric: 'Node Metric1'\n");
-    bool nbirth_metric_one_value = true;
-    add_simple_metric(&nbirth_payload, "Node Metric1", true, Node_Metric1, METRIC_DATA_TYPE_BOOLEAN, false, false, &nbirth_metric_one_value, sizeof(nbirth_metric_one_value));
+//     // Add some regular node metrics
+//     fprintf(stdout, "Adding metric: 'Node Metric0'\n");
+//     char nbirth_metric_zero_value[] = "hello node";
+//     add_simple_metric(&nbirth_payload, "Node Metric0", true, Node_Metric0, METRIC_DATA_TYPE_STRING, false, false, &nbirth_metric_zero_value, sizeof(nbirth_metric_zero_value));
+//     fprintf(stdout, "Adding metric: 'Node Metric1'\n");
+//     bool nbirth_metric_one_value = true;
+//     add_simple_metric(&nbirth_payload, "Node Metric1", true, Node_Metric1, METRIC_DATA_TYPE_BOOLEAN, false, false, &nbirth_metric_one_value, sizeof(nbirth_metric_one_value));
 
-    // Create a DataSet
-    org_eclipse_tahu_protobuf_Payload_DataSet dataset = org_eclipse_tahu_protobuf_Payload_DataSet_init_default;
-    uint32_t datatypes[] = { DATA_SET_DATA_TYPE_INT8,
-        DATA_SET_DATA_TYPE_INT16,
-        DATA_SET_DATA_TYPE_INT32 };
-    const char *column_keys[] = { "Int8s",
-        "Int16s",
-        "Int32s" };
-    org_eclipse_tahu_protobuf_Payload_DataSet_Row *row_data = (org_eclipse_tahu_protobuf_Payload_DataSet_Row *)
-        calloc(2, sizeof(org_eclipse_tahu_protobuf_Payload_DataSet_Row));
-    row_data[0].elements_count = 3;
-    row_data[0].elements = (org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue *)
-        calloc(3, sizeof(org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue));
-    row_data[0].elements[0].which_value = org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_int_value_tag;
-    row_data[0].elements[0].value.int_value = 0;
-    row_data[0].elements[1].which_value = org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_int_value_tag;
-    row_data[0].elements[1].value.int_value = 1;
-    row_data[0].elements[2].which_value = org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_int_value_tag;
-    row_data[0].elements[2].value.int_value = 2;
-    row_data[1].elements_count = 3;
-    row_data[1].elements = (org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue *)
-        calloc(3, sizeof(org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue));
-    row_data[1].elements[0].which_value = org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_int_value_tag;
-    row_data[1].elements[0].value.int_value = 3;
-    row_data[1].elements[1].which_value = org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_int_value_tag;
-    row_data[1].elements[1].value.int_value = 4;
-    row_data[1].elements[2].which_value = org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_int_value_tag;
-    row_data[1].elements[2].value.int_value = 5;
-    init_dataset(&dataset, 2, 3, datatypes, column_keys, row_data);
+//     // Create a DataSet
+//     org_eclipse_tahu_protobuf_Payload_DataSet dataset = org_eclipse_tahu_protobuf_Payload_DataSet_init_default;
+//     uint32_t datatypes[] = { DATA_SET_DATA_TYPE_INT8,
+//         DATA_SET_DATA_TYPE_INT16,
+//         DATA_SET_DATA_TYPE_INT32 };
+//     const char *column_keys[] = { "Int8s",
+//         "Int16s",
+//         "Int32s" };
+//     org_eclipse_tahu_protobuf_Payload_DataSet_Row *row_data = (org_eclipse_tahu_protobuf_Payload_DataSet_Row *)
+//         calloc(2, sizeof(org_eclipse_tahu_protobuf_Payload_DataSet_Row));
+//     row_data[0].elements_count = 3;
+//     row_data[0].elements = (org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue *)
+//         calloc(3, sizeof(org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue));
+//     row_data[0].elements[0].which_value = org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_int_value_tag;
+//     row_data[0].elements[0].value.int_value = 0;
+//     row_data[0].elements[1].which_value = org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_int_value_tag;
+//     row_data[0].elements[1].value.int_value = 1;
+//     row_data[0].elements[2].which_value = org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_int_value_tag;
+//     row_data[0].elements[2].value.int_value = 2;
+//     row_data[1].elements_count = 3;
+//     row_data[1].elements = (org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue *)
+//         calloc(3, sizeof(org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue));
+//     row_data[1].elements[0].which_value = org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_int_value_tag;
+//     row_data[1].elements[0].value.int_value = 3;
+//     row_data[1].elements[1].which_value = org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_int_value_tag;
+//     row_data[1].elements[1].value.int_value = 4;
+//     row_data[1].elements[2].which_value = org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_int_value_tag;
+//     row_data[1].elements[2].value.int_value = 5;
+//     init_dataset(&dataset, 2, 3, datatypes, column_keys, row_data);
 
-    // Create the a Metric with the DataSet value and add it to the payload
-    fprintf(stdout, "Adding metric: 'DataSet'\n");
-    org_eclipse_tahu_protobuf_Payload_Metric dataset_metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
-    init_metric(&dataset_metric, "DataSet", true, Dataset, METRIC_DATA_TYPE_DATASET, false, false, &dataset, sizeof(dataset));
-    add_metric_to_payload(&nbirth_payload, &dataset_metric);
+//     // Create the a Metric with the DataSet value and add it to the payload
+//     fprintf(stdout, "Adding metric: 'DataSet'\n");
+//     org_eclipse_tahu_protobuf_Payload_Metric dataset_metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
+//     init_metric(&dataset_metric, "DataSet", true, Dataset, METRIC_DATA_TYPE_DATASET, false, false, &dataset, sizeof(dataset));
+//     add_metric_to_payload(&nbirth_payload, &dataset_metric);
 
-    // Add a metric with a custom property
-    fprintf(stdout, "Adding metric: 'Node Metric2'\n");
-    org_eclipse_tahu_protobuf_Payload_Metric prop_metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
-    uint32_t nbirth_metric_two_value = 13;
-    init_metric(&prop_metric, "Node Metric2", true, Node_Metric2, METRIC_DATA_TYPE_INT16, false, false, &nbirth_metric_two_value, sizeof(nbirth_metric_two_value));
-    org_eclipse_tahu_protobuf_Payload_PropertySet properties = org_eclipse_tahu_protobuf_Payload_PropertySet_init_default;
-    add_property_to_set(&properties, "engUnit", PROPERTY_DATA_TYPE_STRING, "MyCustomUnits", sizeof("MyCustomUnits"));
-    add_propertyset_to_metric(&prop_metric, &properties);
-    add_metric_to_payload(&nbirth_payload, &prop_metric);
+//     // Add a metric with a custom property
+//     fprintf(stdout, "Adding metric: 'Node Metric2'\n");
+//     org_eclipse_tahu_protobuf_Payload_Metric prop_metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
+//     uint32_t nbirth_metric_two_value = 13;
+//     init_metric(&prop_metric, "Node Metric2", true, Node_Metric2, METRIC_DATA_TYPE_INT16, false, false, &nbirth_metric_two_value, sizeof(nbirth_metric_two_value));
+//     org_eclipse_tahu_protobuf_Payload_PropertySet properties = org_eclipse_tahu_protobuf_Payload_PropertySet_init_default;
+//     add_property_to_set(&properties, "engUnit", PROPERTY_DATA_TYPE_STRING, "MyCustomUnits", sizeof("MyCustomUnits"));
+//     add_propertyset_to_metric(&prop_metric, &properties);
+//     add_metric_to_payload(&nbirth_payload, &prop_metric);
 
-    // Create a metric called RPMs which is a member of the UDT definition - note aliases do not apply to UDT members
-    org_eclipse_tahu_protobuf_Payload_Metric rpms_metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
-    uint32_t rpms_value = 0;
-    init_metric(&rpms_metric, "RPMs", false, 0, METRIC_DATA_TYPE_INT32, false, false, &rpms_value, sizeof(rpms_value));
+//     // Create a metric called RPMs which is a member of the UDT definition - note aliases do not apply to UDT members
+//     org_eclipse_tahu_protobuf_Payload_Metric rpms_metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
+//     uint32_t rpms_value = 0;
+//     init_metric(&rpms_metric, "RPMs", false, 0, METRIC_DATA_TYPE_INT32, false, false, &rpms_value, sizeof(rpms_value));
 
-    // Create a metric called AMPs which is a member of the UDT definition - note aliases do not apply to UDT members
-    org_eclipse_tahu_protobuf_Payload_Metric amps_metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
-    uint32_t amps_value = 0;
-    init_metric(&amps_metric, "AMPs", false, 0, METRIC_DATA_TYPE_INT32, false, false, &amps_value, sizeof(amps_value));
+//     // Create a metric called AMPs which is a member of the UDT definition - note aliases do not apply to UDT members
+//     org_eclipse_tahu_protobuf_Payload_Metric amps_metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
+//     uint32_t amps_value = 0;
+//     init_metric(&amps_metric, "AMPs", false, 0, METRIC_DATA_TYPE_INT32, false, false, &amps_value, sizeof(amps_value));
 
-    // Create a Template/UDT Parameter - this is purely for example of including parameters and is not actually used by UDT instances
-    org_eclipse_tahu_protobuf_Payload_Template_Parameter parameter = org_eclipse_tahu_protobuf_Payload_Template_Parameter_init_default;
-    parameter.name = strdup("Index");
-    parameter.has_type = true;
-    parameter.type = PARAMETER_DATA_TYPE_STRING;
-    parameter.which_value = org_eclipse_tahu_protobuf_Payload_Template_Parameter_string_value_tag;
-    parameter.value.string_value = strdup("0");
+//     // Create a Template/UDT Parameter - this is purely for example of including parameters and is not actually used by UDT instances
+//     org_eclipse_tahu_protobuf_Payload_Template_Parameter parameter = org_eclipse_tahu_protobuf_Payload_Template_Parameter_init_default;
+//     parameter.name = strdup("Index");
+//     parameter.has_type = true;
+//     parameter.type = PARAMETER_DATA_TYPE_STRING;
+//     parameter.which_value = org_eclipse_tahu_protobuf_Payload_Template_Parameter_string_value_tag;
+//     parameter.value.string_value = strdup("0");
 
-    // Create the UDT definition value which includes the UDT members and parameters
-    org_eclipse_tahu_protobuf_Payload_Template udt_template = org_eclipse_tahu_protobuf_Payload_Template_init_default;
-    udt_template.metrics_count = 2;
-    udt_template.metrics = (org_eclipse_tahu_protobuf_Payload_Metric *)calloc(2, sizeof(org_eclipse_tahu_protobuf_Payload_Metric));
-    udt_template.metrics[0] = rpms_metric;
-    udt_template.metrics[1] = amps_metric;
-    udt_template.parameters_count = 1;
-    udt_template.parameters = (org_eclipse_tahu_protobuf_Payload_Template_Parameter *)calloc(1, sizeof(org_eclipse_tahu_protobuf_Payload_Template_Parameter));
-    udt_template.parameters[0] = parameter;
-    udt_template.template_ref = NULL;
-    udt_template.has_is_definition = true;
-    udt_template.is_definition = true;
+//     // Create the UDT definition value which includes the UDT members and parameters
+//     org_eclipse_tahu_protobuf_Payload_Template udt_template = org_eclipse_tahu_protobuf_Payload_Template_init_default;
+//     udt_template.metrics_count = 2;
+//     udt_template.metrics = (org_eclipse_tahu_protobuf_Payload_Metric *)calloc(2, sizeof(org_eclipse_tahu_protobuf_Payload_Metric));
+//     udt_template.metrics[0] = rpms_metric;
+//     udt_template.metrics[1] = amps_metric;
+//     udt_template.parameters_count = 1;
+//     udt_template.parameters = (org_eclipse_tahu_protobuf_Payload_Template_Parameter *)calloc(1, sizeof(org_eclipse_tahu_protobuf_Payload_Template_Parameter));
+//     udt_template.parameters[0] = parameter;
+//     udt_template.template_ref = NULL;
+//     udt_template.has_is_definition = true;
+//     udt_template.is_definition = true;
 
-    // Create the root UDT definition and add the UDT definition value which includes the UDT members and parameters
-    org_eclipse_tahu_protobuf_Payload_Metric metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
-    init_metric(&metric, "_types_/Custom_Motor", false, 0, METRIC_DATA_TYPE_TEMPLATE, false, false, &udt_template, sizeof(udt_template));
+//     // Create the root UDT definition and add the UDT definition value which includes the UDT members and parameters
+//     org_eclipse_tahu_protobuf_Payload_Metric metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
+//     init_metric(&metric, "_types_/Custom_Motor", false, 0, METRIC_DATA_TYPE_TEMPLATE, false, false, &udt_template, sizeof(udt_template));
 
-    // Add the UDT to the payload
-    add_metric_to_payload(&nbirth_payload, &metric);
+//     // Add the UDT to the payload
+//     add_metric_to_payload(&nbirth_payload, &metric);
 
-#ifdef SPARKPLUG_DEBUG
-    // Print the payload for debug
-    print_payload(&nbirth_payload);
-#endif
+// #ifdef SPARKPLUG_DEBUG
+//     // Print the payload for debug
+//     print_payload(&nbirth_payload);
+// #endif
 
-    // Encode the payload into a binary format so it can be published in the MQTT message.
-    // The binary_buffer must be large enough to hold the contents of the binary payload
-    size_t buffer_length = 1024;
-    uint8_t *binary_buffer = (uint8_t *)malloc(buffer_length * sizeof(uint8_t));
-    size_t message_length = encode_payload(binary_buffer, buffer_length, &nbirth_payload);
+//     // Encode the payload into a binary format so it can be published in the MQTT message.
+//     // The binary_buffer must be large enough to hold the contents of the binary payload
+//     size_t buffer_length = 1024;
+//     uint8_t *binary_buffer = (uint8_t *)malloc(buffer_length * sizeof(uint8_t));
+//     size_t message_length = encode_payload(binary_buffer, buffer_length, &nbirth_payload);
 
-    // Publish the NBIRTH on the appropriate topic
-    mosquitto_publish(mosq, NULL, "spBv1.0/Sparkplug B Devices/NBIRTH/C Edge Node 1", message_length, binary_buffer, 0, false);
+//     // Publish the NBIRTH on the appropriate topic
+//     mosquitto_publish(mosq, NULL, "spBv1.0/Sparkplug B Devices/NBIRTH/C Edge Node 1", message_length, binary_buffer, 0, false);
 
-    // Free the memory
-    free(binary_buffer);
-    free(row_data);
-    free_payload(&nbirth_payload);
-}
+//     // Free the memory
+//     free(binary_buffer);
+//     free(row_data);
+//     free_payload(&nbirth_payload);
+// }
 
-void publish_device_birth(struct mosquitto *mosq) {
-    // Create the DBIRTH payload
-    org_eclipse_tahu_protobuf_Payload dbirth_payload;
-    get_next_payload(&dbirth_payload);
+// void publish_device_birth(struct mosquitto *mosq) {
+//     // Create the DBIRTH payload
+//     org_eclipse_tahu_protobuf_Payload dbirth_payload;
+//     get_next_payload(&dbirth_payload);
 
-    // Add some device metrics
-    fprintf(stdout, "Adding metric: 'input/Device Metric0'\n");
-    char dbirth_metric_zero_value[] = "hello device";
-    add_simple_metric(&dbirth_payload, "input/Device Metric0", true, Device_Metric0, METRIC_DATA_TYPE_STRING, false, false, &dbirth_metric_zero_value, sizeof(dbirth_metric_zero_value));
-    fprintf(stdout, "Adding metric: 'input/Device Metric1'\n");
-    bool dbirth_metric_one_value = true;
-    add_simple_metric(&dbirth_payload, "input/Device Metric1", true, Device_Metric1, METRIC_DATA_TYPE_BOOLEAN, false, false, &dbirth_metric_one_value, sizeof(dbirth_metric_one_value));
-    fprintf(stdout, "Adding metric: 'output/Device Metric2'\n");
-    uint32_t dbirth_metric_two_value = 16;
-    add_simple_metric(&dbirth_payload, "output/Device Metric2", true, Device_Metric2, METRIC_DATA_TYPE_INT16, false, false, &dbirth_metric_two_value, sizeof(dbirth_metric_two_value));
-    fprintf(stdout, "Adding metric: 'output/Device Metric3'\n");
-    bool dbirth_metric_three_value = true;
-    add_simple_metric(&dbirth_payload, "output/Device Metric3", true, Device_Metric3, METRIC_DATA_TYPE_BOOLEAN, false, false, &dbirth_metric_three_value, sizeof(dbirth_metric_three_value));
+//     // Add some device metrics
+//     fprintf(stdout, "Adding metric: 'input/Device Metric0'\n");
+//     char dbirth_metric_zero_value[] = "hello device";
+//     add_simple_metric(&dbirth_payload, "input/Device Metric0", true, Device_Metric0, METRIC_DATA_TYPE_STRING, false, false, &dbirth_metric_zero_value, sizeof(dbirth_metric_zero_value));
+//     fprintf(stdout, "Adding metric: 'input/Device Metric1'\n");
+//     bool dbirth_metric_one_value = true;
+//     add_simple_metric(&dbirth_payload, "input/Device Metric1", true, Device_Metric1, METRIC_DATA_TYPE_BOOLEAN, false, false, &dbirth_metric_one_value, sizeof(dbirth_metric_one_value));
+//     fprintf(stdout, "Adding metric: 'output/Device Metric2'\n");
+//     uint32_t dbirth_metric_two_value = 16;
+//     add_simple_metric(&dbirth_payload, "output/Device Metric2", true, Device_Metric2, METRIC_DATA_TYPE_INT16, false, false, &dbirth_metric_two_value, sizeof(dbirth_metric_two_value));
+//     fprintf(stdout, "Adding metric: 'output/Device Metric3'\n");
+//     bool dbirth_metric_three_value = true;
+//     add_simple_metric(&dbirth_payload, "output/Device Metric3", true, Device_Metric3, METRIC_DATA_TYPE_BOOLEAN, false, false, &dbirth_metric_three_value, sizeof(dbirth_metric_three_value));
 
-    // Create a metric called RPMs for the UDT instance
-    org_eclipse_tahu_protobuf_Payload_Metric rpms_metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
-    uint32_t rpms_value = 123;
-    init_metric(&rpms_metric, "RPMs", false, 0, METRIC_DATA_TYPE_INT32, false, false, &rpms_value, sizeof(rpms_value));
+//     // Create a metric called RPMs for the UDT instance
+//     org_eclipse_tahu_protobuf_Payload_Metric rpms_metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
+//     uint32_t rpms_value = 123;
+//     init_metric(&rpms_metric, "RPMs", false, 0, METRIC_DATA_TYPE_INT32, false, false, &rpms_value, sizeof(rpms_value));
 
-    // Create a metric called AMPs for the UDT instance and create a custom property (milliamps) for it
-    org_eclipse_tahu_protobuf_Payload_Metric amps_metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
-    uint32_t amps_value = 456;
-    init_metric(&amps_metric, "AMPs", false, 0, METRIC_DATA_TYPE_INT32, false, false, &amps_value, sizeof(amps_value));
-    org_eclipse_tahu_protobuf_Payload_PropertySet properties = org_eclipse_tahu_protobuf_Payload_PropertySet_init_default;
-    add_property_to_set(&properties, "engUnit", PROPERTY_DATA_TYPE_STRING, "milliamps", sizeof("milliamps"));
-    add_propertyset_to_metric(&amps_metric, &properties);
+//     // Create a metric called AMPs for the UDT instance and create a custom property (milliamps) for it
+//     org_eclipse_tahu_protobuf_Payload_Metric amps_metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
+//     uint32_t amps_value = 456;
+//     init_metric(&amps_metric, "AMPs", false, 0, METRIC_DATA_TYPE_INT32, false, false, &amps_value, sizeof(amps_value));
+//     org_eclipse_tahu_protobuf_Payload_PropertySet properties = org_eclipse_tahu_protobuf_Payload_PropertySet_init_default;
+//     add_property_to_set(&properties, "engUnit", PROPERTY_DATA_TYPE_STRING, "milliamps", sizeof("milliamps"));
+//     add_propertyset_to_metric(&amps_metric, &properties);
 
-    // Create a Template/UDT instance Parameter - this is purely for example of including parameters and is not actually used by UDT instances
-    org_eclipse_tahu_protobuf_Payload_Template_Parameter parameter = org_eclipse_tahu_protobuf_Payload_Template_Parameter_init_default;
-    parameter.name = strdup("Index");
-    parameter.has_type = true;
-    parameter.type = PARAMETER_DATA_TYPE_STRING;
-    parameter.which_value = org_eclipse_tahu_protobuf_Payload_Template_Parameter_string_value_tag;
-    parameter.value.string_value = strdup("1");
+//     // Create a Template/UDT instance Parameter - this is purely for example of including parameters and is not actually used by UDT instances
+//     org_eclipse_tahu_protobuf_Payload_Template_Parameter parameter = org_eclipse_tahu_protobuf_Payload_Template_Parameter_init_default;
+//     parameter.name = strdup("Index");
+//     parameter.has_type = true;
+//     parameter.type = PARAMETER_DATA_TYPE_STRING;
+//     parameter.which_value = org_eclipse_tahu_protobuf_Payload_Template_Parameter_string_value_tag;
+//     parameter.value.string_value = strdup("1");
 
-    // Create the UDT instance value which includes the UDT members and parameters
-    org_eclipse_tahu_protobuf_Payload_Template udt_template = org_eclipse_tahu_protobuf_Payload_Template_init_default;
-    udt_template.version = NULL;
-    udt_template.metrics_count = 2;
-    udt_template.metrics = (org_eclipse_tahu_protobuf_Payload_Metric *)calloc(2, sizeof(org_eclipse_tahu_protobuf_Payload_Metric));
-    udt_template.metrics[0] = rpms_metric;
-    udt_template.metrics[1] = amps_metric;
-    udt_template.parameters_count = 1;
-    udt_template.parameters = (org_eclipse_tahu_protobuf_Payload_Template_Parameter *)calloc(1, sizeof(org_eclipse_tahu_protobuf_Payload_Template_Parameter));
-    udt_template.parameters[0] = parameter;
-    udt_template.template_ref = strdup("Custom_Motor");
-    udt_template.has_is_definition = true;
-    udt_template.is_definition = false;
+//     // Create the UDT instance value which includes the UDT members and parameters
+//     org_eclipse_tahu_protobuf_Payload_Template udt_template = org_eclipse_tahu_protobuf_Payload_Template_init_default;
+//     udt_template.version = NULL;
+//     udt_template.metrics_count = 2;
+//     udt_template.metrics = (org_eclipse_tahu_protobuf_Payload_Metric *)calloc(2, sizeof(org_eclipse_tahu_protobuf_Payload_Metric));
+//     udt_template.metrics[0] = rpms_metric;
+//     udt_template.metrics[1] = amps_metric;
+//     udt_template.parameters_count = 1;
+//     udt_template.parameters = (org_eclipse_tahu_protobuf_Payload_Template_Parameter *)calloc(1, sizeof(org_eclipse_tahu_protobuf_Payload_Template_Parameter));
+//     udt_template.parameters[0] = parameter;
+//     udt_template.template_ref = strdup("Custom_Motor");
+//     udt_template.has_is_definition = true;
+//     udt_template.is_definition = false;
 
-    // Create the root UDT instance and add the UDT instance value
-    org_eclipse_tahu_protobuf_Payload_Metric metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
-    init_metric(&metric, "My_Custom_Motor", true, My_Custom_Motor, METRIC_DATA_TYPE_TEMPLATE, false, false, &udt_template, sizeof(udt_template));
+//     // Create the root UDT instance and add the UDT instance value
+//     org_eclipse_tahu_protobuf_Payload_Metric metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
+//     init_metric(&metric, "My_Custom_Motor", true, My_Custom_Motor, METRIC_DATA_TYPE_TEMPLATE, false, false, &udt_template, sizeof(udt_template));
 
-    // Add the UDT Instance to the payload
-    add_metric_to_payload(&dbirth_payload, &metric);
+//     // Add the UDT Instance to the payload
+//     add_metric_to_payload(&dbirth_payload, &metric);
 
-#ifdef SPARKPLUG_DEBUG
-    // Print the payload
-    print_payload(&dbirth_payload);
-#endif
+// #ifdef SPARKPLUG_DEBUG
+//     // Print the payload
+//     print_payload(&dbirth_payload);
+// #endif
 
-    // Encode the payload into a binary format so it can be published in the MQTT message.
-    // The binary_buffer must be large enough to hold the contents of the binary payload
-    size_t buffer_length = 1024;
-    uint8_t *binary_buffer = (uint8_t *)malloc(buffer_length * sizeof(uint8_t));
-    size_t message_length = encode_payload(binary_buffer, buffer_length, &dbirth_payload);
+//     // Encode the payload into a binary format so it can be published in the MQTT message.
+//     // The binary_buffer must be large enough to hold the contents of the binary payload
+//     size_t buffer_length = 1024;
+//     uint8_t *binary_buffer = (uint8_t *)malloc(buffer_length * sizeof(uint8_t));
+//     size_t message_length = encode_payload(binary_buffer, buffer_length, &dbirth_payload);
 
-    // Publish the DBIRTH on the appropriate topic
-    mosquitto_publish(mosq, NULL, "spBv1.0/Sparkplug B Devices/DBIRTH/C Edge Node 1/Emulated Device", message_length, binary_buffer, 0, false);
+//     // Publish the DBIRTH on the appropriate topic
+//     mosquitto_publish(mosq, NULL, "spBv1.0/Sparkplug B Devices/DBIRTH/C Edge Node 1/Emulated Device", message_length, binary_buffer, 0, false);
 
-    // Free the memory
-    free(binary_buffer);
-    free_payload(&dbirth_payload);
-}
+//     // Free the memory
+//     free(binary_buffer);
+//     free_payload(&dbirth_payload);
+// }
 
 
 
 // Prints relevant system properties about a message.
-static void PrintMessageInformation(IOTHUB_MESSAGE_HANDLE msg) {
-  IOTHUBMESSAGE_CONTENT_TYPE contentType;
-  contentType = IoTHubMessage_GetContentType(msg);
-  if (contentType != IOTHUBMESSAGE_BYTEARRAY) {
-    /* The transport will only create messages of type IOTHUBMESSAGE_BYTEARRAY,
-      never IOTHUBMESSAGE_STRING.*/
-    std::cout << "Warning: Unknown content type "<<(int)contentType;
-    std::cout <<" received for message.  Cannot display" << std::endl;
-  }
-  else {
-    unsigned const char* messageBody;
-    size_t messageBodyLength;
+// static void (IOTHUB_MESSAGE_HANDLE msg) {
+//   IOTHUBMESSAGE_CONTENT_TYPE contentType;
+//   contentType = IoTHubMessage_GetContentType(msg);
+//   if (contentType != IOTHUBMESSAGE_BYTEARRAY) {
+//     /* The transport will only create messages of type IOTHUBMESSAGE_BYTEARRAY,
+//       never IOTHUBMESSAGE_STRING.*/
+//     std::cout << "Warning: Unknown content type "<<(int)contentType;
+//     std::cout <<" received for message.  Cannot display" << std::endl;
+//   }
+//   else {
+//     unsigned const char* messageBody;
+//     size_t messageBodyLength;
 
-    /* IoTHubMessage_GetByteArray retrieves a shallow copy of the data.
-    Caller must NOT free messageBody.*/
-    IOTHUB_MESSAGE_RESULT messageResult;
-    messageResult = IoTHubMessage_GetByteArray(msg,
-                                                &messageBody,
-                                                &messageBodyLength);
-    if (messageResult != IOTHUB_MESSAGE_OK) {
-      std::cout << " WARNING: messageBody = NULL" << std::endl;
-    }
-    else {
-      std::cout << " Received Binary message."<<std::endl;
-      std::cout << " Data: <<<"<<messageBody<<std::endl;
-    }
-  }
+//     /* IoTHubMessage_GetByteArray retrieves a shallow copy of the data.
+//     Caller must NOT free messageBody.*/
+//     IOTHUB_MESSAGE_RESULT messageResult;
+//     messageResult = IoTHubMessage_GetByteArray(msg,
+//                                                 &messageBody,
+//                                                 &messageBodyLength);
+//     if (messageResult != IOTHUB_MESSAGE_OK) {
+//       std::cout << " WARNING: messageBody = NULL" << std::endl;
+//     }
+//     else {
+//       std::cout << " Received Binary message."<<std::endl;
+//       std::cout << " Data: <<<"<<messageBody<<std::endl;
+//     }
+//   }
 
-    // Message properties
-    const char* messageId = IoTHubMessage_GetMessageId(msg);
-    if (messageId == NULL) {
-      messageId = "<null>";
-    }
+//     // Message properties
+//     const char* messageId = IoTHubMessage_GetMessageId(msg);
+//     if (messageId == NULL) {
+//       messageId = "<null>";
+//     }
 
-    const char* correlationId = IoTHubMessage_GetCorrelationId(msg);
-    if (correlationId == NULL) {
-      correlationId = "<null>";
-    }
+//     const char* correlationId = IoTHubMessage_GetCorrelationId(msg);
+//     if (correlationId == NULL) {
+//       correlationId = "<null>";
+//     }
 
-    const char* inputQueueName = IoTHubMessage_GetInputName(msg);
-    if (inputQueueName == NULL) {
-      inputQueueName = "<null>";
-    }
+//     const char* inputQueueName = IoTHubMessage_GetInputName(msg);
+//     if (inputQueueName == NULL) {
+//       inputQueueName = "<null>";
+//     }
 
-    const char* connectionModuleId = IoTHubMessage_GetConnectionModuleId(msg);
-    if ((connectionModuleId ) == NULL) {
-      connectionModuleId = "<null>";
-    }
+//     const char* connectionModuleId = IoTHubMessage_GetConnectionModuleId(msg);
+//     if ((connectionModuleId ) == NULL) {
+//       connectionModuleId = "<null>";
+//     }
 
-    const char* connectionDeviceId;
-    connectionDeviceId = IoTHubMessage_GetConnectionDeviceId(msg);
-    if ((connectionDeviceId ) == NULL) {
-      connectionDeviceId = "<null>";
-    }
+//     const char* connectionDeviceId;
+//     connectionDeviceId = IoTHubMessage_GetConnectionDeviceId(msg);
+//     if ((connectionDeviceId ) == NULL) {
+//       connectionDeviceId = "<null>";
+//     }
 
-    const char* tempAlertProperty;
-    tempAlertProperty = IoTHubMessage_GetProperty(msg, "temperatureAlert");
-    if ((tempAlertProperty ) == NULL) {
-      tempAlertProperty = "<null>";
-    }
+//     const char* tempAlertProperty;
+//     tempAlertProperty = IoTHubMessage_GetProperty(msg, "temperatureAlert");
+//     if ((tempAlertProperty ) == NULL) {
+//       tempAlertProperty = "<null>";
+//     }
 
-    std::cout << " Correlation ID: "<<correlationId<<std::endl;
-    std::cout << " InputQueueName: "<<inputQueueName<<std::endl;
-    std::cout << " connectionModuleId: "<<connectionModuleId<<std::endl;
-    std::cout << " connectionDeviceId: "<<connectionDeviceId<<std::endl;
-    std::cout << " temperatureAlert: "<<tempAlertProperty<<std::endl;
-}
+//     std::cout << " Correlation ID: "<<correlationId<<std::endl;
+//     std::cout << " InputQueueName: "<<inputQueueName<<std::endl;
+//     std::cout << " connectionModuleId: "<<connectionModuleId<<std::endl;
+//     std::cout << " connectionDeviceId: "<<connectionDeviceId<<std::endl;
+//     std::cout << " temperatureAlert: "<<tempAlertProperty<<std::endl;
+// }
 
 /** DefaultMessageCallback is invoked if a message arrives that does not map up
  *  to one of the queues specified by
  *  IoTHubModuleClient_LL_SetInputMessageCallback.
  *  In the context of this sample, such behavior is unexpected but not an
  *  error. **/
-static IOTHUBMESSAGE_DISPOSITION_RESULT DefaultMessageCallback(
-    IOTHUB_MESSAGE_HANDLE message, void* userContextCallback) {
-  (void)userContextCallback;
-  std::cout <<"Message arrived sent to the default queue"<<std::endl;
-  PrintMessageInformation(message);
-  return IOTHUBMESSAGE_ACCEPTED;
-}
+// static IOTHUBMESSAGE_DISPOSITION_RESULT DefaultMessageCallback(
+//     IOTHUB_MESSAGE_HANDLE message, void* userContextCallback) {
+//   (void)userContextCallback;
+//   std::cout <<"Message arrived sent to the default queue"<<std::endl;
+//   PrintMessageInformaPrintMessageInformationtion(message);
+//   return IOTHUBMESSAGE_ACCEPTED;
+// }
 
-static IOTHUBMESSAGE_DISPOSITION_RESULT input1_message_callback (
-    IOTHUB_MESSAGE_HANDLE msg, void* userContextCallback) {
-  (void)userContextCallback;
+// static IOTHUBMESSAGE_DISPOSITION_RESULT input1_message_callback (
+//     IOTHUB_MESSAGE_HANDLE msg, void* userContextCallback) {
+//   (void)userContextCallback;
 
-  IOTHUBMESSAGE_CONTENT_TYPE contentType = IoTHubMessage_GetContentType(msg);
-  if (contentType != IOTHUBMESSAGE_BYTEARRAY) {
-    /*  The transport will only create messages of type IOTHUBMESSAGE_BYTEARRAY,
-        never IOTHUBMESSAGE_STRING.*/
-    std::cout << "Warning: Unknown content type "<<int(contentType)<< \
-        "[%d] received for message.  Cannot display"<<std::endl;
-  }
-  else {
-    /*  IoTHubMessage_GetByteArray retrieves a shallow copy of the data.
-        Caller must NOT free messageBody.*/
-    IOTHUB_MESSAGE_RESULT messageResult;
-    unsigned const char* messageBody;
-    size_t messageBodyLength;
-    messageResult = IoTHubMessage_GetByteArray(msg, &messageBody,
-                                                &messageBodyLength);
-    if (messageResult != IOTHUB_MESSAGE_OK) {
-      std::cout <<" WARNING: messageBody = NULL"<<std::endl;
-    }
-    else {
-      std::cout << "messageBody : " << messageBody<<std::endl;
-      try{
-        nlohmann::json j = nlohmann::json::parse(messageBody);
-        // if(j.contains("engine_speed")){
-        //   engine_speed_= j["engine_speed"];
-        // }
-        for(size_t i = 0; i < SERIAL_METRIC_NO; i++){
-          std::string m_name = "metric"+std::to_string(i);
-          if(j.contains(m_name)){
-            serial_metric_[i] = j[m_name];
-          }
-        }
-      }
-      catch (...) {
-        std::cout << "exception parsing message" <<std::endl;
-      }
-    }
-  }
-  return IOTHUBMESSAGE_ACCEPTED;
-}
+//   IOTHUBMESSAGE_CONTENT_TYPE contentType = IoTHubMessage_GetContentType(msg);
+//   if (contentType != IOTHUBMESSAGE_BYTEARRAY) {
+//     /*  The transport will only create messages of type IOTHUBMESSAGE_BYTEARRAY,
+//         never IOTHUBMESSAGE_STRING.*/
+//     std::cout << "Warning: Unknown content type "<<int(contentType)<< \
+//         "[%d] received for message.  Cannot display"<<std::endl;
+//   }
+//   else {
+//     /*  IoTHubMessage_GetByteArray retrieves a shallow copy of the data.
+//         Caller must NOT free messageBody.*/
+//     IOTHUB_MESSAGE_RESULT messageResult;
+//     unsigned const char* messageBody;
+//     size_t messageBodyLength;
+//     messageResult = IoTHubMessage_GetByteArray(msg, &messageBody,
+//                                                 &messageBodyLength);
+//     if (messageResult != IOTHUB_MESSAGE_OK) {
+//       std::cout <<" WARNING: messageBody = NULL"<<std::endl;
+//     }
+//     else {
+//       std::cout << "messageBody : " << messageBody<<std::endl;
+//       try{
+//         nlohmann::json j = nlohmann::json::parse(messageBody);
+//         // if(j.contains("engine_speed")){
+//         //   engine_speed_= j["engine_speed"];
+//         // }
+//         for(size_t i = 0; i < SERIAL_METRIC_NO; i++){
+//           std::string m_name = "metric"+std::to_string(i);
+//           if(j.contains(m_name)){
+//             serial_metric_[i] = j[m_name];
+//           }
+//         }
+//       }
+//       catch (...) {
+//         std::cout << "exception parsing message" <<std::endl;
+//       }
+//     }
+//   }
+//   return IOTHUBMESSAGE_ACCEPTED;
+// }
 
-static IOTHUB_MODULE_CLIENT_LL_HANDLE initialize_iot_connection() {
-  IOTHUB_MODULE_CLIENT_LL_HANDLE handle;
+// static IOTHUB_MODULE_CLIENT_LL_HANDLE initialize_iot_connection() {
+//   IOTHUB_MODULE_CLIENT_LL_HANDLE handle;
 
-  if (IoTHub_Init() != 0) {
-    std::cerr << "Failed to initialize the platform."<<std::endl;
-    handle = NULL;
-  }
-  /*Note: You must use MQTT_Protocol as the argument below.
-    Using other protocols will result in undefined behavior.*/
-  handle = IoTHubModuleClient_LL_CreateFromEnvironment(MQTT_Protocol);
-  if (handle == NULL) {
-    std::cerr <<"ERROR: IoTHubModuleClient_LL_CreateFromEnvironment failed";
-    std::cerr << std::endl;
-  }
-  else {
-      /* Uncomment the following lines to enable verbose logging 
-        (e.g., for debugging).*/
-      // bool traceOn = true;
-      // IoTHubModuleClient_LL_SetOption(handle, OPTION_LOG_TRACE, &traceOn);
-  }
+//   if (IoTHub_Init() != 0) {
+//     std::cerr << "Failed to initialize the platform."<<std::endl;
+//     handle = NULL;
+//   }
+//   /*Note: You must use MQTT_Protocol as the argument below.
+//     Using other protocols will result in undefined behavior.*/
+//   handle = IoTHubModuleClient_LL_CreateFromEnvironment(MQTT_Protocol);
+//   if (handle == NULL) {
+//     std::cerr <<"ERROR: IoTHubModuleClient_LL_CreateFromEnvironment failed";
+//     std::cerr << std::endl;
+//   }
+//   else {
+//       /* Uncomment the following lines to enable verbose logging 
+//         (e.g., for debugging).*/
+//       // bool traceOn = true;
+//       // IoTHubModuleClient_LL_SetOption(handle, OPTION_LOG_TRACE, &traceOn);
+//   }
 
-  return handle;
-}
+//   return handle;
+// }
 
 static void deinitialize_iot_connection(
     IOTHUB_MODULE_CLIENT_LL_HANDLE handle) {
@@ -803,31 +803,31 @@ static void deinitialize_iot_connection(
   IoTHub_Deinit();
 }
 
-static int SetupCallbacksForInputQueues(
-      IOTHUB_MODULE_CLIENT_LL_HANDLE iotHubModuleClientHandle) {
-    int ret = 0;
-    IOTHUB_CLIENT_RESULT client_result;
+// static int SetupCallbacksForInputQueues(
+//       IOTHUB_MODULE_CLIENT_LL_HANDLE iotHubModuleClientHandle) {
+//     int ret = 0;
+//     IOTHUB_CLIENT_RESULT client_result;
 
-    client_result = IoTHubModuleClient_LL_SetInputMessageCallback(
-        iotHubModuleClientHandle,
-        "input1",
-        input1_message_callback,
-        (void*)iotHubModuleClientHandle);
-    if (client_result != IOTHUB_CLIENT_OK) {
-      std::cerr << "ERROR: IoTHubModuleClient_LL_SetInputMessageCallback(\
-          \"input1\")..........FAILED!"<<std::endl;
-      ret = MU_FAILURE;
-    }
+//     client_result = IoTHubModuleClient_LL_SetInputMessageCallback(
+//         iotHubModuleClientHandle,
+//         "input1",
+//         input1_message_callback,
+//         (void*)iotHubModuleClientHandle);
+//     if (client_result != IOTHUB_CLIENT_OK) {
+//       std::cerr << "ERROR: IoTHubModuleClient_LL_SetInputMessageCallback(\
+//           \"input1\")..........FAILED!"<<std::endl;
+//       ret = MU_FAILURE;
+//     }
 
-    client_result = IoTHubModuleClient_LL_SetMessageCallback(
-        iotHubModuleClientHandle,
-        DefaultMessageCallback,
-        (void*)iotHubModuleClientHandle);
-    if (client_result != IOTHUB_CLIENT_OK) {
-      std::cerr << "ERROR: IoTHubModuleClient_LL_SetMessageCallback(default) \
-          ..........FAILED!" << std::endl;
-        ret = MU_FAILURE;
-    }
+//     client_result = IoTHubModuleClient_LL_SetMessageCallback(
+//         iotHubModuleClientHandle,
+//         DefaultMessageCallback,
+//         (void*)iotHubModuleClientHandle);
+//     if (client_result != IOTHUB_CLIENT_OK) {
+//       std::cerr << "ERROR: IoTHubModuleClient_LL_SetMessageCallback(default) \
+//           ..........FAILED!" << std::endl;
+//         ret = MU_FAILURE;
+//     }
 
-    return ret;
-}
+//     return ret;
+// }
