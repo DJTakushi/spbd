@@ -59,8 +59,8 @@ void sig_int_handler(int signum) {
 
 /* Mosquitto Callbacks */
 void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message);
-void my_connect_callback(struct mosquitto *mosq, void *userdata, int result);
-void my_subscribe_callback(struct mosquitto *mosq, void *userdata, int mid, int qos_count, const int *granted_qos);
+// void my_connect_callback(struct mosquitto *mosq, void *userdata, int result);
+// void my_subscribe_callback(struct mosquitto *mosq, void *userdata, int mid, int qos_count, const int *granted_qos);
 void my_log_callback(struct mosquitto *mosq, void *userdata, int level, const char *str);
 
 /* Local Functions */
@@ -132,10 +132,10 @@ int main_old(int argc, char* argv[]) {
   }
 
   #ifdef SPARKPLUG_DEBUG
-    mosquitto_log_callback_set(mosq, my_log_callback);
-    mosquitto_subscribe_callback_set(mosq, my_subscribe_callback);
+    // mosquitto_log_callback_set(mosq, my_log_callback);
+    // mosquitto_subscribe_callback_set(mosq, my_subscribe_callback);
   #endif
-  mosquitto_connect_callback_set(mosq, my_connect_callback);
+  // mosquitto_connect_callback_set(mosq, my_connect_callback);
   mosquitto_message_callback_set(mosq, my_message_callback);
   // mosquitto_username_pw_set(mosq, "admin", "changeme");
   // mosquitto_will_set(mosq, "spBv1.0/Sparkplug B Devices/NDEATH/C Edge Node 1", 0, NULL, 0, false);
@@ -379,36 +379,36 @@ void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mo
  * Callback for successful or unsuccessful MQTT connect.  Upon successful connect, subscribe to our Sparkplug NCMD and DCMD messages.
  * A production application should handle MQTT connect failures and reattempt as necessary.
  */
-void my_connect_callback(struct mosquitto *mosq, void *userdata, int result) {
-    if (!result) {
-        // Subscribe to commands
-        mosquitto_subscribe(mosq, NULL, "spBv1.0/Sparkplug B Devices/NCMD/C Edge Node 1/#", 0);
-        mosquitto_subscribe(mosq, NULL, "spBv1.0/Sparkplug B Devices/DCMD/C Edge Node 1/#", 0);
-    } else {
-        fprintf(stderr, "MQTT Connect failed\n");
-    }
-}
+// void my_connect_callback(struct mosquitto *mosq, void *userdata, int result) {
+//     if (!result) {
+//         // Subscribe to commands
+//         mosquitto_subscribe(mosq, NULL, "spBv1.0/Sparkplug B Devices/NCMD/C Edge Node 1/#", 0);
+//         mosquitto_subscribe(mosq, NULL, "spBv1.0/Sparkplug B Devices/DCMD/C Edge Node 1/#", 0);
+//     } else {
+//         fprintf(stderr, "MQTT Connect failed\n");
+//     }
+// }
 
 /*
  * Callback for successful MQTT subscriptions.
  */
-void my_subscribe_callback(struct mosquitto *mosq, void *userdata, int mid, int qos_count, const int *granted_qos) {
-    int i;
+// void my_subscribe_callback(struct mosquitto *mosq, void *userdata, int mid, int qos_count, const int *granted_qos) {
+//     int i;
 
-    fprintf(stdout, "Subscribed (mid: %d): %d", mid, granted_qos[0]);
-    for (i = 1; i < qos_count; i++) {
-        fprintf(stdout, ", %d", granted_qos[i]);
-    }
-    fprintf(stdout, "\n");
-}
+//     fprintf(stdout, "Subscribed (mid: %d): %d", mid, granted_qos[0]);
+//     for (i = 1; i < qos_count; i++) {
+//         fprintf(stdout, ", %d", granted_qos[i]);
+//     }
+//     fprintf(stdout, "\n");
+// }
 
 /*
  * MQTT logger callback
  */
-void my_log_callback(struct mosquitto *mosq, void *userdata, int level, const char *str) {
-    // Print all log messages regardless of level.
-    fprintf(stdout, "%s\n", str);
-}
+// void my_log_callback(struct mosquitto *mosq, void *userdata, int level, const char *str) {
+//     // Print all log messages regardless of level.
+//     fprintf(stdout, "%s\n", str);
+// }
 
 /*
  * Helper to publish the Sparkplug NBIRTH and DBIRTH messages after initial MQTT connect.
