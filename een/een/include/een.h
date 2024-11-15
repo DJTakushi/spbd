@@ -39,9 +39,14 @@ class een{
 
   void setup_mosquitto();
   void setup_iot_hub();
+
+  static void PrintMessageInformation(IOTHUB_MESSAGE_HANDLE msg);
   static IOTHUBMESSAGE_DISPOSITION_RESULT input1_message_callback (
                                               IOTHUB_MESSAGE_HANDLE msg,
                                               void* userContextCallback);
+  static IOTHUBMESSAGE_DISPOSITION_RESULT DefaultMessageCallback(
+                                          IOTHUB_MESSAGE_HANDLE message,
+                                          void* userContextCallback);
   static void connect_callback(struct mosquitto *mosq,
                                   void *userdata,
                                   int result);
