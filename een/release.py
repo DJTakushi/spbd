@@ -1,7 +1,8 @@
 import sys
 import git
 import re
-
+import os
+import subprocess
 class git_repo_manager:
   def __init__(self, repo_dir):
     self.repo_dir_ = repo_dir
@@ -78,6 +79,19 @@ class git_repo_manager:
 
 
 class docker_manager:
+  def build_image(tag):
+    os.chdir(sys.path[0])
+    full_tag = "sparkplugbdemo.azurecr.io/een:{tag}"
+    cmd = ["docker","build","-t",full_tag,"."]
+    result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    success = False
+    if result.returncode==0:
+      success = True
+      print(f"built {full_tag}...")
+    else:
+      print(f"failed to build tag {full_tag}")
+    return success
+
   def create_tag():
     pass
   def push_tag():
