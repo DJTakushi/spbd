@@ -50,6 +50,10 @@ class een{
                                     int mid,
                                     int qos_count,
                                     const int *granted_qos);
+  static void log_callback(struct mosquitto *mosq,
+                              void *userdata,
+                              int level,
+                              const char *str);
 
 
   void set_topics();

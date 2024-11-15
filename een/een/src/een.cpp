@@ -31,6 +31,7 @@ void een::setup_mosquitto(){
   else{
     mosquitto_connect_callback_set(mosq_, een::connect_callback);
     mosquitto_subscribe_callback_set(mosq_, een::subscribe_callback);
+    mosquitto_log_callback_set(mosq_, een::log_callback);
 
     mosquitto_username_pw_set(mosq_, "admin", "changeme");
 
@@ -69,7 +70,13 @@ void een::subscribe_callback(struct mosquitto *mosq,
   }
   std::cout << std::endl;
 }
-
+void een::log_callback(struct mosquitto *mosq,
+                        void *userdata,
+                        int level,
+                        const char *str) {
+  // Print all log messages regardless of level.
+  std::cout << str <<  std::endl;
+}
 
 void een::nbirth_send(){
   /** TODO :  */
