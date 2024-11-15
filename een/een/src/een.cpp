@@ -4,6 +4,10 @@ een::een(std::string config){
   set_topics();
   setup_mosquitto();
   setup_iot_hub();
+
+  /** TODO : connect to all device modules and poplulate device_map_ */
+  nbirth_send();
+  dbirth_send();
 }
 
 void een::set_topics(){
