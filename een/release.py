@@ -79,21 +79,31 @@ class git_repo_manager:
 
 
 class docker_manager:
-  def build_tagged_image(tag):
+  def __init__(self, tag):
+    self.full_tag_ = f"sparkplugbdemo.azurecr.io/een:{tag}"
+  def build_tagged_image(self):
     os.chdir(sys.path[0])
-    full_tag = f"sparkplugbdemo.azurecr.io/een:{tag}"
-    cmd = ["docker","build","-t",full_tag,"."]
-    result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    cmd = ["docker","build","-t",self.full_tag_,"."]
+    result = subprocess.run(cmd)
     success = False
     if result.returncode==0:
       success = True
-      print(f"built {full_tag}...")
+      print(f"built {self.full_tag_}...")
     else:
-      print(f"failed to build tag {full_tag}")
+      print(f"failed to build tag {self.full_tag_}")
     return success
 
-  def push_tag():
-    pass
+  def push_tag(self):
+    cmd = ["docker","push",self.full_tag_]
+    result = subprocess.run(cmd)
+    success = False
+    if result.returncode==0:
+      success = True
+      print(f"pushed {self.full_tag_}...")
+    else:
+      print(f"failed to push tag {self.full_tag_}")
+    return success
+
 
 def main():
   tag_name = None
@@ -111,7 +121,10 @@ def main():
         git_.commit(f"tag instances updated to {tag_name}")
         git_.tag(tag_name)
         git_.push()
-    docker_manager.build_tagged_image(tag_name)
+
+        docker_ = docker_manager(tag_name)
+        if docker_.build_tagged_image():
+          docker_.push_tag()
   else:
     print("tag-name required")
 
