@@ -9,7 +9,9 @@ een::een(std::string config){
   nbirth_send();
   dbirth_send();
 }
-
+een::~een(){
+  close_iot_hub();
+}
 void een::set_topics(){
   std::string topic_base = "spBv1.0/"+group_id_;
   topic_nbirth_ = topic_base + "/NBIRTH/" + edge_node_id_;
@@ -287,6 +289,12 @@ IOTHUBMESSAGE_DISPOSITION_RESULT een::DefaultMessageCallback(
   std::cout <<"Message arrived sent to the default queue"<<std::endl;
   PrintMessageInformation(message);
   return IOTHUBMESSAGE_ACCEPTED;
+}
+void een::close_iot_hub() {
+  if (iot_handle_ != NULL) {
+    IoTHubModuleClient_LL_Destroy(iot_handle_);
+  }
+  IoTHub_Deinit();
 }
 
 bool een::is_stable(){

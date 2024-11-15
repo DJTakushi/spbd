@@ -39,6 +39,7 @@ class een{
 
   void setup_mosquitto();
   void setup_iot_hub();
+  void close_iot_hub();
 
   static void PrintMessageInformation(IOTHUB_MESSAGE_HANDLE msg);
   static IOTHUBMESSAGE_DISPOSITION_RESULT input1_message_callback (
@@ -68,6 +69,7 @@ class een{
 
  public:
   een(std::string config);
+  ~een();
   void nbirth_send();
   void dbirth_send();
 
