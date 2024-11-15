@@ -31,8 +31,7 @@ class git_repo_manager:
     # TODO: fail if space detected
 
     if ' 'not in tag_name and len(parts) == 3:
-      re.sub('[a-zA-Z]', '', parts[0])
-      version_maj = int(parts[0])
+      version_maj = int(re.sub('[a-zA-Z]', '', parts[0]))
       version_min = int(parts[1])
       version_bugfix = int(parts[2])
     else:
