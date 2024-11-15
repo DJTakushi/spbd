@@ -8,18 +8,14 @@ class git_repo_manager:
 
   def repo_safe_to_commit(self):
     ### confirm no other un-committed edits will be swept up into release
-    ### confirm submodules are checked out and to the appropriate tag
     safe = False
-    t = self.repo_.head.commit.tree
-
-    d = self.repo_.git.diff(t)
-    if d:
-      print(f"diff found : {d}")
+    if  self.repo_.is_dirty(untracked_files=True):
+      print("ERROR: repo cannot be dirty for a build.")
+      print("  see 'git status' for details")
     else:
-      if  self.repo_.is_dirty(untracked_files=True):
-        print("repo is dirty")
-      else:
-        safe = True
+      safe = True
+
+    ### TODO: confirm submodules are checked out and to the appropriate tag
     return safe
 
   def update_tags_in_source(self, tag_name):
