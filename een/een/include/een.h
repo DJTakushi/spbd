@@ -54,6 +54,9 @@ class een{
                               void *userdata,
                               int level,
                               const char *str);
+  static void message_callback(struct mosquitto *mosq,
+                                  void *userdata,
+                                  const struct mosquitto_message *message);
 
 
   void set_topics();

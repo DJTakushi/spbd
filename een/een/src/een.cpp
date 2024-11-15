@@ -29,12 +29,11 @@ void een::setup_mosquitto(){
     stable_ = false;
   }
   else{
-    mosquitto_connect_callback_set(mosq_, een::connect_callback);
-    mosquitto_subscribe_callback_set(mosq_, een::subscribe_callback);
     mosquitto_log_callback_set(mosq_, een::log_callback);
-
+    mosquitto_subscribe_callback_set(mosq_, een::subscribe_callback);
+    mosquitto_connect_callback_set(mosq_, een::connect_callback);
+    mosquitto_message_callback_set(mosq_, een::message_callback);
     mosquitto_username_pw_set(mosq_, "admin", "changeme");
-
     mosquitto_will_set(mosq_, topic_ndeath_.c_str(), 0, NULL, 0, false);
 
     if (mosquitto_connect(mosq_,
@@ -76,6 +75,11 @@ void een::log_callback(struct mosquitto *mosq,
                         const char *str) {
   // Print all log messages regardless of level.
   std::cout << str <<  std::endl;
+}
+void een::message_callback(struct mosquitto *mosq,
+                                  void *userdata,
+                                  const struct mosquitto_message *message){
+  /* TODO: implement functionality like tahu/c/examples/udt_example/example.c */
 }
 
 void een::nbirth_send(){
