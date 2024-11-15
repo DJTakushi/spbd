@@ -58,7 +58,7 @@ void sig_int_handler(int signum) {
 }
 
 /* Mosquitto Callbacks */
-void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message);
+// void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message);
 // void my_connect_callback(struct mosquitto *mosq, void *userdata, int result);
 // void my_subscribe_callback(struct mosquitto *mosq, void *userdata, int mid, int qos_count, const int *granted_qos);
 void my_log_callback(struct mosquitto *mosq, void *userdata, int level, const char *str);
@@ -136,7 +136,7 @@ int main_old(int argc, char* argv[]) {
     // mosquitto_subscribe_callback_set(mosq, my_subscribe_callback);
   #endif
   // mosquitto_connect_callback_set(mosq, my_connect_callback);
-  mosquitto_message_callback_set(mosq, my_message_callback);
+  // mosquitto_message_callback_set(mosq, my_message_callback);
   // mosquitto_username_pw_set(mosq, "admin", "changeme");
   // mosquitto_will_set(mosq, "spBv1.0/Sparkplug B Devices/NDEATH/C Edge Node 1", 0, NULL, 0, false);
 
@@ -189,191 +189,191 @@ int main_old(int argc, char* argv[]) {
 /*
  * Callback for incoming MQTT messages. Since this is a Sparkplug implementation these will be NCMD and DCMD messages
  */
-void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message) {
+// void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message) {
 
-    if (message->payloadlen) {
-        fprintf(stdout, "%s :: %d\n", message->topic, message->payloadlen);
-    } else {
-        fprintf(stdout, "%s (null)\n", message->topic);
-    }
-    fflush(stdout);
+//     if (message->payloadlen) {
+//         fprintf(stdout, "%s :: %d\n", message->topic, message->payloadlen);
+//     } else {
+//         fprintf(stdout, "%s (null)\n", message->topic);
+//     }
+//     fflush(stdout);
 
-    // Decode the payload
-    org_eclipse_tahu_protobuf_Payload inbound_payload = org_eclipse_tahu_protobuf_Payload_init_zero;
-    if (decode_payload(&inbound_payload, (uint8_t*)(message->payload), message->payloadlen)) {
-    } else {
-        fprintf(stderr, "Failed to decode the payload\n");
-    }
+//     // Decode the payload
+//     org_eclipse_tahu_protobuf_Payload inbound_payload = org_eclipse_tahu_protobuf_Payload_init_zero;
+//     if (decode_payload(&inbound_payload, (uint8_t*)(message->payload), message->payloadlen)) {
+//     } else {
+//         fprintf(stderr, "Failed to decode the payload\n");
+//     }
 
-    // Get the number of metrics in the payload and iterate over them handling them as needed
-    int i;
-    for (i = 0; i < inbound_payload.metrics_count; i++) {
+//     // Get the number of metrics in the payload and iterate over them handling them as needed
+//     int i;
+//     for (i = 0; i < inbound_payload.metrics_count; i++) {
 
-        if (inbound_payload.metrics[i].name != NULL) {
-            // Handle the incoming message as necessary - start with the 'Node Control' metrics
-            if (strcmp(inbound_payload.metrics[i].name, "Node Control/Next Server") == 0) {
-                // 'Node Control/Next Server' is an NCMD used to tell the device/client application to
-                // disconnect from the current MQTT server and connect to the next MQTT server in the
-                // list of available servers.  This is used for clients that have a pool of MQTT servers
-                // to connect to.
-                fprintf(stderr, "'Node Control/Next Server' is not implemented in this example\n");
-            } else if (strcmp(inbound_payload.metrics[i].name, "Node Control/Rebirth") == 0) {
-                // 'Node Control/Rebirth' is an NCMD used to tell the device/client application to resend
-                // its full NBIRTH and DBIRTH again.  MQTT Engine will send this NCMD to a device/client
-                // application if it receives an NDATA or DDATA with a metric that was not published in the
-                // original NBIRTH or DBIRTH.  This is why the application must send all known metrics in
-                // its original NBIRTH and DBIRTH messages.
-                publish_births(mosq);
-            } else if (strcmp(inbound_payload.metrics[i].name, "Node Control/Reboot") == 0) {
-                // 'Node Control/Reboot' is an NCMD used to tell a device/client application to reboot
-                // This can be used for devices that need a full application reset via a soft reboot.
-                // In this case, we fake a full reboot with a republishing of the NBIRTH and DBIRTH
-                // messages.
-                publish_births(mosq);
-            } else if (strcmp(inbound_payload.metrics[i].name, "output/Device Metric2") == 0) {
-                // This is a metric we declared in our DBIRTH message and we're emulating an output.
-                // So, on incoming 'writes' to the output we must publish a DDATA with the new output
-                // value.  If this were a real output we'd write to the output and then read it back
-                // before publishing a DDATA message.
+//         if (inbound_payload.metrics[i].name != NULL) {
+//             // Handle the incoming message as necessary - start with the 'Node Control' metrics
+//             if (strcmp(inbound_payload.metrics[i].name, "Node Control/Next Server") == 0) {
+//                 // 'Node Control/Next Server' is an NCMD used to tell the device/client application to
+//                 // disconnect from the current MQTT server and connect to the next MQTT server in the
+//                 // list of available servers.  This is used for clients that have a pool of MQTT servers
+//                 // to connect to.
+//                 fprintf(stderr, "'Node Control/Next Server' is not implemented in this example\n");
+//             } else if (strcmp(inbound_payload.metrics[i].name, "Node Control/Rebirth") == 0) {
+//                 // 'Node Control/Rebirth' is an NCMD used to tell the device/client application to resend
+//                 // its full NBIRTH and DBIRTH again.  MQTT Engine will send this NCMD to a device/client
+//                 // application if it receives an NDATA or DDATA with a metric that was not published in the
+//                 // original NBIRTH or DBIRTH.  This is why the application must send all known metrics in
+//                 // its original NBIRTH and DBIRTH messages.
+//                 publish_births(mosq);
+//             } else if (strcmp(inbound_payload.metrics[i].name, "Node Control/Reboot") == 0) {
+//                 // 'Node Control/Reboot' is an NCMD used to tell a device/client application to reboot
+//                 // This can be used for devices that need a full application reset via a soft reboot.
+//                 // In this case, we fake a full reboot with a republishing of the NBIRTH and DBIRTH
+//                 // messages.
+//                 publish_births(mosq);
+//             } else if (strcmp(inbound_payload.metrics[i].name, "output/Device Metric2") == 0) {
+//                 // This is a metric we declared in our DBIRTH message and we're emulating an output.
+//                 // So, on incoming 'writes' to the output we must publish a DDATA with the new output
+//                 // value.  If this were a real output we'd write to the output and then read it back
+//                 // before publishing a DDATA message.
 
-                // We know this is an Int16 because of how we declated it in the DBIRTH
-                uint32_t new_value = inbound_payload.metrics[i].value.int_value;
-                fprintf(stdout, "CMD message for output/Device Metric2 - New Value: %d\n", new_value);
+//                 // We know this is an Int16 because of how we declated it in the DBIRTH
+//                 uint32_t new_value = inbound_payload.metrics[i].value.int_value;
+//                 fprintf(stdout, "CMD message for output/Device Metric2 - New Value: %d\n", new_value);
 
-                // Create the DDATA payload
-                org_eclipse_tahu_protobuf_Payload ddata_payload;
-                get_next_payload(&ddata_payload);
-                // Note the Metric name 'output/Device Metric2' is not needed because we're using aliases
-                add_simple_metric(&ddata_payload, NULL, true, Device_Metric2, METRIC_DATA_TYPE_INT16, false, false, &new_value, sizeof(new_value));
+//                 // Create the DDATA payload
+//                 org_eclipse_tahu_protobuf_Payload ddata_payload;
+//                 get_next_payload(&ddata_payload);
+//                 // Note the Metric name 'output/Device Metric2' is not needed because we're using aliases
+//                 add_simple_metric(&ddata_payload, NULL, true, Device_Metric2, METRIC_DATA_TYPE_INT16, false, false, &new_value, sizeof(new_value));
 
-                // Encode the payload into a binary format so it can be published in the MQTT message.
-                // The binary_buffer must be large enough to hold the contents of the binary payload
-                size_t buffer_length = 128;
-                uint8_t *binary_buffer = (uint8_t *)malloc(buffer_length * sizeof(uint8_t));
-                size_t message_length = encode_payload(binary_buffer, buffer_length, &ddata_payload);
+//                 // Encode the payload into a binary format so it can be published in the MQTT message.
+//                 // The binary_buffer must be large enough to hold the contents of the binary payload
+//                 size_t buffer_length = 128;
+//                 uint8_t *binary_buffer = (uint8_t *)malloc(buffer_length * sizeof(uint8_t));
+//                 size_t message_length = encode_payload(binary_buffer, buffer_length, &ddata_payload);
 
-                // Publish the DDATA on the appropriate topic
-                mosquitto_publish(mosq, NULL, "spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device", message_length, binary_buffer, 0, false);
+//                 // Publish the DDATA on the appropriate topic
+//                 mosquitto_publish(mosq, NULL, "spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device", message_length, binary_buffer, 0, false);
 
-                // Free the memory
-                free(binary_buffer);
-                free_payload(&ddata_payload);
-            } else if (strcmp(inbound_payload.metrics[i].name, "output/Device Metric3") == 0) {
-                // This is a metric we declared in our DBIRTH message and we're emulating an output.
-                // So, on incoming 'writes' to the output we must publish a DDATA with the new output
-                // value.  If this were a real output we'd write to the output and then read it back
-                // before publishing a DDATA message.
+//                 // Free the memory
+//                 free(binary_buffer);
+//                 free_payload(&ddata_payload);
+//             } else if (strcmp(inbound_payload.metrics[i].name, "output/Device Metric3") == 0) {
+//                 // This is a metric we declared in our DBIRTH message and we're emulating an output.
+//                 // So, on incoming 'writes' to the output we must publish a DDATA with the new output
+//                 // value.  If this were a real output we'd write to the output and then read it back
+//                 // before publishing a DDATA message.
 
-                // We know this is an Boolean because of how we declated it in the DBIRTH
-                bool new_value = inbound_payload.metrics[i].value.boolean_value;
-                fprintf(stdout, "CMD message for output/Device Metric3 - New Value: %s\n", new_value ? "true" : "false");
+//                 // We know this is an Boolean because of how we declated it in the DBIRTH
+//                 bool new_value = inbound_payload.metrics[i].value.boolean_value;
+//                 fprintf(stdout, "CMD message for output/Device Metric3 - New Value: %s\n", new_value ? "true" : "false");
 
-                // Create the DDATA payload
-                org_eclipse_tahu_protobuf_Payload ddata_payload;
-                get_next_payload(&ddata_payload);
-                // Note the Metric name 'output/Device Metric3' is not needed because we're using aliases
-                add_simple_metric(&ddata_payload, NULL, true, Device_Metric3, METRIC_DATA_TYPE_BOOLEAN, false, false, &new_value, sizeof(new_value));
+//                 // Create the DDATA payload
+//                 org_eclipse_tahu_protobuf_Payload ddata_payload;
+//                 get_next_payload(&ddata_payload);
+//                 // Note the Metric name 'output/Device Metric3' is not needed because we're using aliases
+//                 add_simple_metric(&ddata_payload, NULL, true, Device_Metric3, METRIC_DATA_TYPE_BOOLEAN, false, false, &new_value, sizeof(new_value));
 
-                // Encode the payload into a binary format so it can be published in the MQTT message.
-                // The binary_buffer must be large enough to hold the contents of the binary payload
-                size_t buffer_length = 128;
-                uint8_t *binary_buffer = (uint8_t *)malloc(buffer_length * sizeof(uint8_t));
-                size_t message_length = encode_payload(binary_buffer, buffer_length, &ddata_payload);
+//                 // Encode the payload into a binary format so it can be published in the MQTT message.
+//                 // The binary_buffer must be large enough to hold the contents of the binary payload
+//                 size_t buffer_length = 128;
+//                 uint8_t *binary_buffer = (uint8_t *)malloc(buffer_length * sizeof(uint8_t));
+//                 size_t message_length = encode_payload(binary_buffer, buffer_length, &ddata_payload);
 
-                // Publish the DDATA on the appropriate topic
-                mosquitto_publish(mosq, NULL, "spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device", message_length, binary_buffer, 0, false);
+//                 // Publish the DDATA on the appropriate topic
+//                 mosquitto_publish(mosq, NULL, "spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device", message_length, binary_buffer, 0, false);
 
-                // Free the memory
-                free(binary_buffer);
-                free_payload(&ddata_payload);
-            } else {
-                fprintf(stderr, "Unknown CMD: %s\n", inbound_payload.metrics[i].name);
-            }
-        } else if (inbound_payload.metrics[i].has_alias) {
-            // Handle the incoming message as necessary - start with the 'Node Control' metrics
-            if (inbound_payload.metrics[i].alias == Next_Server) {
-                // 'Node Control/Next Server' is an NCMD used to tell the device/client application to
-                // disconnect from the current MQTT server and connect to the next MQTT server in the
-                // list of available servers.  This is used for clients that have a pool of MQTT servers
-                // to connect to.
-                fprintf(stderr, "'Node Control/Next Server' is not implemented in this example\n");
-            } else if (inbound_payload.metrics[i].alias == Rebirth) {
-                // 'Node Control/Rebirth' is an NCMD used to tell the device/client application to resend
-                // its full NBIRTH and DBIRTH again.  MQTT Engine will send this NCMD to a device/client
-                // application if it receives an NDATA or DDATA with a metric that was not published in the
-                // original NBIRTH or DBIRTH.  This is why the application must send all known metrics in
-                // its original NBIRTH and DBIRTH messages.
-                publish_births(mosq);
-            } else if (inbound_payload.metrics[i].alias == Reboot) {
-                // 'Node Control/Reboot' is an NCMD used to tell a device/client application to reboot
-                // This can be used for devices that need a full application reset via a soft reboot.
-                // In this case, we fake a full reboot with a republishing of the NBIRTH and DBIRTH
-                // messages.
-                publish_births(mosq);
-            } else if (inbound_payload.metrics[i].alias == Device_Metric2) {
-                // This is a metric we declared in our DBIRTH message and we're emulating an output.
-                // So, on incoming 'writes' to the output we must publish a DDATA with the new output
-                // value.  If this were a real output we'd write to the output and then read it back
-                // before publishing a DDATA message.
+//                 // Free the memory
+//                 free(binary_buffer);
+//                 free_payload(&ddata_payload);
+//             } else {
+//                 fprintf(stderr, "Unknown CMD: %s\n", inbound_payload.metrics[i].name);
+//             }
+//         } else if (inbound_payload.metrics[i].has_alias) {
+//             // Handle the incoming message as necessary - start with the 'Node Control' metrics
+//             if (inbound_payload.metrics[i].alias == Next_Server) {
+//                 // 'Node Control/Next Server' is an NCMD used to tell the device/client application to
+//                 // disconnect from the current MQTT server and connect to the next MQTT server in the
+//                 // list of available servers.  This is used for clients that have a pool of MQTT servers
+//                 // to connect to.
+//                 fprintf(stderr, "'Node Control/Next Server' is not implemented in this example\n");
+//             } else if (inbound_payload.metrics[i].alias == Rebirth) {
+//                 // 'Node Control/Rebirth' is an NCMD used to tell the device/client application to resend
+//                 // its full NBIRTH and DBIRTH again.  MQTT Engine will send this NCMD to a device/client
+//                 // application if it receives an NDATA or DDATA with a metric that was not published in the
+//                 // original NBIRTH or DBIRTH.  This is why the application must send all known metrics in
+//                 // its original NBIRTH and DBIRTH messages.
+//                 publish_births(mosq);
+//             } else if (inbound_payload.metrics[i].alias == Reboot) {
+//                 // 'Node Control/Reboot' is an NCMD used to tell a device/client application to reboot
+//                 // This can be used for devices that need a full application reset via a soft reboot.
+//                 // In this case, we fake a full reboot with a republishing of the NBIRTH and DBIRTH
+//                 // messages.
+//                 publish_births(mosq);
+//             } else if (inbound_payload.metrics[i].alias == Device_Metric2) {
+//                 // This is a metric we declared in our DBIRTH message and we're emulating an output.
+//                 // So, on incoming 'writes' to the output we must publish a DDATA with the new output
+//                 // value.  If this were a real output we'd write to the output and then read it back
+//                 // before publishing a DDATA message.
 
-                // We know this is an Int16 because of how we declated it in the DBIRTH
-                uint32_t new_value = inbound_payload.metrics[i].value.int_value;
-                fprintf(stdout, "CMD message for output/Device Metric2 - New Value: %d\n", new_value);
+//                 // We know this is an Int16 because of how we declated it in the DBIRTH
+//                 uint32_t new_value = inbound_payload.metrics[i].value.int_value;
+//                 fprintf(stdout, "CMD message for output/Device Metric2 - New Value: %d\n", new_value);
 
-                // Create the DDATA payload
-                org_eclipse_tahu_protobuf_Payload ddata_payload;
-                get_next_payload(&ddata_payload);
-                // Note the Metric name 'output/Device Metric2' is not needed because we're using aliases
-                add_simple_metric(&ddata_payload, NULL, true, Device_Metric2, METRIC_DATA_TYPE_INT16, false, false, &new_value, sizeof(new_value));
+//                 // Create the DDATA payload
+//                 org_eclipse_tahu_protobuf_Payload ddata_payload;
+//                 get_next_payload(&ddata_payload);
+//                 // Note the Metric name 'output/Device Metric2' is not needed because we're using aliases
+//                 add_simple_metric(&ddata_payload, NULL, true, Device_Metric2, METRIC_DATA_TYPE_INT16, false, false, &new_value, sizeof(new_value));
 
-                // Encode the payload into a binary format so it can be published in the MQTT message.
-                // The binary_buffer must be large enough to hold the contents of the binary payload
-                size_t buffer_length = 128;
-                uint8_t *binary_buffer = (uint8_t *)malloc(buffer_length * sizeof(uint8_t));
-                size_t message_length = encode_payload(binary_buffer, buffer_length, &ddata_payload);
+//                 // Encode the payload into a binary format so it can be published in the MQTT message.
+//                 // The binary_buffer must be large enough to hold the contents of the binary payload
+//                 size_t buffer_length = 128;
+//                 uint8_t *binary_buffer = (uint8_t *)malloc(buffer_length * sizeof(uint8_t));
+//                 size_t message_length = encode_payload(binary_buffer, buffer_length, &ddata_payload);
 
-                // Publish the DDATA on the appropriate topic
-                mosquitto_publish(mosq, NULL, "spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device", message_length, binary_buffer, 0, false);
+//                 // Publish the DDATA on the appropriate topic
+//                 mosquitto_publish(mosq, NULL, "spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device", message_length, binary_buffer, 0, false);
 
-                // Free the memory
-                free(binary_buffer);
-                free_payload(&ddata_payload);
-            } else if (inbound_payload.metrics[i].alias == Device_Metric3) {
-                // This is a metric we declared in our DBIRTH message and we're emulating an output.
-                // So, on incoming 'writes' to the output we must publish a DDATA with the new output
-                // value.  If this were a real output we'd write to the output and then read it back
-                // before publishing a DDATA message.
+//                 // Free the memory
+//                 free(binary_buffer);
+//                 free_payload(&ddata_payload);
+//             } else if (inbound_payload.metrics[i].alias == Device_Metric3) {
+//                 // This is a metric we declared in our DBIRTH message and we're emulating an output.
+//                 // So, on incoming 'writes' to the output we must publish a DDATA with the new output
+//                 // value.  If this were a real output we'd write to the output and then read it back
+//                 // before publishing a DDATA message.
 
-                // We know this is an Boolean because of how we declated it in the DBIRTH
-                bool new_value = inbound_payload.metrics[i].value.boolean_value;
-                fprintf(stdout, "CMD message for output/Device Metric3 - New Value: %s\n", new_value ? "true" : "false");
+//                 // We know this is an Boolean because of how we declated it in the DBIRTH
+//                 bool new_value = inbound_payload.metrics[i].value.boolean_value;
+//                 fprintf(stdout, "CMD message for output/Device Metric3 - New Value: %s\n", new_value ? "true" : "false");
 
-                // Create the DDATA payload
-                org_eclipse_tahu_protobuf_Payload ddata_payload;
-                get_next_payload(&ddata_payload);
-                // Note the Metric name 'output/Device Metric3' is not needed because we're using aliases
-                add_simple_metric(&ddata_payload, NULL, true, Device_Metric3, METRIC_DATA_TYPE_BOOLEAN, false, false, &new_value, sizeof(new_value));
+//                 // Create the DDATA payload
+//                 org_eclipse_tahu_protobuf_Payload ddata_payload;
+//                 get_next_payload(&ddata_payload);
+//                 // Note the Metric name 'output/Device Metric3' is not needed because we're using aliases
+//                 add_simple_metric(&ddata_payload, NULL, true, Device_Metric3, METRIC_DATA_TYPE_BOOLEAN, false, false, &new_value, sizeof(new_value));
 
-                // Encode the payload into a binary format so it can be published in the MQTT message.
-                // The binary_buffer must be large enough to hold the contents of the binary payload
-                size_t buffer_length = 128;
-                uint8_t *binary_buffer = (uint8_t *)malloc(buffer_length * sizeof(uint8_t));
-                size_t message_length = encode_payload(binary_buffer, buffer_length, &ddata_payload);
+//                 // Encode the payload into a binary format so it can be published in the MQTT message.
+//                 // The binary_buffer must be large enough to hold the contents of the binary payload
+//                 size_t buffer_length = 128;
+//                 uint8_t *binary_buffer = (uint8_t *)malloc(buffer_length * sizeof(uint8_t));
+//                 size_t message_length = encode_payload(binary_buffer, buffer_length, &ddata_payload);
 
-                // Publish the DDATA on the appropriate topic
-                mosquitto_publish(mosq, NULL, "spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device", message_length, binary_buffer, 0, false);
+//                 // Publish the DDATA on the appropriate topic
+//                 mosquitto_publish(mosq, NULL, "spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device", message_length, binary_buffer, 0, false);
 
-                // Free the memory
-                free(binary_buffer);
-                free_payload(&ddata_payload);
-            } else {
-                fprintf(stderr, "Unknown CMD: %ld\n", inbound_payload.metrics[i].alias);
-            }
-        } else {
-            fprintf(stdout, "Not a metric name or alias??\n");
-        }
-    }
-}
+//                 // Free the memory
+//                 free(binary_buffer);
+//                 free_payload(&ddata_payload);
+//             } else {
+//                 fprintf(stderr, "Unknown CMD: %ld\n", inbound_payload.metrics[i].alias);
+//             }
+//         } else {
+//             fprintf(stdout, "Not a metric name or alias??\n");
+//         }
+//     }
+// }
 
 /*
  * Callback for successful or unsuccessful MQTT connect.  Upon successful connect, subscribe to our Sparkplug NCMD and DCMD messages.
