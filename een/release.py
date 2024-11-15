@@ -73,9 +73,10 @@ class git_repo_manager:
     self.repo_.git.tag(tag_name)
     print(f"tagged commit to '{tag_name}...")
 
-  def push(self):
+  def push(self, tag_name):
     # may not want to do this for dev
-    pass
+    self.repo_.git.push(tag_name)
+
 
 
 class docker_manager:
@@ -120,7 +121,7 @@ def main():
       if git_.update_tags_in_source(tag_name):
         git_.commit(f"tag instances updated to {tag_name}")
         git_.tag(tag_name)
-        git_.push()
+        git_.push(tag_name)
 
         docker_ = docker_manager(tag_name)
         if docker_.build_tagged_image():
