@@ -42,7 +42,6 @@ void device_client::ddata_send(struct mosquitto* m){
                       binary_buffer,
                       0,
                       false);
-    std::cout << "ddata_send sent payload to topic "<< topic_ddata_ <<  std::endl;
 
     free(binary_buffer);
   }
