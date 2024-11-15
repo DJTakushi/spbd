@@ -2,7 +2,6 @@ import sys
 import git
 import re
 
-
 class git_repo_manager:
   def __init__(self, repo_dir):
     self.repo_ = git.Repo(repo_dir)
@@ -10,9 +9,10 @@ class git_repo_manager:
   def repo_safe_to_commit(self, force):
     ### confirm no other un-committed edits will be swept up into release
     safe = False
+    e = "WARNING" if force else "ERROR"
     if  self.repo_.is_dirty(untracked_files=True):
-      print("ERROR: repo cannot be dirty for a build.") # replace ERROR with failure prefix
-      print("  see 'git status' for details")
+      print(f"{e}: repo cannot be dirty for a build "\
+            "(see 'git status' for details)")
     else:
       safe = True
 
