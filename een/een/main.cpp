@@ -68,7 +68,6 @@ void publish_births(struct mosquitto *mosq);
 void publish_node_birth(struct mosquitto *mosq);
 void publish_device_birth(struct mosquitto *mosq);
 void publish_ddata_message(struct mosquitto *mosq);
-void my_publish(struct mosquitto *mosq, std::string topic, std::string msg);
 
 static void PrintMessageInformation(IOTHUB_MESSAGE_HANDLE msg);
 static IOTHUBMESSAGE_DISPOSITION_RESULT DefaultMessageCallback(
@@ -138,8 +137,8 @@ int main_old(int argc, char* argv[]) {
   #endif
   mosquitto_connect_callback_set(mosq, my_connect_callback);
   mosquitto_message_callback_set(mosq, my_message_callback);
-  mosquitto_username_pw_set(mosq, "admin", "changeme");
-  mosquitto_will_set(mosq, "spBv1.0/Sparkplug B Devices/NDEATH/C Edge Node 1", 0, NULL, 0, false);
+  // mosquitto_username_pw_set(mosq, "admin", "changeme");
+  // mosquitto_will_set(mosq, "spBv1.0/Sparkplug B Devices/NDEATH/C Edge Node 1", 0, NULL, 0, false);
 
   // Optional SSL parameters for MQTT
   //mosquitto_tls_insecure_set(mosq, true);
@@ -176,7 +175,7 @@ int main_old(int argc, char* argv[]) {
   std::string my_topic = "spBv1.0/Sparkplug B Devices/DDATA/danny";
   int counter = 0;
   while(true) {
-    publish_ddata_message(mosq);
+    // publish_ddata_message(mosq);
 
     for (int j = 0; j < 50; j++) {
       std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -644,67 +643,6 @@ void publish_device_birth(struct mosquitto *mosq) {
     free_payload(&dbirth_payload);
 }
 
-void publish_ddata_message(struct mosquitto *mosq) {
-    // Create the DDATA payload
-    org_eclipse_tahu_protobuf_Payload ddata_payload;
-    get_next_payload(&ddata_payload);
-
-    // // Add some device metrics to denote changed values on inputs
-    // char ddata_metric_zero_value[13];
-    // int i;
-    // for (i = 0; i < 12; ++i) {
-    //     ddata_metric_zero_value[i] = '0' + rand() % 72; // starting on '0', ending on '}'
-    // }
-    // ddata_metric_zero_value[12] = 0;
-
-    // // Note the Metric name 'input/Device Metric0' is not needed because we're using aliases
-    // add_simple_metric(&ddata_payload, "Device Metric0", true, Device_Metric0, METRIC_DATA_TYPE_STRING, false, false, &ddata_metric_zero_value, sizeof(ddata_metric_zero_value));
-    // bool ddata_metric_one_value = rand() % 2;
-    // // Note the Metric name 'input/Device Metric1' is not needed because we're using aliases
-    // add_simple_metric(&ddata_payload, "Device Metric1", true, Device_Metric1, METRIC_DATA_TYPE_BOOLEAN, false, false, &ddata_metric_one_value, sizeof(ddata_metric_one_value));
-    // add_simple_metric(&ddata_payload, "gear", true, kGear, METRIC_DATA_TYPE_INT32, false, false, &gear_, sizeof(gear_));
-    // add_simple_metric(&ddata_payload, "engine_speed", true, kEngineSpeed, METRIC_DATA_TYPE_DOUBLE, false, false, &engine_speed_, sizeof(engine_speed_));
-    for(size_t i = 0; i < SERIAL_METRIC_NO; i++){
-      std::string metric_name = "metric"+std::to_string(i);
-      add_simple_metric(&ddata_payload,
-                        metric_name.c_str(),
-                        true,
-                        i,
-                        METRIC_DATA_TYPE_DOUBLE,
-                        false,
-                        false,
-                        &serial_metric_[i],
-                        sizeof(serial_metric_[i]));
-    }
-
-
-#ifdef SPARKPLUG_DEBUG
-    // Print the payload
-    print_payload(&ddata_payload);
-#endif
-
-    // Encode the payload into a binary format so it can be published in the MQTT message.
-    // The binary_buffer must be large enough to hold the contents of the binary payload
-    size_t buffer_length = 1024;
-    uint8_t *binary_buffer = (uint8_t *)malloc(buffer_length * sizeof(uint8_t));
-    size_t message_length = encode_payload(binary_buffer, buffer_length, &ddata_payload);
-
-    // Publish the DDATA on the appropriate topic
-    mosquitto_publish(mosq, NULL, "spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device", message_length, binary_buffer, 0, false);
-
-    // Free the memory
-    free(binary_buffer);
-    free_payload(&ddata_payload);
-}
-
-void my_publish(struct mosquitto *mosq, std::string topic, std::string msg) {
-  static int msg_id =0;
-  std::cout << "publishing : " << msg << std::endl;
-
-  mosquitto_publish(mosq, &msg_id, topic.c_str(),
-                    msg.size(), msg.c_str(), 0, false);
-  msg_id++;
-}
 
 
 // Prints relevant system properties about a message.

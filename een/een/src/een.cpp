@@ -1,9 +1,20 @@
 #include <iostream>
 #include "een.h"
 een::een(std::string config){
+  set_topics();
   setup_mosquitto();
   setup_iot_hub();
 }
+
+void een::set_topics(){
+  std::string topic_base = "spBv1.0/"+group_id_;
+  topic_nbirth_ = topic_base + "/NBIRTH/" + edge_node_id_;
+  topic_ndeath_ = topic_base + "/NDEATH/" + edge_node_id_;
+  topic_ndata_ = topic_base + "/NDATA/" + edge_node_id_;
+  topic_ncmd_ = topic_base + "/NCMD/" + edge_node_id_+"/#";
+  topic_dcmd_ = topic_base + "/DCMD/" + edge_node_id_+"/#";
+}
+
 void een::setup_mosquitto(){
   char* mqtt_host_name_env = std::getenv("MQ_HOST");
   if (mqtt_host_name_env != NULL){
@@ -12,13 +23,19 @@ void een::setup_mosquitto(){
   std::cout << "host_compose : " << std::string(mqtt_host_name_) << std::endl;
 
   mosquitto_lib_init();
-  mosq_ = mosquitto_new(NULL, true, NULL);
+  mosq_ = mosquitto_new(NULL, true, this);
   if (!mosq_) {
     std::cerr << "Error creating mosquitto handler"<<std::endl;
     stable_ = false;
   }
   else{
+    mosquitto_connect_callback_set(mosq_, een::connect_callback);
+    mosquitto_subscribe_callback_set(mosq_, een::subscribe_callback);
+
     mosquitto_username_pw_set(mosq_, "admin", "changeme");
+
+    mosquitto_will_set(mosq_, topic_ndeath_.c_str(), 0, NULL, 0, false);
+
     if (mosquitto_connect(mosq_,
                           mqtt_host_name_.c_str(),
                           mqtt_host_port_,
@@ -31,11 +48,40 @@ void een::setup_mosquitto(){
     }
   }
 }
+void een::connect_callback(struct mosquitto *mosq,void *userdata,int result) {
+  een* this_een_ = (een*)userdata;
+  if (!result) {
+    // Subscribe to commands
+    mosquitto_subscribe(mosq, NULL, this_een_->topic_ncmd_.c_str(), 0);
+    mosquitto_subscribe(mosq, NULL, this_een_->topic_dcmd_.c_str(), 0);
+  } else {
+    std::cerr << "MQTT Connect failed : code " << result << std::endl;
+  }
+}
+void een::subscribe_callback(struct mosquitto *mosq,
+                              void *userdata,
+                              int mid,
+                              int qos_count,
+                              const int *granted_qos){
+  std::cout << "subscribed (mid: "<< mid << "): "<< granted_qos[0];;
+  for (int i = 1; i < qos_count; i++) {
+    std::cout << ", " << granted_qos[i];
+  }
+  std::cout << std::endl;
+}
+
 
 void een::nbirth_send(){
   /** TODO :  */
 }
+void een::dbirth_send(){
+  /** TODO :  */
+}
+
 void een::ndeath_send(){
+  /** TODO :  */
+}
+void een::ddeath_send(){
   /** TODO :  */
 }
 void een::ncmd_rec(){

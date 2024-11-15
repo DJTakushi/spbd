@@ -25,6 +25,12 @@ class een{
   uint mqtt_host_port_{1883};
   uint mqtt_host_keepalive_{60};
 
+  std::string topic_nbirth_;
+  std::string topic_ndeath_;
+  std::string topic_ndata_;
+  std::string topic_ncmd_;
+  std::string topic_dcmd_;
+
   IOTHUB_MODULE_CLIENT_LL_HANDLE iot_handle_{NULL};
   device_map device_map_;
 
@@ -36,11 +42,26 @@ class een{
   static IOTHUBMESSAGE_DISPOSITION_RESULT input1_message_callback (
                                               IOTHUB_MESSAGE_HANDLE msg,
                                               void* userContextCallback);
+  static void connect_callback(struct mosquitto *mosq,
+                                  void *userdata,
+                                  int result);
+  static void subscribe_callback(struct mosquitto *mosq,
+                                    void *userdata,
+                                    int mid,
+                                    int qos_count,
+                                    const int *granted_qos);
+
+
+  void set_topics();
 
  public:
   een(std::string config);
   void nbirth_send();
+  void dbirth_send();
+
   void ndeath_send();
+  void ddeath_send();
+
   void ncmd_rec();
   void dcmd_rec();
   void ndata__send();
