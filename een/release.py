@@ -69,11 +69,13 @@ class git_repo_manager:
     print(f"committed with msg : '{commit_message}'...")
 
   def tag(self, tag_name):
-    pass
+    self.repo_.git.tag(tag_name)
+    print(f"tagged commit to '{tag_name}...")
 
   def push(self):
     # may not want to do this for dev
     pass
+
 
 class docker_manager:
   def create_tag():
