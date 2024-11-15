@@ -81,7 +81,7 @@ class git_repo_manager:
 class docker_manager:
   def build_tagged_image(tag):
     os.chdir(sys.path[0])
-    full_tag = "sparkplugbdemo.azurecr.io/een:{tag}"
+    full_tag = f"sparkplugbdemo.azurecr.io/een:{tag}"
     cmd = ["docker","build","-t",full_tag,"."]
     result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     success = False
