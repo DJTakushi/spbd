@@ -75,7 +75,7 @@ class git_repo_manager:
 
   def push(self, tag_name):
     # may not want to do this for dev
-    self.repo_.git.push(tag_name)
+    self.repo_.git.push("origin","tag",tag_name)
 
 
 
