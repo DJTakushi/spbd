@@ -7,17 +7,21 @@ class git_repo_manager:
   def __init__(self, repo_dir):
     self.repo_ = git.Repo(repo_dir)
 
-  def repo_safe_to_commit(self):
+  def repo_safe_to_commit(self, force):
     ### confirm no other un-committed edits will be swept up into release
     safe = False
     if  self.repo_.is_dirty(untracked_files=True):
-      print("ERROR: repo cannot be dirty for a build.")
+      print("ERROR: repo cannot be dirty for a build.") # replace ERROR with failure prefix
       print("  see 'git status' for details")
     else:
       safe = True
 
     ### TODO: confirm submodules are checked out and to the appropriate tag
-    return safe
+
+    if force:
+      return force
+    else:
+      return safe
 
   def update_tags_in_source(self, tag_name):
     ### update tag instances in source code
@@ -57,11 +61,16 @@ class docker_manager:
 
 def main():
   tag_name = None
+  force_ = False
   if len(sys.argv) >= 2:
+    for arg in sys.argv[1:]:
+      if "--force" in arg:
+        force_ = True
+
     tag_name = sys.argv[1]
 
     git_ = git_repo_manager(f"{sys.path[0]}/..")
-    if git_.repo_safe_to_commit():
+    if git_.repo_safe_to_commit(force_) or force_:
       if git_.update_tags_in_source(tag_name):
         git_.commit(f"tag instances updated to {tag_name}")
         git_.tag(tag_name)
