@@ -1,5 +1,6 @@
 import sys
 import git
+import re
 
 
 class git_repo_manager:
@@ -20,7 +21,24 @@ class git_repo_manager:
 
   def update_tags_in_source(self, tag_name):
     ### update tag instances in source code
-    pass
+    success = False
+
+    version_maj = 0
+    version_min = 0
+    version_bugfix= 0
+    parts = tag_name.split('.')
+
+    # TODO: fail if space detected
+
+    if ' 'not in tag_name and parts.size() == 3:
+      re.sub('[a-zA-Z]', '', parts[0])
+      version_maj = int(parts[0])
+      version_min = int(parts[1])
+      version_bugfix = int(parts[2])
+    else:
+      print("invalid tag ; must follow pattern 'dev1.2.3'")
+
+    return success
 
   def commit(self, commit_message):
     pass
@@ -45,10 +63,10 @@ def main():
 
     git_ = git_repo_manager(f"{sys.path[0]}/..")
     if git_.repo_safe_to_commit():
-      git_.update_tags_in_source(tag_name)
-      git_.commit(f"tag instances updated to {tag_name}")
-      git_.tag(tag_name)
-      git_.push()
+      if git_.update_tags_in_source(tag_name):
+        git_.commit(f"tag instances updated to {tag_name}")
+        git_.tag(tag_name)
+        git_.push()
     docker_manager.create_tag()
   else:
     print("tag-name required")
