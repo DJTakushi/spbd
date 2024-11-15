@@ -79,7 +79,7 @@ class git_repo_manager:
 
 
 class docker_manager:
-  def build_image(tag):
+  def build_tagged_image(tag):
     os.chdir(sys.path[0])
     full_tag = "sparkplugbdemo.azurecr.io/een:{tag}"
     cmd = ["docker","build","-t",full_tag,"."]
@@ -92,8 +92,6 @@ class docker_manager:
       print(f"failed to build tag {full_tag}")
     return success
 
-  def create_tag():
-    pass
   def push_tag():
     pass
 
@@ -113,7 +111,7 @@ def main():
         git_.commit(f"tag instances updated to {tag_name}")
         git_.tag(tag_name)
         git_.push()
-    docker_manager.create_tag()
+    docker_manager.build_tagged_image(tag_name)
   else:
     print("tag-name required")
 
