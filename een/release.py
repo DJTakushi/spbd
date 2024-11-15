@@ -64,7 +64,8 @@ class git_repo_manager:
     return success
 
   def commit(self, commit_message):
-    pass
+    self.repo_.git.add("--all")
+    self.repo_.git.commit('-m',commit_message)
 
   def tag(self, tag_name):
     pass

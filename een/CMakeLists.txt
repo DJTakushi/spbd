@@ -12,8 +12,8 @@ set(EEN_PROJECT_NAME        "sparkplugb_demo_een")
 set(EEN_PROJECT_DESCRIPTION "SparkPlugB Demo Embedded Edge Node")
 set(EEN_AUTHOR_DOMAIN       "https://github.com/DJTakushi/spbd")
 set(EEN_VERSION_MAJOR       "0")
-set(EEN_VERSION_MINOR       "0")
-set(EEN_VERSION_PATCH       "1")
+set(EEN_VERSION_MINOR       "1")
+set(EEN_VERSION_PATCH       "4")
 
 set(EEN_VERSION
     "${EEN_VERSION_MAJOR}.${EEN_VERSION_MINOR}.${EEN_VERSION_PATCH}")
