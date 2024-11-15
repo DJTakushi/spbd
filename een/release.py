@@ -4,6 +4,7 @@ import re
 
 class git_repo_manager:
   def __init__(self, repo_dir):
+    self.repo_dir_ = repo_dir
     self.repo_ = git.Repo(repo_dir)
 
   def repo_safe_to_commit(self, force):
@@ -29,18 +30,37 @@ class git_repo_manager:
 
     version_maj = 0
     version_min = 0
-    version_bugfix= 0
+    version_patch= 0
     parts = tag_name.split('.')
-
-    # TODO: fail if space detected
 
     if ' 'not in tag_name and len(parts) == 3:
       version_maj = int(re.sub('[^0-9]', '', parts[0]))
       version_min = int(parts[1])
-      version_bugfix = int(parts[2])
+      version_patch = int(parts[2])
+
+      # CMakeLists.txt update
+      cmake_lines = []
+      cmake_lists_fp = self.repo_dir_+"/een/CMakeLists.txt"
+      with open(cmake_lists_fp, 'r') as file:
+        cmake_lines = file.readlines()
+      for i in range(len(cmake_lines)):
+        if "set(EEN_VERSION_MAJOR" in cmake_lines[i]:
+          cmake_lines[i] = f"set(EEN_VERSION_MAJOR       \"{version_maj}\")\n"
+          print("updated version_maj...")
+        if "set(EEN_VERSION_MINOR" in cmake_lines[i]:
+          cmake_lines[i] = f"set(EEN_VERSION_MINOR       \"{version_min}\")\n"
+          print("updated version_min...")
+        if "set(EEN_VERSION_PATCH" in cmake_lines[i]:
+          cmake_lines[i] = f"set(EEN_VERSION_PATCH       \"{version_patch}\")\n"
+          print("updated version_patch...")
+      with open(cmake_lists_fp, 'w') as file:
+        file.writelines(cmake_lines)
+        success = True
     else:
       print("invalid tag ; must follow pattern 'dev1.2.3'")
 
+    if success:
+      print(f"updated {cmake_lists_fp}...")
     return success
 
   def commit(self, commit_message):
