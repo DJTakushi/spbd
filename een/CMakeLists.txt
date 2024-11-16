@@ -13,7 +13,7 @@ set(EEN_PROJECT_DESCRIPTION "SparkPlugB Demo Embedded Edge Node")
 set(EEN_AUTHOR_DOMAIN       "https://github.com/DJTakushi/spbd")
 set(EEN_VERSION_MAJOR       "0")
 set(EEN_VERSION_MINOR       "1")
-set(EEN_VERSION_PATCH       "18")
+set(EEN_VERSION_PATCH       "19")
 
 set(EEN_VERSION
     "${EEN_VERSION_MAJOR}.${EEN_VERSION_MINOR}.${EEN_VERSION_PATCH}")
