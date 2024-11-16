@@ -81,6 +81,7 @@ class git_repo_manager:
 
 class docker_manager:
   def __init__(self, tag):
+    tag = tag.split('/')[-1] # get last part right of marker
     self.full_tag_ = f"sparkplugbdemo.azurecr.io/een:{tag}"
   def build_tagged_image(self):
     os.chdir(sys.path[0])
