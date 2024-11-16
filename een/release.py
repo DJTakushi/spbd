@@ -4,22 +4,38 @@ import re
 import os
 import subprocess
 class git_repo_manager:
-  def __init__(self, repo_dir):
+  def __init__(self, repo_dir,tag_name):
+    self.tag_name_ = tag_name
     self.repo_dir_ = repo_dir
     self.repo_ = git.Repo(repo_dir)
 
+    # safety checks
+    self.safe_ = self.tag_safe() and self.repo_safe_to_commit()
+    ### TODO: confirm submodules are checked out and to the appropriate tag
+
+  def tag_safe(self):
+    safe_ = False
+    existing_tags = self.repo_.git.tag("-l",self.tag_name_)
+    if len(existing_tags) == 0:
+      safe_ = True
+    else:
+      print("ERROR : tag already exists :")
+      print(existing_tags)
+      safe_ = False
+    return safe_
+
   def repo_safe_to_commit(self):
     ### confirm no other un-committed edits will be swept up into release
-    safe = False
-    if  self.repo_.is_dirty(untracked_files=True):
+    safe_ = False
+    if not self.repo_.is_dirty(untracked_files=True):
+      safe_ = True
+    else:
       print("ERROR: repo cannot be dirty for a build "\
             "(see 'git status' for details)")
-    else:
-      safe = True
+    return safe_
 
-    ### TODO: check if tag exists
-    ### TODO: confirm submodules are checked out and to the appropriate tag
-    return safe
+  def is_safe(self):
+    return  self.safe_
 
   def update_tags_in_source(self, tag_name):
     ### update tag instances in source code
@@ -73,8 +89,6 @@ class git_repo_manager:
     # may not want to do this for dev
     self.repo_.git.push("origin","tag",tag_name)
 
-
-
 class docker_manager:
   def __init__(self, tag):
     tag = tag.split('/')[-1] # get last part right of marker
@@ -114,21 +128,20 @@ def main():
 
     tag_name = sys.argv[1]
 
-    git_ = git_repo_manager(f"{sys.path[0]}/..")
-    if not no_git_:
-      if git_.repo_safe_to_commit():
-        if git_.update_tags_in_source(tag_name):
-          git_.commit(f"tag instances updated to {tag_name}")
-          git_.tag(tag_name)
-          git_.push(tag_name)
-          git_success_ = True
+    git_ = git_repo_manager(f"{sys.path[0]}/..",tag_name)
+    if not no_git_ and git_.is_safe():
+      if git_.update_tags_in_source(tag_name):
+        git_.commit(f"tag instances updated to {tag_name}")
+        git_.tag(tag_name)
+        git_.push(tag_name)
+        git_success_ = True
 
     if no_git_ or git_success_:
       docker_ = docker_manager(tag_name)
       if docker_.build_tagged_image():
         docker_.push_tag()
   else:
-    print("tag-name required")
+    print("tag-name required (E.G.: 'dev0.1.19')")
 
 if __name__=="__main__":
   main()
