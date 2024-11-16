@@ -8,22 +8,18 @@ class git_repo_manager:
     self.repo_dir_ = repo_dir
     self.repo_ = git.Repo(repo_dir)
 
-  def repo_safe_to_commit(self, force):
+  def repo_safe_to_commit(self):
     ### confirm no other un-committed edits will be swept up into release
     safe = False
-    e = "WARNING" if force else "ERROR"
     if  self.repo_.is_dirty(untracked_files=True):
-      print(f"{e}: repo cannot be dirty for a build "\
+      print("ERROR: repo cannot be dirty for a build "\
             "(see 'git status' for details)")
     else:
       safe = True
 
+    ### TODO: check if tag exists
     ### TODO: confirm submodules are checked out and to the appropriate tag
-
-    if force:
-      return force
-    else:
-      return safe
+    return safe
 
   def update_tags_in_source(self, tag_name):
     ### update tag instances in source code
@@ -109,24 +105,28 @@ class docker_manager:
 
 def main():
   tag_name = None
-  force_ = False
+  no_git_ = False
+  git_success_ = False
   if len(sys.argv) >= 2:
     for arg in sys.argv[1:]:
-      if "--force" in arg:
-        force_ = True
+      if "--nogit" in arg:
+        no_git_ = True
 
     tag_name = sys.argv[1]
 
     git_ = git_repo_manager(f"{sys.path[0]}/..")
-    if git_.repo_safe_to_commit(force_) or force_:
-      if git_.update_tags_in_source(tag_name):
-        git_.commit(f"tag instances updated to {tag_name}")
-        git_.tag(tag_name)
-        git_.push(tag_name)
+    if not no_git_:
+      if git_.repo_safe_to_commit():
+        if git_.update_tags_in_source(tag_name):
+          git_.commit(f"tag instances updated to {tag_name}")
+          git_.tag(tag_name)
+          git_.push(tag_name)
+          git_success_ = True
 
-        docker_ = docker_manager(tag_name)
-        if docker_.build_tagged_image():
-          docker_.push_tag()
+    if no_git_ or git_success_:
+      docker_ = docker_manager(tag_name)
+      if docker_.build_tagged_image():
+        docker_.push_tag()
   else:
     print("tag-name required")
 
