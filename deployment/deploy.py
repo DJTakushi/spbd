@@ -56,10 +56,11 @@ def main():
     if TAG_TAG in arg:
       tag_=arg.replace(TAG_TAG,"")
     else:
-      if deployment_path_ == None:
+      if ".json" in arg:
         deployment_path_ = arg
+        id_ = os.path.basename(deployment_path_).replace(".json","")
       else:
-        print(f"extra argument unknown ({arg})")
+        print(f"argument unknown ({arg})")
 
   if deployment_path_ == None:
     print("deployment required (E.G.: 'manifests/blender_dev_67.json')")
@@ -84,6 +85,7 @@ def main():
 
   dm.add_registry_credentials(j,username_,password_)
   dm.save_tmp_deployment(j,deployment_name_tmp)
+  dm.deploy(id_,deployment_name_tmp,tag_)
 
   dm.remove_file(deployment_name_tmp)
 
