@@ -2,7 +2,7 @@
 ### SPARKPLUG B DEMO FILTER SAMPLE
 ################################################################################
 
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.28.3)
 
 ################################################################################
 ### PROJECT DESCRIPTION AND META INFO
