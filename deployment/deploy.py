@@ -39,11 +39,11 @@ class deployment_manager:
       json.dump(deployment,f,indent=2)
 
   def deploy(id,content,product_tags):
-    print(f"deploying id : {id}, content : {content}, product_tags : {product_tags}")
-    cmd = ["az","iot","edge","deployment","create","--deployment-id",id,
-           "--hub-name", "spbdhub", "--content",content,"--target-condition",
-           f"\"tags.product='{product_tags}'\""]
-    subprocess.run(cmd)
+    cmd = f"az iot edge deployment create --deployment-id {id} \
+          --hub-name spbdhub --content {content} --target-condition \
+            \"tags.product='{product_tags}'\""
+    print(f"cmd : {cmd}")
+    subprocess.run(cmd, shell = True)
 
   def remove_file(filepath):
     os.remove(filepath)
@@ -93,7 +93,6 @@ def main():
   dm.deploy(id_,deployment_name_tmp,tag_)
 
   dm.remove_file(deployment_name_tmp)
-
 
 if __name__=="__main__":
   main()
