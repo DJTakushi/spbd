@@ -40,7 +40,7 @@
               },
               "restartPolicy": "always",
               "settings": {
-                "image": "sparkplugbdemo.azurecr.io/een:dev0.1.21"
+                "image": "sparkplugbdemo.azurecr.io/een:dev0.1.22"
               },
               "status": "running",
               "type": "docker"
@@ -48,7 +48,7 @@
             "data_serial":{
               "restartPolicy": "always",
               "settings": {
-                "image": "sparkplugbdemo.azurecr.io/data_serial:dev0.0.11",
+                "image": "sparkplugbdemo.azurecr.io/data_serial:dev0.0.12",
                 "createOptions": "{\"HostConfig\":{\"Binds\":[\"/dev:/dev\"],\"Privileged\":true}}"
               },
               "status": "running",
