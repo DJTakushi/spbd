@@ -1,0 +1,78 @@
+{
+  "content": {
+    "modulesContent": {
+      "$edgeAgent": {
+        "properties.desired": {
+          "schemaVersion": "1.1",
+          "runtime": {
+            "type": "docker",
+            "settings": {
+              "registryCredentials": {
+                "sparkplugbdemo_registry": {
+                  "address": "sparkplugbdemo.azurecr.io",
+                }
+              }
+            }
+          },
+          "systemModules": {
+            "edgeAgent": {
+              "settings": {
+                "image": "mcr.microsoft.com/azureiotedge-agent:1.5"
+              },
+              "type": "docker"
+            },
+            "edgeHub": {
+              "restartPolicy": "always",
+              "settings": {
+                "image": "mcr.microsoft.com/azureiotedge-hub:1.5",
+                "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"443/tcp\":[{\"HostPort\":\"443\"}],\"5671/tcp\":[{\"HostPort\":\"5671\"}],\"8883/tcp\":[{\"HostPort\":\"8883\"}]}}}"
+              },
+              "status": "running",
+              "type": "docker"
+            }
+          },
+          "modules": {
+            "een": {
+              "env": {
+                "MQ_HOST": {
+                  "value": "192.168.130.51"
+                }
+              },
+              "restartPolicy": "always",
+              "settings": {
+                "image": "sparkplugbdemo.azurecr.io/een:dev0.1.21"
+              },
+              "status": "running",
+              "type": "docker"
+            },
+            "data_serial":{
+              "restartPolicy": "always",
+              "settings": {
+                "image": "sparkplugbdemo.azurecr.io/data_serial:dev0.0.11",
+                "createOptions": "{\"HostConfig\":{\"Binds\":[\"/dev:/dev\"],\"Privileged\":true}}"
+              },
+              "status": "running",
+              "type": "docker"
+            }
+          }
+        }
+      },
+      "$edgeHub": {
+        "properties.desired": {
+          "schemaVersion": "1.1",
+          "storeAndForwardConfiguration": {
+            "timeToLiveSecs": 7200
+          },
+          "routes": {
+            "data_serial_to_een": {
+              "route": "FROM /messages/modules/data_serial/* INTO BrokeredEndpoint(\"/modules/een/inputs/input1\")"
+            }
+          }
+        }
+      },
+      "een": {
+        "properties.desired": {}
+      }
+    }
+  }
+}
