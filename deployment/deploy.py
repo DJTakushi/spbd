@@ -57,15 +57,21 @@ def main():
   id_ = None
 
   TAG_TAG = "--tag="
+  ID_TAG="--id="
   for arg in sys.argv[1:]:
     if TAG_TAG in arg:
       tag_=arg.replace(TAG_TAG,"")
+    elif ID_TAG in arg:
+      id_=arg.replace(ID_TAG,"")
     else:
       if ".json" in arg:
         deployment_path_ = arg
-        id_ = os.path.basename(deployment_path_).replace(".json","")
       else:
         print(f"argument unknown ({arg})")
+
+  if id_ == None:
+    # assume id from manifest filename
+    id_ = os.path.basename(deployment_path_).replace(".json","")
 
   if deployment_path_ == None:
     print("deployment required (E.G.: 'manifests/blender_dev_67.json')")
