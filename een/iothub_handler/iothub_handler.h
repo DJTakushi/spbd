@@ -1,4 +1,0 @@
-
-class iothub_handler{
-  
-}
