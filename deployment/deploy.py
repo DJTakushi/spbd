@@ -1,5 +1,6 @@
 import json
 import os
+import subprocess
 import sys
 env_var_username = "SPARKPLUGBDEMO_REGSISTRY_DEPLOYMENT_USERNAME"
 env_var_password = "SPARKPLUGBDEMO_REGSISTRY_DEPLOYMENT_PASSWORD"
@@ -38,7 +39,11 @@ class deployment_manager:
       json.dump(deployment,f,indent=2)
 
   def deploy(id,content,product_tags):
-    pass
+    print(f"deploying id : {id}, content : {content}, product_tags : {product_tags}")
+    cmd = ["az","iot","edge","deployment","create","--deployment-id",id,
+           "--hub-name", "spbdhub", "--content",content,"--target-condition",
+           f"\"tags.product='{product_tags}'\""]
+    subprocess.run(cmd)
 
   def remove_file(filepath):
     os.remove(filepath)
