@@ -11,7 +11,7 @@ SparkPlugB Demo
 - [9. TODO](#9-todo)
 
 # 1. description
-Architecture (deployed) :
+## 1.1 runtime architecture
 ```mermaid
 flowchart LR
   subgraph embedded box
@@ -34,7 +34,9 @@ flowchart LR
     style HostApplication fill:black,stroke:blue,stroke-width:2px,color:blue,stroke-dasharray: 5 5
   end
 ```
-*config stream could be replaced by comprehensive data-stream with full configuration.  Timestamps would have to indicate if attribute  values are fresh though
+*secondary config stream could be replaced by a single comprehensive data-stream with full configuration.  However, timestamps would have to indicate if attribute  values are fresh, and bandwith size will increase linearly with the number of attributes monitored.  Protobuff buffers could be use to minimize data size.
+
+
 
 ```mermaid
 ---
