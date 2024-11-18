@@ -9,7 +9,7 @@
             "settings": {
               "registryCredentials": {
                 "sparkplugbdemo_registry": {
-                  "address": "sparkplugbdemo.azurecr.io",
+                  "address": "sparkplugbdemo.azurecr.io"
                 }
               }
             }
