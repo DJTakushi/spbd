@@ -40,7 +40,9 @@ flowchart LR
 
 
 
-# 2. use
+# 2. local use
+NOTE : inter-module communication is limited to Azure IoT Edge routes, which are unavailable without an Azure managed deployment.  This can be optionally replaced to use a local MQTT server, but this is not yet fully implemented.
+
 ## 2.1 use with docker compose
 ```
 sudo docker compose build een sub
