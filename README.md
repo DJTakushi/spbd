@@ -99,7 +99,4 @@ sub/sub
 
 
 # 9 TODO
-- python containerized pub/sub containers
-  - need fresh protocol files
-    - `protoc --proto_path=sparkplug_b/ --python_out=python/core/ sparkplug_b/sparkplug_b.proto`
 - reconnection attempt behavior
