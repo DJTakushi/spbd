@@ -36,8 +36,16 @@ flowchart LR
 ```
 *secondary config stream could be replaced by a single comprehensive data-stream with full configuration.  However, timestamps would have to indicate if attribute  values are fresh, and bandwith size will increase linearly with the number of attributes monitored.  Protobuff buffers could be use to minimize data size.
 
+## 1.2  deployment architecture
+![](./images/deployment_architecture.png)
+A) data_serial/release.py
+   1. commits tag of code (if safe).  This is important to automate to enure that image tags are traceable to code tags.
+   2. build + tag + push docker image to container registry
 
+B) een/release.py (same as above)
 
+C) deploy.py
+   1. create temp deployment from existing manifest, adding secrets that must not be kept in version-control that are stored as environment-variables
 
 
 # 2. local use
