@@ -1,6 +1,8 @@
 SparkPlugB Demo
 
 - [1.description](#1-description)
+  - [1.1 runtime architecture](#11-runtime-architecture)
+  - [1.2 deployment architecture](#12-deployment-architecture)
 - [2.use](#2-use)
   - [2.1 use with docker compose](#21-use-with-docker-compose)
   - [2.2 use with local applications](#22-use-with-local-applications)
