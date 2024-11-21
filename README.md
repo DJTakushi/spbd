@@ -22,7 +22,12 @@ flowchart LR
     data_serial --config*--> een
     een --cmd--> data_serial
 
+    data_can --data--> een
+    data_can --config*--> een
+    een --cmd--> data_can
+
     style data_serial fill:black,stroke:red,stroke-width:2px,color:red
+    style data_can fill:black,stroke:orange,stroke-width:2px,color:orange
     style een fill:black,stroke:yellow,stroke-width:2px,color:yellow
   end
 
