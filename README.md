@@ -55,6 +55,47 @@ C) deploy.py
    1. create temp deployment from existing manifest, adding secrets that must not be kept in version-control that are stored as environment-variables
 
 
+## 1.3  repo structure
+```mermaid
+flowchart TD
+spbd[embedded_deployment]
+
+subgraph een
+  code_een[code]--submodule <br> bc12a38-->embedded_common_een[embedded_common]
+  style embedded_common_een color:darkgreen, fill:green, stroke:darkgreen, stroke-width:5px
+end
+style een color:olive, fill:yellow, stroke:olive, stroke-width:2px
+spbd --submodule<br>21629af--> een
+
+subgraph data_serial
+  code_data_serial[code]--submodule <br> bc12a38-->embedded_common_ds[embedded_common]
+  style embedded_common_ds color:darkgreen, fill:green, stroke:darkgreen, stroke-width:5px
+end
+style data_serial color:maroon, fill:red, stroke:maroon, stroke-width:5px
+spbd --submodule<br>769717a --> data_serial
+
+subgraph data_can
+  code_data_can[code]--submodule <br> bc12a38-->embedded_common_dc[embedded_common]
+  style embedded_common_dc color:darkgreen, fill:green, stroke:darkgreen, stroke-width:5px
+end
+style data_can color:chocolate, fill:orange, stroke:chocolate, stroke-width:5px
+spbd --submodule<br>abcd123 --> data_can
+
+subgraph deployments
+  deploy.py
+  subgraph manifests
+    deployment.json
+  end
+  deploy.py --deploys--> manifests
+end
+spbd --> deployments
+
+subgraph util
+  things[...]
+end
+spbd --> util
+```
+
 # 2. local use
 NOTE : inter-module communication is limited to Azure IoT Edge routes, which are unavailable without an Azure managed deployment.  This can be optionally replaced to use a local MQTT server, but this is not yet fully implemented.
 
