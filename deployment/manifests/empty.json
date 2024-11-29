@@ -1,0 +1,50 @@
+{
+  "content": {
+    "modulesContent": {
+      "$edgeAgent": {
+        "properties.desired": {
+          "schemaVersion": "1.1",
+          "runtime": {
+            "type": "docker",
+            "settings": {
+              "registryCredentials": {
+                "sparkplugbdemo_registry": {
+                  "address": "sparkplugbdemo.azurecr.io"
+                }
+              }
+            }
+          },
+          "systemModules": {
+            "edgeAgent": {
+              "settings": {
+                "image": "mcr.microsoft.com/azureiotedge-agent:1.5"
+              },
+              "type": "docker"
+            },
+            "edgeHub": {
+              "restartPolicy": "always",
+              "settings": {
+                "image": "mcr.microsoft.com/azureiotedge-hub:1.5",
+                "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"443/tcp\":[{\"HostPort\":\"443\"}],\"5671/tcp\":[{\"HostPort\":\"5671\"}],\"8883/tcp\":[{\"HostPort\":\"8883\"}]}}}"
+              },
+              "status": "running",
+              "type": "docker"
+            }
+          },
+          "modules": {
+          }
+        }
+      },
+      "$edgeHub": {
+        "properties.desired": {
+          "schemaVersion": "1.1",
+          "storeAndForwardConfiguration": {
+            "timeToLiveSecs": 7200
+          },
+          "routes": {
+          }
+        }
+      }
+    }
+  }
+}
