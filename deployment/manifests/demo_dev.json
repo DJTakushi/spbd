@@ -48,8 +48,8 @@
             "data_serial":{
               "restartPolicy": "always",
               "settings": {
-                "image": "sparkplugbdemo.azurecr.io/data_serial:dev0.0.46",
-                "createOptions": "{\"HostConfig\":{\"Binds\":[\"/dev:/dev\"],\"Privileged\":true}}"
+                "image": "sparkplugbdemo.azurecr.io/data_serial:dev0.0.47",
+                "createOptions": "{\"HostConfig\":{\"Binds\":[\"/dev:/dev\"],\"Privileged\":true},\"Entrypoint\":[\"./app\",\"-cAZURE_ROUTES\"]}"
               },
               "status": "running",
               "type": "docker"
