@@ -3,4 +3,4 @@
 	url = git@github.com:DJTakushi/een.git
 [submodule "data_serial"]
 	path = data_serial
-	url = https://github.com/DJTakushi/data_serial
+	url = git@github.com/DJTakushi/data_serial.git
