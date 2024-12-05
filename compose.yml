@@ -1,5 +1,5 @@
-# sudo docker compose build een sub
-# sudo docker compose --profile een --profile sub up
+# docker compose build een data_serial
+# docker compose --profile een --profile data_serial up
 services:
   mqtt:
     image : eclipse-mosquitto:2.0.19
@@ -13,55 +13,13 @@ services:
     build:
       context: een
       dockerfile: Dockerfile
-    # ports:
-    #   - "8080:8080"
     extra_hosts:
     - "host.docker.internal:host-gateway"
-    environment:
-      MQ_HOST : "host.docker.internal"
+    entrypoint: ./app -cMQTT -ahost.docker.internal -spba192.168.130.51
     depends_on:
       - mqtt
     profiles:
       - een
-  sub:
-    image: sub
-    build:
-      context: sub
-      dockerfile: Dockerfile
-    depends_on:
-      - mqtt
-    extra_hosts:
-    - "host.docker.internal:host-gateway"
-    environment:
-      MQ_HOST : "host.docker.internal"
-    profiles:
-      - sub
-  data_b:
-    image: data_b
-    build:
-      context: data_b
-      dockerfile: Dockerfile
-    depends_on:
-      - mqtt
-    extra_hosts:
-    - "host.docker.internal:host-gateway"
-    environment:
-      MQ_HOST : "host.docker.internal"
-    profiles:
-      - data_b
-  filter_sample:
-    image: filter_sample
-    build:
-      context: filter_sample
-      dockerfile: Dockerfile
-    depends_on:
-      - mqtt
-    extra_hosts:
-    - "host.docker.internal:host-gateway"
-    environment:
-      MQ_HOST : "host.docker.internal"
-    profiles:
-      - filter_sample
   data_serial:
     image:  data_serial
     build:
@@ -71,7 +29,9 @@ services:
       - mqtt
     extra_hosts:
     - "host.docker.internal:host-gateway"
-    environment:
-      MQ_HOST : "host.docker.internal"
     profiles:
       - data_serial
+    entrypoint: ./app -cMQTT -ahost.docker.internal
+    privileged: true
+    volumes:
+      - /dev:/dev
