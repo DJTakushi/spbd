@@ -33,15 +33,10 @@
           },
           "modules": {
             "een": {
-              "env": {
-                "MQ_HOST": {
-                  "value": "192.168.130.51"
-                }
-              },
               "restartPolicy": "always",
               "settings": {
-                "createOptions": "{\"Entrypoint\":[\"./app\",\"-cAZURE_ROUTES\"]}",
-                "image": "sparkplugbdemo.azurecr.io/een:dev0.1.54"
+                "createOptions": "{\"Entrypoint\":[\"./app\",\"-cAZURE_ROUTES\",\"-spba192.168.130.51\"]}",
+                "image": "sparkplugbdemo.azurecr.io/een:dev0.1.56"
               },
               "status": "running",
               "type": "docker"
@@ -66,7 +61,7 @@
           },
           "routes": {
             "data_serial_to_een": {
-              "route": "FROM /messages/modules/data_serial/* INTO BrokeredEndpoint(\"/modules/een/inputs/input1\")"
+              "route": "FROM /messages/modules/data_serial/* INTO BrokeredEndpoint(\"/modules/een/inputs/een\")"
             }
           }
         }
