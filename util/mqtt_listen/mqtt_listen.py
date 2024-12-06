@@ -14,7 +14,7 @@ myUsername = "admin"
 myPassword = "changeme"
 
 subscriptions = []
-default_subscription = "data_serial_output"
+default_subscription = "een"
 
 def on_connect(client, userdata, flags, rc):
   if rc == 0:
