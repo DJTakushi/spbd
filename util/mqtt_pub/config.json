@@ -1,0 +1,89 @@
+{
+  "msg_type":"config",
+  "name": "foo",
+  "pub_key": "een",
+  "local_conn":{
+    "type":"MQTT",
+    "address":"localhost",
+    "port":1883,
+    "sub_keys": [
+      "data_serial_config"
+    ]
+  },
+  "hardware": {
+    "type": "serial",
+    "name": "/dev/ttyUSB0",
+    "baud": 115200
+  },
+  "parser": {
+    "linedelimiter": "\n",
+    "fielddelimiter": ",",
+    "attributes": [
+      {
+        "name": "SlurryRate",
+        "datatype":10,
+        "position":1
+      },
+      {
+        "name": "CleanRate",
+        "datatype":10,
+        "position":2
+      },
+      {
+        "name": "Denso",
+        "datatype":10,
+        "position":3
+      },
+      {
+        "name": "Auger1RPM",
+        "datatype":10,
+        "position":4
+      },
+      {
+        "name": "Auger2RPM",
+        "datatype":10,
+        "position":5
+      },
+      {
+        "name": "Auger3RPM",
+        "datatype":10,
+        "position":5
+      },
+      {
+        "name": "DischargePressure",
+        "datatype":10,
+        "position":6
+      },
+      {
+        "name": "TubLevel",
+        "datatype":10,
+        "position":7
+      },
+      {
+        "name": "CleanTotalBBL",
+        "datatype":10,
+        "position":8
+      },
+      {
+        "name": "SlurryTotalBBL",
+        "datatype":10,
+        "position":9
+      },
+      {
+        "name": "StageTotalBBLs",
+        "datatype":10,
+        "position":10
+      },
+      {
+        "name": "TubValvePosition",
+        "datatype":10,
+        "position":11
+      },
+      {
+        "name": "SuctionPressure",
+        "datatype":10,
+        "position":12
+      }
+    ]
+  }
+}
