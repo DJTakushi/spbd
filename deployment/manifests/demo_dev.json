@@ -36,7 +36,7 @@
               "restartPolicy": "always",
               "settings": {
                 "createOptions": "{\"Entrypoint\":[\"./app\",\"-cAZURE_ROUTES\",\"-spba192.168.130.51\"]}",
-                "image": "sparkplugbdemo.azurecr.io/een:dev0.1.56"
+                "image": "sparkplugbdemo.azurecr.io/een:dev0.1.57"
               },
               "status": "running",
               "type": "docker"
@@ -44,7 +44,7 @@
             "data_serial":{
               "restartPolicy": "always",
               "settings": {
-                "image": "sparkplugbdemo.azurecr.io/data_serial:dev0.0.49",
+                "image": "sparkplugbdemo.azurecr.io/data_serial:dev0.0.50",
                 "createOptions": "{\"HostConfig\":{\"Binds\":[\"/dev:/dev\"],\"Privileged\":true},\"Entrypoint\":[\"./app\",\"-cAZURE_ROUTES\"]}"
               },
               "status": "running",
